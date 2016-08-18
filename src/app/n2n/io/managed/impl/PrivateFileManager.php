@@ -22,7 +22,7 @@
 namespace n2n\io\managed\impl;
 
 use n2n\core\VarStore;
-use n2n\N2N;
+use n2n\core\N2N;
 use n2n\core\config\FilesConfig;
 use n2n\model\RequestScoped;
 use n2n\core\config\IoConfig;

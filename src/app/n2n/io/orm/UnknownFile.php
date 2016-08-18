@@ -24,7 +24,7 @@ namespace n2n\io\orm;
 use n2n\io\managed\File;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
-use n2n\http\nav\UnavailableMurlException;
+use n2n\web\http\nav\UnavailableMurlException;
 use n2n\util\uri\Url;
 
 class UnknownFile implements File {
@@ -116,35 +116,35 @@ class UnknownFile implements File {
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::responseOut()
+	 * @see \n2n\web\http\ResponseContent::responseOut()
 	 */
 	public function responseOut() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::getEtag()
+	 * @see \n2n\web\http\ResponseContent::getEtag()
 	 */
 	public function getEtag() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::getLastModified()
+	 * @see \n2n\web\http\ResponseContent::getLastModified()
 	 */
 	public function getLastModified() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseThing::prepareForResponse()
+	 * @see \n2n\web\http\ResponseThing::prepareForResponse()
 	 */
-	public function prepareForResponse(\n2n\http\Response $response) {
+	public function prepareForResponse(\n2n\web\http\Response $response) {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseThing::toKownResponseString()
+	 * @see \n2n\web\http\ResponseThing::toKownResponseString()
 	 */
 	public function toKownResponseString() {
 		return $this->__toString();

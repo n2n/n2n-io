@@ -21,10 +21,10 @@
  */
 namespace n2n\io\managed\impl;
 
-use n2n\N2N;
+use n2n\core\N2N;
 use n2n\core\VarStore;
 use n2n\model\RequestScoped;
-use n2n\http\Session;
+use n2n\web\http\Session;
 use n2n\core\config\IoConfig;
 use n2n\io\managed\impl\engine\TmpFileEngine;
 use n2n\util\ex\IllegalStateException;

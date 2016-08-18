@@ -21,7 +21,7 @@
  */
 namespace n2n\io\managed\impl;
 
-use n2n\http\UploadDefinition;
+use n2n\web\http\UploadDefinition;
 use n2n\io\IoUtils;
 use n2n\io\fs\FsPath;
 use n2n\io\IoErrorException;

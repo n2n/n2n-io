@@ -21,8 +21,8 @@
  */
 namespace n2n\io\managed;
 
-use n2n\http\ResponseContent;
-use n2n\http\nav\Linkable;
+use n2n\web\http\ResponseContent;
+use n2n\web\http\nav\Linkable;
 
 interface File extends ResponseContent, Linkable {
 	

@@ -21,8 +21,8 @@
  */
 namespace n2n\io\fs;
 
-use n2n\http\ResponseContent;
-use n2n\http\Response;
+use n2n\web\http\ResponseContent;
+use n2n\web\http\Response;
 use n2n\io\IoUtils;
 use n2n\util\ex\NotYetImplementedException;
 
@@ -35,25 +35,25 @@ class FileAttachement implements ResponseContent {
 		$this->name = $name;	
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::responseOut()
+	 * @see \n2n\web\http\ResponseContent::responseOut()
 	 */
 	public function responseOut() {
 		$this->file->responseOut();
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::getEtag()
+	 * @see \n2n\web\http\ResponseContent::getEtag()
 	 */
 	public function getEtag() {
 		return $this->file->getEtag();
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseContent::getLastModified()
+	 * @see \n2n\web\http\ResponseContent::getLastModified()
 	 */
 	public function getLastModified() {
 		return $this->file->getLastModified();	
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseThing::prepareForResponse()
+	 * @see \n2n\web\http\ResponseThing::prepareForResponse()
 	 */
 	public function prepareForResponse(Response $response) {
 		$this->file->prepareForResponse($response);
@@ -66,7 +66,7 @@ class FileAttachement implements ResponseContent {
 		$response->setHeader('Content-Disposition: attachment;filename="' . $name . '"');
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\http\ResponseThing::toKownResponseString()
+	 * @see \n2n\web\http\ResponseThing::toKownResponseString()
 	 */
 	public function toKownResponseString() {
 		return $this->file->toResponseString();

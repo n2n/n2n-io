@@ -23,7 +23,7 @@ namespace n2n\io\managed\impl;
 
 use n2n\core\config\FilesConfig;
 use n2n\core\config\IoConfig;
-use n2n\http\Request;
+use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
 use n2n\model\RequestScoped;
 use n2n\io\managed\impl\engine\TransactionFileEngine;
