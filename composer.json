@@ -3,7 +3,7 @@
     "type": "library",
     "description": "n2n io library",
     "keywords": ["framework","awesome"],
-    "homepage": "http://n2n.rocks",
+    "homepage": "http://n2n.rocks/",
     "license": "GNU LGPL",
     "authors": [
         {
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "n2n\\core\\": "src/app/n2n/core"
+            "n2n\\io\\": "src/app/n2n/io"
         }
     }
 }
