@@ -25,7 +25,7 @@ use n2n\core\config\FilesConfig;
 use n2n\core\config\IoConfig;
 use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
-use n2n\model\RequestScoped;
+use n2n\context\RequestScoped;
 use n2n\io\managed\impl\engine\TransactionFileEngine;
 
 class PublicFileManager extends TransactionalFileManagerAdapter implements RequestScoped {

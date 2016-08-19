@@ -27,7 +27,7 @@ use n2n\io\managed\File;
 use n2n\io\managed\FileLocator;
 use n2n\io\IncompatibleFileException;
 use n2n\core\container\Transaction;
-use n2n\model\Lookupable;
+use n2n\context\Lookupable;
 use n2n\core\container\TransactionalResource;
 use n2n\io\managed\FileManager;
 
