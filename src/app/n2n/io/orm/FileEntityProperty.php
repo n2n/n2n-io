@@ -30,7 +30,7 @@ use n2n\persistence\orm\store\operation\MergeOperation;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\persistence\orm\store\action\PersistAction;
 use n2n\persistence\orm\store\action\RemoveAction;
-use n2n\persistence\orm\property\impl\EntityPropertyAdapter;
+use n2n\impl\persistence\orm\property\EntityPropertyAdapter;
 use n2n\persistence\orm\EntityManager;
 
 class FileEntityProperty extends EntityPropertyAdapter {

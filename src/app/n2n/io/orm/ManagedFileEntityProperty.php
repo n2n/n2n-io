@@ -29,7 +29,7 @@ use n2n\io\managed\FileLocator;
 use n2n\persistence\orm\store\operation\MergeOperation;
 use n2n\persistence\orm\EntityManager;
 use n2n\util\ex\IllegalStateException;
-use n2n\persistence\orm\property\impl\ColumnPropertyAdapter;
+use n2n\impl\persistence\orm\property\ColumnPropertyAdapter;
 use n2n\persistence\orm\store\action\PersistAction;
 use n2n\io\managed\FileManager;
 use n2n\persistence\orm\store\action\RemoveAction;
