@@ -2,15 +2,14 @@
     "name": "n2n/n2n-io",
     "type": "library",
     "description": "n2n io library",
-    "keywords": ["framework","awesome"],
+    "keywords": ["n2n","framework","io"],
     "homepage": "http://n2n.rocks/",
     "license": "GNU LGPL",
     "authors": [
         {
             "name": "Andreas von Burg",
             "email": "a@von-burg.net",
-            "homepage": "http://www.von-burg.net",
-            "role": "Developer"
+            "homepage": "http://www.von-burg.net"
         }
     ],
     "require": {
