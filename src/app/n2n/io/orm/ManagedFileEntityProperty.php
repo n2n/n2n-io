@@ -37,6 +37,7 @@ use n2n\reflection\ArgUtils;
 use n2n\io\managed\File;
 use n2n\persistence\orm\property\ColumnComparableEntityProperty;
 use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
+use n2n\persistence\orm\store\ValueHash;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -106,11 +107,11 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction($value, $valueHash, PersistAction $persistingJob) {
+	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $oldValueHash = null) {
 		$fileManager = $this->lookupFileManager($persistingJob->getActionQueue()->getEntityManager());
 		
 		$oldQualifiedName = null;
-		if ($valueHash !== null && 2 == count($parts = explode(self::FM_FILE_VH_SEPERATOR, $valueHash, 2))) {
+		if ($oldValueHash !== null && 2 == count($parts = explode(self::FM_FILE_VH_SEPERATOR, $oldValueHash, 2))) {
 			$oldQualifiedName = $parts[1];
 		}
 		
@@ -133,7 +134,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyRemoveAction()
 	 */
-	public function supplyRemoveAction($value, $valueHash, RemoveAction $removeAction) {
+	public function supplyRemoveAction(RemoveAction $removeAction, $value, ValueHash $oldValueHash) {
 		if ($value === null) return;
 		ArgUtils::assertTrue($value instanceof File);
 		
@@ -144,10 +145,10 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	const FM_FILE_VH_SEPERATOR = ':';
 	
 	/* (non-PHPdoc)
-	 * @see \n2n\persistence\orm\property\EntityProperty::buildValueHash()
+	 * @see \n2n\persistence\orm\property\EntityProperty::createValueHash()
 	 */
-	public function buildValueHash($value, EntityManager $em) {
-		if ($value === null) return null;
+	public function createValueHash($value, EntityManager $em): ValueHash {
+		if ($value === null) return new CommonValueHash(null);
 		ArgUtils::assertTrue($value instanceof File);
 		
 		$qualifiedName = null;
@@ -157,6 +158,6 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 			$qualifiedName = $this->lookupFileManager($em)->checkFile($value);
 		}
 		
-		return $this->fileManagerClassName . self::FM_FILE_VH_SEPERATOR . $qualifiedName;
+		return new CommonValueHash($this->fileManagerClassName . self::FM_FILE_VH_SEPERATOR . $qualifiedName);
 	}
 }
