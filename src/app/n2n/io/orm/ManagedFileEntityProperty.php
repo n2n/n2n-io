@@ -38,6 +38,7 @@ use n2n\io\managed\File;
 use n2n\persistence\orm\property\ColumnComparableEntityProperty;
 use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
 use n2n\persistence\orm\store\ValueHash;
+use n2n\persistence\orm\store\CommonValueHash;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
