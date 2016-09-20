@@ -111,8 +111,13 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $oldValueHash = null) {
 		$fileManager = $this->lookupFileManager($persistingJob->getActionQueue()->getEntityManager());
 		
+		$oldValue = null; 
+		if ($oldValueHash !== null) {
+			$oldValue = $oldValueHash->getHash();
+		}
+		
 		$oldQualifiedName = null;
-		if ($oldValueHash !== null && 2 == count($parts = explode(self::FM_FILE_VH_SEPERATOR, $oldValueHash, 2))) {
+		if ($oldValueHash !== null && 2 == count($parts = explode(self::FM_FILE_VH_SEPERATOR, $oldValue, 2))) {
 			$oldQualifiedName = $parts[1];
 		}
 		
