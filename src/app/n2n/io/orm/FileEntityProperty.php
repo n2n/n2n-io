@@ -32,6 +32,7 @@ use n2n\persistence\orm\store\action\PersistAction;
 use n2n\persistence\orm\store\action\RemoveAction;
 use n2n\impl\persistence\orm\property\EntityPropertyAdapter;
 use n2n\persistence\orm\EntityManager;
+use n2n\persistence\orm\store\ValueHash;
 
 class FileEntityProperty extends EntityPropertyAdapter {
 	private $columnName;
@@ -41,7 +42,7 @@ class FileEntityProperty extends EntityPropertyAdapter {
 		$accessProxy->setConstraint(TypeConstraint::createSimple('n2n\io\managed\File', true));
 	
 		parent::__construct($accessProxy);
-		throw new e;
+		throw new NotYetImplementedException('Use AnnoManagedFile');
 		$this->columnName = $columnName;
 		$this->originalFileNameColumnName = $originalFileNameColumnName;
 	}
@@ -72,7 +73,7 @@ class FileEntityProperty extends EntityPropertyAdapter {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createValueHash()
 	 */
-	public function createValueHash($value, EntityManager $em) {
+	public function createValueHash($value, EntityManager $em): ValueHash {
 		
 	}
 

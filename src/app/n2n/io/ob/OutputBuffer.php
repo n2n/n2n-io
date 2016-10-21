@@ -23,6 +23,8 @@ namespace n2n\io\ob;
 
 use n2n\util\StringUtils;
 use n2n\core\OutputBufferDisturbedException;
+use n2n\web\ui\UiComponent;
+use n2n\util\ex\NotYetImplementedException;
 
 class OutputBuffer {
 	const DEFAULT_CHUNK_SIZE = null; // 131072
@@ -110,6 +112,10 @@ class OutputBuffer {
 		ob_end_clean();
 		$this->obLevel = null;
 	}
+	
+	public function executeOnContinue(\Closure $closure) {
+		throw new NotYetImplementedException();
+	}
 	/**
 	 * 
 	 * @return boolean
@@ -181,6 +187,7 @@ class OutputBuffer {
 
 		if ($buffering) $this->start();
 	}
+	
 	/**
 	 * 
 	 * @return string
@@ -203,7 +210,7 @@ class OutputBuffer {
 	 * @return boolean
 	 */
 	public static function isOnline() {
-		return (bool)ob_get_level();
+		return (bool) ob_get_level();
 	}
 	/**
 	 * @return int
