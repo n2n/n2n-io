@@ -27,7 +27,6 @@ use n2n\io\fs\FsPath;
 use n2n\io\IoErrorException;
 use n2n\io\UploadedFileExceedsMaxSizeException;
 use n2n\io\IncompleteFileUploadException;
-use n2n\io\managed\FileManagingException;
 
 class FileFactory {
 	/**

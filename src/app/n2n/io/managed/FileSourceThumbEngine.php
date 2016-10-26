@@ -29,7 +29,7 @@ interface FileSourceThumbEngine {
 	
 	/**
 	 * @param ImageDimension $imageDimension
-	 * @return FileSource or null if not avaialable
+	 * @return FileSource|null null if not avaialable
 	 */
 	public function getByDimension(ImageDimension $imageDimension);
 	

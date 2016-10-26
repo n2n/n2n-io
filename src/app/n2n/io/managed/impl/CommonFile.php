@@ -248,9 +248,9 @@ class CommonFile implements \Serializable, File {
 		}
 	}
 	
-	public static function createFromAssignation(ManagerAssignation $fileAssignation, $originalName = null) {
-		$file = new File($fileAssignation->getFilePath(), $originalName);
-		$file->setFileAssignation($fileAssignation);
-		return $file;
-	}
+// 	public static function createFromAssignation(ManagerAssignation $fileAssignation, $originalName = null) {
+// 		$file = new File($fileAssignation->getFilePath(), $originalName);
+// 		$file->setFileAssignation($fileAssignation);
+// 		return $file;
+// 	}
 }

@@ -40,7 +40,7 @@ interface FileSource {
 	public function getSize(): int;
 	
 	/**
-	 * @return \DateTime or null if not known 
+	 * @return \DateTime|null null if not known 
 	 */
 	public function getLastModified();
 	
