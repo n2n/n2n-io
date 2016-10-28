@@ -25,14 +25,33 @@ use n2n\io\managed\img\impl\ProportionalThumbStrategy;
 use n2n\io\img\ImageResource;
 
 class ThSt {
+	
+	/**
+	 * @param int $width
+	 * @param int $height
+	 * @param bool $scaleUpAllowed
+	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
+	 */
 	public static function prop(int $width, int $height, bool $scaleUpAllowed = true) {
 		return new ProportionalThumbStrategy($width, $height, null, $scaleUpAllowed);	
 	}
 	
+	/**
+	 * @param int $width
+	 * @param int $height
+	 * @param bool $scaleUpAllowed
+	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
+	 */
 	public static function crop(int $width, int $height, bool $scaleUpAllowed = true) {
 		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_CENTER, $scaleUpAllowed);
 	}
 	
+	/**
+	 * @param int $width
+	 * @param int $height
+	 * @param bool $scaleUpAllowed
+	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
+	 */
 	public static function cropTop(int $width, int $height, bool $scaleUpAllowed = true) {
 		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_TOP, $scaleUpAllowed);
 	}
