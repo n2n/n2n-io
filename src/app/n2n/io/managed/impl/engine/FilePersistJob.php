@@ -38,6 +38,10 @@ class FilePersistJob {
 		$this->managedFileSource = $managedFileSource;
 		$this->lock = $lock;
 	}
+	
+	public function getFile() {
+		return $this->file;
+	}
 
 	public function execute() {
 		IllegalStateException::assertTrue(!$this->executed);
