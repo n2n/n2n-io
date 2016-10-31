@@ -1,18 +1,58 @@
 <?php
 namespace lib\n2n\io\managed\img\impl;
 
-interface UiThumbStrategyComposer {
+use n2n\io\managed\img\ImageFile;
+use n2n\reflection\ArgUtils;
 
+interface UiThumbStrategyComposer {
+	
+	/**
+	 * @return ImageFile
+	 */
+	public function createDefaultImageFile(): ImageFile;
+	
+	/**
+	 * @return ImageSourceSet[]
+	 */
+	public function createUiThumbStrategy(): array;
 }
 
-class UiThumbStrategyComposer implements UiThumbStrategyComposer {
-	private $maxWidth;
-	private $maxHeight;
+class UiThumbStrategy {
+	private $defaultImageFile;
+	private $imageSourceSets;
+	
+	public function __construct(ImageFile $defaultImageFile, array $imageSourceSets) {
+		ArgUtils::valArray($imageSourceSets, ImageSourceSet::class);
+		$this->defaultImageFile = $defaultImageFile;
+		$this->imageSourceSets = $imageSourceSets;
+	}
+	
+	public function getDefaultImageFile() {
+		return $this->defaultImageFile;
+	}
+	
+	public function setDefaultImageFile(ImageFile $defaultImageFile) {
+		$this->defaultImageFile = $defaultImageFile;
+	}
+	
+	public function getImageSourceSets() {
+		return $this->imageSourceSets;
+	}
+	
+	public function setImageSourceSets(array $imageSourceSets) {
+		$this->imageSourceSets = $imageSourceSets;
+	}
+}
+
+class ProportionalUiThumbStrategyComposer implements UiThumbStrategyComposer {
+	private $width;
+	private $height;
 	private $autoCropMode;
 	private $scaleUpAllowed;
 
+	private $fixedWidths;
+	private $maxWidth;
 	private $minWidth;
-	private $minHeight;
 
 	/**
 	 * @param int $width
@@ -21,8 +61,8 @@ class UiThumbStrategyComposer implements UiThumbStrategyComposer {
 	 * @param bool $scaleUpAllowed
 	 */
 	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true) {
-		$this->maxWidth = $width;
-		$this->maxHeight = $height;
+		$this->maxWidth = $this->minWidth = $this->width = $width;
+		$this->height = $height;
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;
 	}
@@ -33,31 +73,40 @@ class UiThumbStrategyComposer implements UiThumbStrategyComposer {
 	 */
 	public function toWidth(int $width) {
 		if ($width > $this->maxWidth) {
-			$this->maxHeight = $this->maxHeight * ($width / $this->maxWidth);
 			$this->maxWidth = $width;
 			return $this;
 		}
-
-		if ($this->maxWidth == $width || ($this->minWidth !== null && $this->minWidth <= $width)) {
+		
+		if ($width < $this->minWidth) {
+			$this->minWidth = $width;
 			return $this;
 		}
 		
 		return $this;
 	}
 
-	public function width(int $width) {
-		
+	public function widths(int ...$widths) {
+		foreach ($widths as $width) {
+			$this->fixedWidths[$width] = $width;
+		}
 		return $this;
 	}
 	
-
-	public function createThumbStrategy() {
-
+	public function factors(float ...$factors) {
+		foreach ($factors as $factor) {
+			$width = (int) ceil($this->width * $factor);
+			$this->fixedWidths[$width] = $width;
+		}
+		return $this;
 	}
-}
-
-class ArtDirectionThumbStrategyComposer {
 	
+	public function createUiThumbStrategy(): UiThumbStrategy {
+		$widths = $this->fixedWidths;
+		ksort($widths, SORT_NUMERIC);
+		
+		$width = reset($widths);
+		
+	}
 }
 
 class ProportionalUiThumbStrategy {
