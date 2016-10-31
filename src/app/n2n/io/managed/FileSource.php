@@ -77,7 +77,7 @@ interface FileSource {
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	public function isImage(): bool;
-	
+		
 	/**
 	 * @return \n2n\io\img\ImageSource
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
@@ -98,6 +98,8 @@ interface FileSource {
 	 * @throws NoThumbSupportException
 	 */
 	public function getFileSourceThumbEngine(): FileSourceThumbEngine;
+	
+// 	public function getFileSourceSizesEngine(): FileSourceSizesEngine;
 	
 	/**
 	 * @param FsPath $fsPath

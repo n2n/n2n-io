@@ -1,11 +1,11 @@
 <?php
 namespace lib\n2n\io\managed\img\impl;
 
-interface ThumbStrategyComposer {
+interface UiThumbStrategyComposer {
 
 }
 
-class ProportiaonalThumbStrategyComposer implements ThumbStrategyComposer {
+class UiThumbStrategyComposer implements UiThumbStrategyComposer {
 	private $maxWidth;
 	private $maxHeight;
 	private $autoCropMode;
@@ -56,12 +56,16 @@ class ProportiaonalThumbStrategyComposer implements ThumbStrategyComposer {
 	}
 }
 
+class ArtDirectionThumbStrategyComposer {
+	
+}
 
-class ProportionalThumbStrategy {
+class ProportionalUiThumbStrategy {
 	private $width;
 	private $height;
 	private $autoCropMode;
 	private $scaleUpAllowed;
+	private $minWidth;
 	
 	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true) {
 		$this->width = $width;
@@ -69,8 +73,31 @@ class ProportionalThumbStrategy {
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;
 	}
+
+	public function getSizes() {
 	
-	public function getFileSources() {
+	}
+	
+	public function buildImageSourceSets() {
 		
 	}
+}
+
+
+class ImageSourceSet {
+	private $width;
+	private $height;
+	
+	public function __construct(int $width, int $height) {
+		$this->width = $width;
+	}
+	
+	public function getImageFile() {
+		
+	}
+	
+	public function getSize() {
+	
+	}
+	
 }
