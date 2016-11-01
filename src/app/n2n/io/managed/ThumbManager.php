@@ -19,36 +19,44 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed;
 
-use n2n\util\ex\IllegalStateException;
-use n2n\io\IoException;
-use n2n\io\managed\FileManagingException;
+use n2n\io\managed\img\ImageDimension;
+use n2n\io\img\ImageResource;
+use n2n\io\managed\FileSource;
 
-class FileRemoveJob {
-	private $managedFileSource;
-	private $executed = false;
-
-	public function __construct(ManagedFileSource $managedFileSource) {
-		$this->managedFileSource = $managedFileSource;
-	}
-
-	public function execute() {
-		IllegalStateException::assertTrue(!$this->executed);
-		$this->executed = true;
-
-		if ($this->managedFileSource->isThumbSupportAvailable()) {
-			$this->managedFileSource->getThumbManager()->clear();
-		}
-		
-		$fsPath = $this->managedFileSource->getFileFsPath();
-		if (!$fsPath->exists()) return;
-			
-		try {
-			$fsPath->delete();
-		} catch (IoException $e) {
-			throw new FileManagingException($this->managedFileSource->getFileManagerName() 
-					. ' could not remove file source: ' . $this->managedFileSource, 0, $e);
-		}
-	}
+interface ThumbManager {
+	
+	/**
+	 * @param ImageDimension $imageDimension
+	 * @return FileSource|null null if not avaialable
+	 */
+	public function getByDimension(ImageDimension $imageDimension);
+	
+	/**
+	 * @param ImageResource $imageResource
+	 * @param ImageDimension $imageDimension
+	 * @return FileSource
+	 */
+	public function create(ImageResource $imageResource, ImageDimension $imageDimension): FileSource;
+	
+	/**
+	 * 
+	 */
+	public function clear();
+	
+	/**
+	 * @return FileSource[]
+	 */
+	public function getAll();
+	
+	/**
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	public function getPossibleImageDimensions(): array;
+	
+	/**
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	public function getUsedImageDimensions(): array;
 }

@@ -25,12 +25,13 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\fs\FsPath;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
 use n2n\util\ex\NotYetImplementedException;
+use n2n\io\managed\VariationEngine;
 
-class ManagedFileSourceVariationManager implements FileSourceThumbEngine {
+class ManagedVariationManager implements VariationManager {
 	const KEY_PREFIX = 'var-';
 
 	private $fileSource;

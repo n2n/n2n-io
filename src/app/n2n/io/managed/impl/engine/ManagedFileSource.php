@@ -24,7 +24,7 @@ namespace n2n\io\managed\impl\engine;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileManagingConstraintException;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
 
 class ManagedFileSource extends FileSourceAdapter {
 	private $fileManagerName;
@@ -78,10 +78,10 @@ class ManagedFileSource extends FileSourceAdapter {
 		return $this->isImage();
 	}
 	
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
+	public function getThumbManager(): ThumbManager {
 		$this->ensureValid();
 		
-		return new ManagedFileSourceThumbEngine($this, 
+		return new ManagedThumbManager($this, 
 				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath), 
 				$this->dirPerm, $this->filePerm);		
 	}

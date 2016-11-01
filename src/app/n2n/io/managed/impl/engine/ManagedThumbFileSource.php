@@ -29,7 +29,7 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
 
 class ManagedThumbFileSource extends FileSourceAdapter implements FileSource {
 	private $imageDimension;
@@ -100,10 +100,10 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource {
 		return $this->originalFileSource->isThumbSupportAvailable();
 	}
 	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getFileSourceThumbEngine()
+	 * @see \n2n\io\managed\FileSource::getThumbManager()
 	 */
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
-		return $this->originalFileSource->getFileSourceThumbEngine();
+	public function getThumbManager(): ThumbManager {
+		return $this->originalFileSource->getThumbManager();
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::__toString()

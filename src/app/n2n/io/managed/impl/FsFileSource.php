@@ -27,7 +27,7 @@ use n2n\io\img\impl\ImageSourceFactory;
 use n2n\util\ex\UnsupportedOperationException;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 use n2n\io\fs\FsPath;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
 use n2n\io\img\ImageSource;
 use n2n\io\InputStream;
 
@@ -72,7 +72,7 @@ class FsFileSource extends FileSourceAdapter implements FileSource {
 		return false;
 	}
 	
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
+	public function getThumbManager(): ThumbManager {
 		return new UnsupportedOperationException('No thumb support provided for file: ' . $this->fsPath);
 	}
 	/* (non-PHPdoc)

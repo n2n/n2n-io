@@ -23,7 +23,7 @@ namespace n2n\io\managed\impl\engine;
 
 use n2n\io\fs\FsPath;
 use n2n\util\ex\UnsupportedOperationException;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
 
 class TmpFileSource extends FileSourceAdapter {
 	private $sessionId;
@@ -48,9 +48,9 @@ class TmpFileSource extends FileSourceAdapter {
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getFileSourceThumbEngine()
+	 * @see \n2n\io\managed\FileSource::getThumbManager()
 	 */
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
+	public function getThumbManager(): ThumbManager {
 		throw new UnsupportedOperationException('Thumb support not available for tmp file: ' . $this->fileFsPath);
 	}
 

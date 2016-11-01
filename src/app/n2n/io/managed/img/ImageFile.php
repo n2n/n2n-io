@@ -90,7 +90,7 @@ class ImageFile {
 	}
 	
 	public function getThumbFile(ImageDimension $imageDimension) {
-		$thumbEngine = $this->file->getFileSource()->getFileSourceThumbEngine();
+		$thumbEngine = $this->file->getFileSource()->getThumbManager();
 		
 		if (null !== ($thumbFileResource = $thumbEngine->getByDimension($imageDimension))) {
 			return new CommonFile($thumbFileResource, $this->file->getOriginalName());
@@ -100,7 +100,7 @@ class ImageFile {
 	}
 		
 	public function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
-		return new CommonFile($this->file->getFileSource()->getFileSourceThumbEngine()
+		return new CommonFile($this->file->getFileSource()->getThumbManager()
 						->create($imageResource, $imageDimension),
 				$this->file->getOriginalName());
 	}
@@ -109,7 +109,7 @@ class ImageFile {
 	 * @return ImageFile
 	 */
 	public function getOrCreateThumb(ThumbStrategy $thumbStrategy): ImageFile {
-		$thumbEngine = $this->file->getFileSource()->getFileSourceThumbEngine();
+		$thumbEngine = $this->file->getFileSource()->getThumbManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 		
 		$thumbFileResource = $thumbEngine->getByDimension($imageDimension);
