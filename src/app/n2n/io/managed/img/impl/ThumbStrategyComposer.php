@@ -3,6 +3,9 @@ namespace lib\n2n\io\managed\img\impl;
 
 use n2n\io\managed\img\ImageFile;
 use n2n\reflection\ArgUtils;
+use n2n\core\container\N2nContext;
+use n2n\io\managed\img\impl\ProportionalThumbStrategy;
+use n2n\io\img\ImageResource;
 
 interface UiThumbStrategyComposer {
 	
@@ -100,14 +103,96 @@ class ProportionalUiThumbStrategyComposer implements UiThumbStrategyComposer {
 		return $this;
 	}
 	
-	public function createUiThumbStrategy(): UiThumbStrategy {
+	
+	
+	public function createUiThumbStrategy(ImageFile $imageFile, N2nContext $n2nContext): UiThumbStrategy {
 		$widths = $this->fixedWidths;
-		ksort($widths, SORT_NUMERIC);
+		$widths[$this->minWidth] = $this->minWidth;
+		$widths[$this->width] = $this->width;
+		$widths[$this->maxWidth] = $this->maxWidth;
+		krsort($widths, SORT_NUMERIC);
 		
-		$width = reset($widths);
+		$thumbFile = null;
+		$imageFiles = array();
+		foreach ($widths as $width) {
+			if ($thumbFile === null) {
+				$imageFiles[$width] = $thumbFile = $this->createThumb($imageFile, $width);
+				continue;
+			}
+			
+			$imageFiles[$width] = $this->createVariation($thumbFile, $width);
+		}
+		
+		$lastSize = null;
+		$lastWidth = null;
+		foreach ($imageFiles as $width => $imageFile) {
+			if ($width > $this->maxWidth || $width < $this->minWidth) continue;
+			
+// 			$size = $imageFile->getFile()->getFileSource()->getSize();
+// 			if (!$this->isSizeGabTooLarge($lastWidth, $lastWidth = $size)) continue;
+			
+// 			if ($lastSize > $size) {
+				
+// 			}
+		}
+		
+		$files = array();
+		
+		$imageSources = new ImageSourceSet($width, $height)
+		
+		return $imageFiles;
+	}
+	
+	const MIN_SIZE_GAB = 51200;
+	
+	private function isSizeGabTooLarge($largerSize, $size) {
+		$diff = $largerSize - $size;
+		if ($diff <= self::MIN_SIZE_GAB) return false;
+		
+		return ($largerSize / 3 < $diff);
+	}
+	
+	private function calcGabWidth($largerWidth, $width) {
+		$diff = $largerWidth - $width;
+		
+		if ($diff > $largerWidth * 0.75) {
+			return $largerWidth - (int) ceil($diff / 2);
+		}
+		
+		return null;
+	}
+	
+	private function createStrategy($width) {
+		$height = ceil($this->height / $this->width * $width);
+		
+		return new ProportionalThumbStrategy($width, $height, $this->autoCropMode, $this->scaleUpAllowed);
+	}
+	
+	private function createThumb(ImageFile $imageFile, int $width) {
+		return $imageFile->getOrCreateThumb($this->createStrategy($width));
+	}
+	
+	private function createVariation(ImageFile $imageFile, int $width) {
+		$strategy = $this->createStrategy($width);
+		if ($strategy->matches($imageFile->getImageSource())) {
+			return null;
+		}
+		
+		return $imageFile->getOrCreateVariationFile($strategy);
+	}
+	
+	
+}
+
+class Builder {
+	
+	public function __construct(ImageFile $imageFile, int $width, int $height) {
 		
 	}
+	
 }
+
+
 
 class ProportionalUiThumbStrategy {
 	private $width;
@@ -134,19 +219,27 @@ class ProportionalUiThumbStrategy {
 
 
 class ImageSourceSet {
-	private $width;
-	private $height;
+	private $files;
+	private $sizeAttr;
 	
-	public function __construct(int $width, int $height) {
-		$this->width = $width;
+	public function __construct(array $files, string $sizesAttr = null) {
+		$this->files = $files;
+		$this->sizeAttr = $sizesAttr;
 	}
 	
-	public function getImageFile() {
-		
+	public function getSizesAttr() {
+		return $this->sizeAttr;
 	}
 	
-	public function getSize() {
 	
+}
+
+class ImageSource {
+	private $file;
+	private $htmlLength;
+	
+	public function __construct(File $file, string $htmlLength) {
+		$this->file = $file;
+		$this->htmlLength = $htmlLength;
 	}
-	
 }
