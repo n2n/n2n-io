@@ -21,15 +21,12 @@
  */
 namespace n2n\io\managed\impl\engine;
 
-use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\fs\FsPath;
-use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
-use n2n\util\ex\NotYetImplementedException;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\VariationManager;
 
 class ManagedVariationManager implements VariationManager {
 	const KEY_PREFIX = 'var-';
