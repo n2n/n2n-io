@@ -37,9 +37,7 @@ class FileRemoveJob {
 		IllegalStateException::assertTrue(!$this->executed);
 		$this->executed = true;
 
-		if ($this->managedFileSource->isThumbSupportAvailable()) {
-			$this->managedFileSource->getThumbManager()->clear();
-		}
+		$this->managedFileSource->getVariationEngine()->clear();
 		
 		$fsPath = $this->managedFileSource->getFileFsPath();
 		if (!$fsPath->exists()) return;

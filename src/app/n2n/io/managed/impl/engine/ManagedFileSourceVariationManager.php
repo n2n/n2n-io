@@ -87,7 +87,7 @@ class ManagedVariationManager implements VariationManager {
 	}
 	
 	private function createVariationFileSource(FsPath $fileFsPath, string $key) {
-		$thumbFileSource = new ManagedThumbFileSource($fileFsPath, $key, $this->mimeType, $this->fileSource);
+		$thumbFileSource = new ManagedVariationFileSource($fileFsPath, $key, $this->mimeType, $this->fileSource);
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
 			$thumbUrl = $fileUrl->chPath($fileUrl->getPath()->getParent()->ext($fileFsPath->getParent()->getName(), $fileFsPath->getName()));

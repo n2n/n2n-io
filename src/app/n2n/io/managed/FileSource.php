@@ -85,27 +85,11 @@ interface FileSource {
 	 */
 	public function createImageSource(): ImageSource;
 	
-	public function hasVariationSupport(): bool; 
-	
+	/**
+	 * @return VariationEngine
+	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 */
 	public function getVariationEngine(): VariationEngine;
-	
-	/**
-	 * @return boolean
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}.
-	 */
-	public function isThumbSupportAvailable(): bool;
-	
-	/**
-	 * @return ThumbManager
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}.
-	 * @throws \n2n\io\img\UnsupportedImageTypeException
-	 * @throws NoThumbSupportException
-	 */
-	public function getThumbManager(): ThumbManager;
-	
-	public function isVariationSupportAvailable(): bool;
-	
-	public function getVariationManager(): VariationManager;
 	
 	/**
 	 * @param FsPath $fsPath

@@ -30,6 +30,7 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\img\ImageSource;
 use n2n\io\InputStream;
+use n2n\io\managed\VariationEngine;
 
 class FsFileSource extends FileSourceAdapter implements FileSource {
 	protected $fsPath;
@@ -68,6 +69,10 @@ class FsFileSource extends FileSourceAdapter implements FileSource {
 			   ImageSourceFactory::getMimeTypeOfFile($this->fsPath));
 	}
 	
+	public function getVariationEngine(): VariationEngine {
+		return $this;
+	}
+	
 	public function isThumbSupportAvailable(): bool {
 		return false;
 	}
@@ -75,6 +80,15 @@ class FsFileSource extends FileSourceAdapter implements FileSource {
 	public function getThumbManager(): ThumbManager {
 		return new UnsupportedOperationException('No thumb support provided for file: ' . $this->fsPath);
 	}
+	
+	public function isVariationSupportAvailable() {
+		return false;
+	}
+	
+	public function getVariationManager(): VariationManager {
+		return new UnsupportedOperationException('No variation support provided for file: ' . $this->fsPath);
+	}
+	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::__toString()
 	 */
