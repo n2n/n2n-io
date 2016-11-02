@@ -243,10 +243,13 @@ class TransactionFileEngine {
 		return;
 	}
 	
-	public function flush() {
+	public function flush(bool $persistOnly = false) {
 		while (null !== ($filePersistJob = array_pop($this->filePersistJobs))) {
 			$filePersistJob->execute();
 		}
+		
+		if ($persistOnly) return;
+		
 		while (null !== ($fileRemoveJob = array_pop($this->fileRemoveJobs))) {
 			$fileRemoveJob->execute();
 		}
