@@ -41,7 +41,7 @@ class ManagedVariationFileSource extends FileSourceAdapter implements FileSource
 	 * @param ImageDimension $imageDimension
 	 * @param ManagedFileSource $originalFileSource
 	 */
-	public function __construct(FsPath $fsPath, string $key, string $mimeType = null, ManagedFileSource $originalFileSource) {
+	public function __construct(FsPath $fsPath, string $key, string $mimeType = null, FileSource $originalFileSource) {
 		parent::__construct(null, $fsPath);
 		$this->key = $key;
 		$this->mimeType = $mimeType;

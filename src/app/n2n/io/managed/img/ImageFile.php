@@ -109,7 +109,7 @@ class ImageFile {
 	 * @return ImageFile
 	 */
 	public function getOrCreateThumb(ThumbStrategy $thumbStrategy): ImageFile {
-		$thumbEngine = $this->file->getFileSource()->getThumbManager();
+		$thumbEngine = $this->file->getFileSource()->getVariationEngine()->getThumbManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 		
 		$thumbFileResource = $thumbEngine->getByDimension($imageDimension);
@@ -128,5 +128,27 @@ class ImageFile {
 		$imageResource->destroy();
 		
 		return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()));
+	}
+	
+	public function getOrCreateVariation(ThumbStrategy $thumbStrategy): ImageFile {
+		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$imageDimension = $thumbStrategy->getImageDimension();
+	
+		$variationFileResource = $variationManager->getByKey($imageDimension);
+		if ($variationFileResource !== null) {
+			return new ImageFile(new CommonFile($variationFileResource, $this->file->getOriginalName()));
+		}
+	
+		if ($thumbStrategy->matches($this->imageSource)) {
+			return $this;
+		}
+	
+		$imageResource = $this->imageSource->createImageResource();
+		$thumbStrategy->resize($imageResource);
+	
+		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);
+		$imageResource->destroy();
+	
+		return new ImageFile(new CommonFile($variationFileResource, $this->file->getOriginalName()));
 	}
 }

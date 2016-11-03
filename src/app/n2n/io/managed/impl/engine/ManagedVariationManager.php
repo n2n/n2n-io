@@ -36,7 +36,7 @@ class ManagedVariationManager implements VariationManager {
 	private $dirPerm;
 	private $filePerm;
 	
-	public function __construct(ManagedFileSource $fileSource, string $mimeType = null, string $dirPerm, string $filePerm) {
+	public function __construct(FileSourceAdapter $fileSource, string $mimeType = null, string $dirPerm, string $filePerm) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
 		$this->dirPerm = $dirPerm;

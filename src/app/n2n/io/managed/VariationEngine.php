@@ -23,7 +23,7 @@ interface VariationEngine {
 	public function hasVariationSupport(): bool;
 	
 	/**
-	 * @return ThumbManager
+	 * @return VariationManager
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}.
 	 * @throws \n2n\io\img\UnsupportedImageTypeException
 	 */

@@ -123,7 +123,8 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 			$mimeType = ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath);
 		}
 		
-		return new ManagedVariationManager($this, $mimeType, $this->dirPerm, $this->filePerm);
+		return new ManagedVariationManager($this, $mimeType, $this->originalFileSource->getDirPerm(), 
+				$this->originalFileSource->getFilePerm());
 	}
 	
 	public function clear() {
