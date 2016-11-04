@@ -22,7 +22,7 @@
 namespace n2n\io\managed;
 
 use n2n\web\http\ResponseContent;
-use n2n\web\http\nav\Linkable;
+use n2n\util\uri\Linkable;
 
 interface File extends ResponseContent, Linkable {
 	

@@ -23,7 +23,6 @@ namespace n2n\io\managed\impl;
 
 use n2n\web\http\Response;
 use n2n\util\StringUtils;
-use n2n\io\fs\ManagerAssignation;
 use n2n\util\UnserializationFailedException;
 use n2n\core\N2nVars;
 use n2n\reflection\ArgUtils;
