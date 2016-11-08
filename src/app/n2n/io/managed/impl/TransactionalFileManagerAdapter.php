@@ -31,6 +31,7 @@ use n2n\context\Lookupable;
 use n2n\core\container\TransactionalResource;
 use n2n\io\managed\FileManager;
 use n2n\core\container\CommitListener;
+use n2n\core\container\CommitFailedException;
 
 abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource, CommitListener {
 	protected $tm;
@@ -146,6 +147,10 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	
 	public function preCommit(Transaction $transaction) {
 		$this->fileEngine->flush(true);
+	}
+
+	public function commitFailed(Transaction $transaction, CommitFailedException $e) {
+		$this->fileEngine->abortFlush();
 	}
 	
 	public function postCommit(Transaction $transaction) {
