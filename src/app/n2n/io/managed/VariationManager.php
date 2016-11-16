@@ -25,21 +25,27 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
 use n2n\io\managed\FileSource;
 
-interface FileSourceThumbEngine {
+interface VariationManager {
 	
 	/**
-	 * @param ImageDimension $imageDimension
-	 * @return FileSource or null if not avaialable
+	 * @param string $key
+	 * @return FileSource|null null if not avaialable
 	 */
-	public function getByDimension(ImageDimension $imageDimension);
+	public function getByKey(string $key);
+		
+	/**
+	 * @param string $key
+	 * @return FileSource
+	 */
+	public function create(string $key);
 	
 	/**
-	 * @param ImageResource $imageResource
+	 * @param string $key
 	 * @param ImageDimension $imageDimension
 	 * @return FileSource
 	 */
-	public function create(ImageResource $imageResource, ImageDimension $imageDimension): FileSource;
-	
+	public function createImage(string $key, ImageResource $imageResource): FileSource;
+		
 	/**
 	 * 
 	 */
@@ -49,14 +55,4 @@ interface FileSourceThumbEngine {
 	 * @return FileSource[]
 	 */
 	public function getAll();
-	
-	/**
-	 * @return \n2n\io\managed\img\ImageDimension[]
-	 */
-	public function getPossibleImageDimensions(): array;
-	
-	/**
-	 * @return \n2n\io\managed\img\ImageDimension[]
-	 */
-	public function getUsedImageDimensions(): array;
 }

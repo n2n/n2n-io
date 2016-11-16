@@ -178,6 +178,24 @@ class FsPath {
 		
 		return $this->createFile($filePerm);
 	}
+	
+	public function isEmpty() {
+		if ($this->isFile()) {
+			return $this->getSize() == 0;
+		}
+		
+		$handle = IoUtils::opendir($this->path);
+		while (false !== ($entry = readdir($handle))) {
+			if ($entry == '.' && $entry == '..') continue;
+
+			closedir($handle);
+			return false;
+		}
+		
+		closedir($handle);
+		return true;
+	}
+	
 	/**
 	 * 
 	 * @param string $pattern
@@ -190,6 +208,9 @@ class FsPath {
 		}
 		return $children;
 	}
+	
+	
+	
 	/**
 	 * 
 	 */

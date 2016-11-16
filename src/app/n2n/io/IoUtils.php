@@ -21,9 +21,6 @@
  */
 namespace n2n\io;
 
-use n2n\io\managed\FileManagingException;
-use n2n\io\fs\HttpAccessible;
-use n2n\io\fs\Managable;
 use n2n\io\IoException;
 use n2n\io\fs\FileResourceStream;
 use n2n\io\fs\FileOperationException;
@@ -105,6 +102,7 @@ class IoUtils {
 			throw new FileOperationException($err['message']);
 		}
 	}
+	
 	/**
 	 * 
 	 * @param string $path
@@ -150,6 +148,22 @@ class IoUtils {
 			IoUtils::unlink($path);
 		}
 	}
+	
+	/**
+	 * @param unknown $path
+	 * @param unknown $context
+	 * @throws IoException
+	 * @return boolean
+	 */
+	public static function opendir($path, $context = null) {
+		if (false !== ($h = @opendir($path, $context))) {
+			return $h;
+		}
+	
+		$err = error_get_last();
+		throw new IoException($err['message']);
+	}
+	
 	/**
 	 * 
 	 * @param string $pattern

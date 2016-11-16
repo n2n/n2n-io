@@ -221,7 +221,7 @@ class TransactionFileEngine {
 		$qualifiedName = $managedFileSource->getQualifiedName();
 		
 		if (isset($this->fileRemoveJobs[$qualifiedName])) {
-			return;
+			return $this->fileRemoveJobs[$qualifiedName];
 		}
 		
 		if (isset($this->filePersistJobs[$qualifiedName])) {
@@ -243,16 +243,36 @@ class TransactionFileEngine {
 		return;
 	}
 	
-	public function flush() {
+	private $persistedFiles = array();
+	
+	public function flush(bool $persistOnly = false) {
 		while (null !== ($filePersistJob = array_pop($this->filePersistJobs))) {
 			$filePersistJob->execute();
+			$this->persistedFiles[] = $filePersistJob->getFile();
 		}
+		
+		if ($persistOnly) return;
+		
 		while (null !== ($fileRemoveJob = array_pop($this->fileRemoveJobs))) {
 			$fileRemoveJob->execute();
 		}
+		
+		$this->clearBuffer();
+	}
+	
+	public function abortFlush() {
+		$this->filePersistJobs = array();
+		$this->fileRemoveJobs = array();
+		
+		while (null !== ($persistedFile = array_pop($this->persistedFiles))) {
+			$this->remove($persistedFile);
+		}
+
+		$this->flush();
 	}
 	
 	public function clearBuffer() {
+		$this->persistedFiles = array();
 		$this->filePersistJobs = array();
 		$this->fileRemoveJobs = array();
 	}

@@ -24,9 +24,11 @@ namespace n2n\io\managed\impl\engine;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileManagingConstraintException;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
+use n2n\io\managed\VariationEngine;
+use n2n\io\managed\VariationManager;
 
-class ManagedFileSource extends FileSourceAdapter {
+class ManagedFileSource extends FileSourceAdapter implements VariationEngine {
 	private $fileManagerName;
 	private $dirPerm;
 	private $filePerm;
@@ -74,16 +76,44 @@ class ManagedFileSource extends FileSourceAdapter {
 				. ' and can not be deleted: ' . $this->fileFsPath);
 	}
 	
-	public function isThumbSupportAvailable(): bool {
+	public function getVariationEngine(): VariationEngine {
+		$this->ensureValid();
+		
+		return $this;
+	}
+	
+	public function hasThumbSupport(): bool {
 		return $this->isImage();
 	}
 	
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
+	public function getThumbManager(): ThumbManager {
 		$this->ensureValid();
 		
-		return new ManagedFileSourceThumbEngine($this, 
+		return new ManagedThumbManager($this, 
 				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath), 
 				$this->dirPerm, $this->filePerm);		
+	}
+	
+	public function hasVariationSupport(): bool {
+		return true;
+	}
+	
+	public function getVariationManager(): VariationManager {
+		$this->ensureValid();
+	
+		return new ManagedVariationManager($this,
+				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath),
+				$this->dirPerm, $this->filePerm);
+	}
+	
+	public function clear() {
+		if ($this->hasThumbSupport()) {
+			$this->getThumbManager()->clear();
+		}
+		
+		if ($this->hasVariationSupport()) {
+			$this->getVariationManager()->clear();
+		}
 	}
 	
 	/* (non-PHPdoc)

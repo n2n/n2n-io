@@ -21,66 +21,42 @@
  */
 namespace n2n\io\managed;
 
-use n2n\web\http\ResponseContent;
-use n2n\util\uri\Linkable;
+use n2n\io\managed\img\ImageDimension;
+use n2n\io\img\ImageResource;
+use n2n\io\managed\FileSource;
 
-interface File extends ResponseContent, Linkable {
+interface ThumbManager {
 	
 	/**
-	 * @return bool 
+	 * @param ImageDimension $imageDimension
+	 * @return FileSource|null null if not avaialable
 	 */
-	public function isValid(): bool;
+	public function getByDimension(ImageDimension $imageDimension);
 	
 	/**
-	 * @return string
-	 */
-	public function getOriginalName(): string;
-	
-	/**
-	 * @param string $originalName
-	 * @throws \InvalidArgumentException if originalName is empty
-	 */
-	public function setOriginalName(string $originalName);
-	
-	/**
-	 * @return string or null
-	 */
-	public function getOriginalExtension();
-	
-	/**
-	 * @param FileSource $fileSource
-	 */
-	public function setFileSource(FileSource $fileSource);
-	
-	/**
+	 * @param ImageResource $imageResource
+	 * @param ImageDimension $imageDimension
 	 * @return FileSource
 	 */
-	public function getFileSource(): FileSource;
-	
-	/**
-	 * @return string
-	 */
-	public function __toString(): string;
+	public function create(ImageResource $imageResource, ImageDimension $imageDimension): FileSource;
 	
 	/**
 	 * 
 	 */
-	public function delete();
+	public function clear();
 	
 	/**
-	 * @param mixed $fsPath
+	 * @return FileSource[]
 	 */
-	public function move($fsPath, string $filePerm, bool $overwrite = true);
+	public function getAll();
 	
 	/**
-	 * @param mixed $fsPath
-	 * @return File
+	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
-	public function copy($fsPath, string $filePerm, bool $overwrite = true): File;
+	public function getPossibleImageDimensions(): array;
 	
 	/**
-	 * @param mixed $o
-	 * @return bool
+	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
-	public function equals($o): bool;
+	public function getUsedImageDimensions(): array;
 }

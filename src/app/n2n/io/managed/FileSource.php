@@ -40,7 +40,7 @@ interface FileSource {
 	public function getSize(): int;
 	
 	/**
-	 * @return \DateTime or null if not known 
+	 * @return \DateTime|null null if not known 
 	 */
 	public function getLastModified();
 	
@@ -77,7 +77,7 @@ interface FileSource {
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	public function isImage(): bool;
-	
+		
 	/**
 	 * @return \n2n\io\img\ImageSource
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
@@ -86,18 +86,10 @@ interface FileSource {
 	public function createImageSource(): ImageSource;
 	
 	/**
-	 * @return boolean
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}.
+	 * @return VariationEngine
+	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
-	public function isThumbSupportAvailable(): bool;
-	
-	/**
-	 * @return FileSourceThumbEngine
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}.
-	 * @throws \n2n\io\img\UnsupportedImageTypeException
-	 * @throws NoThumbSupportException
-	 */
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine;
+	public function getVariationEngine(): VariationEngine;
 	
 	/**
 	 * @param FsPath $fsPath

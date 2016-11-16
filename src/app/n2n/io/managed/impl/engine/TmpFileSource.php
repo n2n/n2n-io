@@ -23,7 +23,9 @@ namespace n2n\io\managed\impl\engine;
 
 use n2n\io\fs\FsPath;
 use n2n\util\ex\UnsupportedOperationException;
-use n2n\io\managed\FileSourceThumbEngine;
+use n2n\io\managed\ThumbManager;
+use n2n\io\managed\VariationEngine;
+use n2n\io\managed\VariationManager;
 
 class TmpFileSource extends FileSourceAdapter {
 	private $sessionId;
@@ -40,18 +42,36 @@ class TmpFileSource extends FileSourceAdapter {
 		return $this->sessionId;
 	}
 	
+	public function getVariationEngine(): VariationEngine {
+		return $this;
+	}
+	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
 	 */
-	public function isThumbSupportAvailable(): bool {
+	public function hasThumbSupport(): bool {
 		return false;
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getFileSourceThumbEngine()
+	 * @see \n2n\io\managed\FileSource::getThumbManager()
 	 */
-	public function getFileSourceThumbEngine(): FileSourceThumbEngine {
+	public function getThumbManager(): ThumbManager {
 		throw new UnsupportedOperationException('Thumb support not available for tmp file: ' . $this->fileFsPath);
+	}
+	
+	/* (non-PHPdoc)
+	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
+	 */
+	public function hasVariationSupport(): bool {
+		return false;
+	}
+	
+	/* (non-PHPdoc)
+	 * @see \n2n\io\managed\FileSource::getThumbManager()
+	 */
+	public function getVariationManager(): VariationManager {
+		throw new UnsupportedOperationException('Variation support not available for tmp file: ' . $this->fileFsPath);
 	}
 
 	/* (non-PHPdoc)

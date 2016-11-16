@@ -22,6 +22,7 @@
 namespace n2n\io\img;
 
 use n2n\reflection\ArgUtils;
+
 class ImageResource {	
 	private $resource;
 	private $width;

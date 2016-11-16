@@ -30,8 +30,10 @@ use n2n\core\container\Transaction;
 use n2n\context\Lookupable;
 use n2n\core\container\TransactionalResource;
 use n2n\io\managed\FileManager;
+use n2n\core\container\CommitListener;
+use n2n\core\container\CommitFailedException;
 
-abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource {
+abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource, CommitListener {
 	protected $tm;
 	protected $fileEngine;
 	
@@ -39,6 +41,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		$this->tm = $tm;
 		
 		$tm->registerResource($this);
+		$tm->registerCommitListener($this);
 	}
 	
 	/**
@@ -134,13 +137,23 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\core\container\TransactionalResource::commit()
 	 */
-	public function commit(Transaction $transaction) {
-		$this->fileEngine->flush();
-	}
+	public function commit(Transaction $transaction) {}
 	/* (non-PHPdoc)
 	 * @see \n2n\core\container\TransactionalResource::rollBack()
 	 */
 	public function rollBack(Transaction $transaction) {
 		$this->fileEngine->clearBuffer();
+	}
+	
+	public function preCommit(Transaction $transaction) {
+		$this->fileEngine->flush(true);
+	}
+
+	public function commitFailed(Transaction $transaction, CommitFailedException $e) {
+		$this->fileEngine->abortFlush();
+	}
+	
+	public function postCommit(Transaction $transaction) {
+		$this->fileEngine->flush();
 	}
 }

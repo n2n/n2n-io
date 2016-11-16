@@ -29,12 +29,10 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
-use n2n\io\managed\ThumbManager;
 use n2n\io\managed\VariationEngine;
-use n2n\io\managed\VariationManager;
 
-class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, VariationEngine {
-	private $imageDimension;
+class ManagedVariationFileSource extends FileSourceAdapter implements FileSource {
+	private $key;
 	private $mimeType;
 	private $originalFileSource;
 
@@ -43,9 +41,9 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	 * @param ImageDimension $imageDimension
 	 * @param ManagedFileSource $originalFileSource
 	 */
-	public function __construct(FsPath $fsPath, ImageDimension $imageDimension, $mimeType, ManagedFileSource $originalFileSource) {
+	public function __construct(FsPath $fsPath, string $key, string $mimeType = null, FileSource $originalFileSource) {
 		parent::__construct(null, $fsPath);
-		$this->imageDimension = $imageDimension;
+		$this->key = $key;
 		$this->mimeType = $mimeType;
 		$this->originalFileSource = $originalFileSource;
 	}
@@ -53,8 +51,8 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	/**
 	 * @return ImageDimension
 	 */
-	public function getImageDimension(): ImageDimension {
-		return $this->imageDimension;
+	public function getKey(): string {
+		return $this->key;
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::createInputStream()
@@ -66,7 +64,7 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	 * @see \n2n\io\managed\FileSource::move()
 	 */
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false) {
-		throw new FileManagingConstraintException('Managed thumb file can not be relocated: ' . $this->fileFsPath);
+		throw new FileManagingConstraintException('Managed variation file can not be relocated: ' . $this->fileFsPath);
 	}
 	
 	/* (non-PHPdoc)
@@ -75,7 +73,7 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	public function delete() {
 		$this->ensureValid();
 		
-		throw new FileManagingConstraintException('Managed thumb file can not be delete: '
+		throw new FileManagingConstraintException('Managed variation file can not be delete: '
 				. $this->fileFsPath);
 	}
 	
@@ -97,49 +95,13 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	}
 	
 	public function getVariationEngine(): VariationEngine {
-		return $this;
+		return $this->originalFileSource->getVariationEngine();
 	}
 	
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
-	 */
-	public function hasThumbSupport(): bool {
-		return $this->originalFileSource->isVariationSupportAvailable();
-	}
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getThumbManager()
-	 */
-	public function getThumbManager(): ThumbManager {
-		return $this->originalFileSource->getThumbManager();
-	}
-	
-	public function hasVariationSupport(): bool {
-		return true;
-	}
-	
-	public function getVariationManager(): VariationManager {
-		$mimeType = null;
-		if ($this->isImage()) {
-			$mimeType = ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath);
-		}
-		
-		return new ManagedVariationManager($this, $mimeType, $this->originalFileSource->getDirPerm(), 
-				$this->originalFileSource->getFilePerm());
-	}
-	
-	public function clear() {
-		if ($this->hasThumbSupport()) {
-			$this->getThumbManager()->clear();
-		}
-	
-		if ($this->hasVariationSupport()) {
-			$this->getVariationManager()->clear();
-		}
-	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::__toString()
 	 */
 	public function __toString(): string {
-		return $this->fileFsPath . ' (thumb file ' . $this->imageDimension . ')';	
+		return $this->fileFsPath . ' (variation file ' . $this->key . ')';	
 	}
 }
