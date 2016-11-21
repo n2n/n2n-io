@@ -25,6 +25,7 @@ use n2n\web\http\ResponseContent;
 use n2n\web\http\Response;
 use n2n\io\IoUtils;
 use n2n\util\ex\NotYetImplementedException;
+use n2n\io\managed\File;
 
 class FileAttachement implements ResponseContent {
 	private $file;
@@ -58,7 +59,7 @@ class FileAttachement implements ResponseContent {
 	public function prepareForResponse(Response $response) {
 		$this->file->prepareForResponse($response);
 			
-		$name = isset($name) ? $name : $this->file->getOriginalName();
+		$name = $this->name !== null ? $this->name : $this->file->getOriginalName();
 		if (IoUtils::hasSpecialChars($name)) {
 			throw new NotYetImplementedException('RFC-2231 encoding not yet implemented');
 		}
