@@ -102,7 +102,7 @@ class ManagedFileSource extends FileSourceAdapter implements VariationEngine {
 		$this->ensureValid();
 	
 		return new ManagedVariationManager($this,
-				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath),
+				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath, false),
 				$this->dirPerm, $this->filePerm);
 	}
 	

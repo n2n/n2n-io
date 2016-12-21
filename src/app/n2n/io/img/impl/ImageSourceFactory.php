@@ -83,11 +83,18 @@ class ImageSourceFactory {
 		}
 	}	
 	
-	public static function getMimeTypeOfFile($fileName) {
-		$size = IoUtils::getimagesize((string) $fileName);
-		if (in_array($size['mime'], self::$extensionMimeTypeMappings)) {
-			return $size['mime'];
+	public static function getMimeTypeOfFile($fileName, bool $required = false) {
+		$prevE = null;
+		try {
+			$size = IoUtils::getimagesize((string) $fileName);
+			if (in_array($size['mime'], self::$extensionMimeTypeMappings)) {
+				return $size['mime'];
+			}
+		} catch (IoException $e) {
+			$prevE = $e;
 		}
+		
+		if (!$required) return null;
 		
 		throw new UnsupportedImageTypeException('Unsupported image mime type \'' . $size['mime']
 				. '\'. Supported mime types: ' . implode(', ', self::$extensionMimeTypeMappings));
