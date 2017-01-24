@@ -24,7 +24,7 @@ namespace n2n\io\orm;
 use n2n\io\managed\File;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
-use n2n\web\http\nav\UnavailableMurlException;
+use n2n\web\http\nav\UnavailableUrlException;
 use n2n\util\uri\Url;
 
 class UnknownFile implements File {
@@ -154,7 +154,7 @@ class UnknownFile implements File {
 		try {
 			return $this->getFileSource()->getUrl();
 		} catch (IllegalStateException $e) {
-			throw new UnavailableMurlException(false, null, 0, $e);
+			throw new UnavailableUrlException(false, null, 0, $e);
 		}
 	}
 }

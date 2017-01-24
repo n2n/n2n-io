@@ -31,7 +31,7 @@ use n2n\io\managed\FileSource;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileListener;
 use n2n\io\IoUtils;
-use n2n\web\http\nav\UnavailableMurlException;
+use n2n\web\http\nav\UnavailableUrlException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\util\uri\Url;
 
@@ -243,7 +243,7 @@ class CommonFile implements \Serializable, File {
 		try {
 			return $this->getFileSource()->getUrl();
 		} catch (InaccessibleFileSourceException $e) {
-			throw new UnavailableMurlException(false, 0, $e);		
+			throw new UnavailableUrlException(false, 0, $e);		
 		}
 	}
 	
