@@ -19,8 +19,10 @@
  * Bert Hofmänner.......: Idea, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\core;
+namespace n2n\io\ob;
 
-class OutputBufferDisturbedException extends N2nRuntimeException {
+use n2n\io\IoException;
+
+class OutputBufferDisturbedException extends IoException {
 
 }
