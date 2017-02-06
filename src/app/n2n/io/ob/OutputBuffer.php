@@ -22,8 +22,6 @@
 namespace n2n\io\ob;
 
 use n2n\util\StringUtils;
-use n2n\core\OutputBufferDisturbedException;
-use n2n\web\ui\UiComponent;
 use n2n\util\ex\NotYetImplementedException;
 
 class OutputBuffer {
