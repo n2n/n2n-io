@@ -33,17 +33,17 @@ use n2n\reflection\ObjectAdapter;
 
 class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	const TMP_DIR = 'files';
-	
+
 	private $tmpFileEngine;
-	
+
 	private function _init(VarStore $varStore, IoConfig $ioConfig) {
 		$tmpDirFsPath = $varStore->requestDirFsPath(VarStore::CATEGORY_TMP, N2N::NS, self::TMP_DIR);
-	
+
 		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateFilePermission());
-		
+
 		$this->cleanUp();
 	}
-	
+
 	/**
 	 * @throws IllegalStateException
 	 * @return \n2n\io\managed\impl\engine\TmpFileEngine
@@ -52,37 +52,41 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 		if ($this->tmpFileEngine !== null) {
 			return $this->tmpFileEngine;
 		}
-		
+
 		throw new IllegalStateException('TmpFileManager not initialized.');
 	}
-	
+
 	/**
 	 * @param string $originalName
 	 * @param Session $session
-	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error 
+	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 * @return File
 	 */
 	public function createFile($originalName = null) {
 		return $this->getTmpFileEngine()->createFile(null, $originalName);
 	}
-	
+
+	public function createFileFromUrl($url, $originalName = null) {
+		return $this->getTmpFileEngine()->createFileFromUrl($url, null, $originalName);
+	}
+
 	/**
 	 * @param File $file
 	 * @return File
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
-	 * @throws \n2n\io\managed\FileManagingConstraintException if creating a temp file from passed File violates any 
-	 * constraints.  
+	 * @throws \n2n\io\managed\FileManagingConstraintException if creating a temp file from passed File violates any
+	 * constraints.
 	 */
 	public function createCopyFromFile(File $file) {
 		return $this->getTmpFileEngine()->createCopyFromFile($file);
 	}
 	/**
-	 * 
+	 *
 	 * @param File $file
 	 * @param Session $session
 	 * @return string qualified name
-	 * @throws \n2n\io\managed\FileManagingConstraintException if converting passed file to a temp file violates any 
-	 * constraints. 
+	 * @throws \n2n\io\managed\FileManagingConstraintException if converting passed file to a temp file violates any
+	 * constraints.
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
 	public function add(File $file, Session $session = null) {
@@ -90,9 +94,9 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 		if ($session !== null) {
 			$sessionId = $session->getId();
 		}
-		
+
 		return $this->getTmpFileEngine()->addFile($file, $sessionId);
-		
+
 	}
 	/**
 	 * @param string $fileName
@@ -100,10 +104,10 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * @throws QualifiedNameFormatException
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
-	public function getSessionFile($qualifiedName, Session $session) {		
+	public function getSessionFile($qualifiedName, Session $session) {
 		return $this->getTmpFileEngine()->getSessionFile($qualifiedName, $session->getId());
 	}
-	
+
 	/**
 	 * @param File $file
 	 * @param Session $session
@@ -119,10 +123,10 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	public function cleanUp() {
 		$this->tmpFileEngine->deleteOldSessionFiles((int) ini_get('session.gc_maxlifetime'));
 	}
-	
-	
+
+
 // 	public function equals($obj) {
 // 		return $obj instanceof TmpFileManager && $this->getDataDirPath() == $obj->getDataDirPath();
 // 	}
-	
+
 }
