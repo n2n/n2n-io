@@ -23,7 +23,7 @@ namespace n2n\io;
 
 use n2n\io\IoException;
 use n2n\io\fs\FileResourceStream;
-use n2n\io\fs\FileOperationException;
+use n2n\io\managed\FileOperationException;
 
 class IoUtils {
 	
