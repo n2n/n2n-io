@@ -31,6 +31,7 @@ use n2n\io\managed\ThumbManager;
 use n2n\io\img\ImageSource;
 use n2n\io\InputStream;
 use n2n\io\managed\VariationEngine;
+use n2n\io\managed\VariationManager;
 
 class FsFileSource extends FileSourceAdapter implements FileSource {
 	protected $fsPath;

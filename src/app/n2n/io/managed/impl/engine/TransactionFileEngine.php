@@ -175,7 +175,7 @@ class TransactionFileEngine {
 	 * @param string $qualifiedName
 	 * @return File
 	 */
-	public function getByQualifiedName($qualifiedName) {
+	public function getByQualifiedName(string $qualifiedName) {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
 			return $this->filePersistJobs[$qualifiedName]->getFile();
 		}
