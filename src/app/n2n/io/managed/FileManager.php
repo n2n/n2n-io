@@ -46,7 +46,7 @@ interface FileManager {
 	 * @throws QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException 
 	 */
-	public function getByQualifiedName($qualifiedName);
+	public function getByQualifiedName(string $qualifiedName = null);
 	
 	/**
 	 * @param string $qualifiedName
