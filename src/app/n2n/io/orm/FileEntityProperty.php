@@ -42,7 +42,7 @@ class FileEntityProperty extends EntityPropertyAdapter {
 		$accessProxy->setConstraint(TypeConstraint::createSimple('n2n\io\managed\File', true));
 	
 		parent::__construct($accessProxy);
-		throw new NotYetImplementedException('Use AnnoManagedFile');
+		throw new NotYetImplementedException('Use AnnoManagedFile for ' . $accessProxy->getPropertyName());
 		$this->columnName = $columnName;
 		$this->originalFileNameColumnName = $originalFileNameColumnName;
 	}
