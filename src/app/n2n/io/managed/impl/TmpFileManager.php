@@ -104,7 +104,7 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * @throws QualifiedNameFormatException
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
-	public function getSessionFile($qualifiedName, Session $session) {
+	public function getSessionFile(string $qualifiedName, Session $session) {
 		return $this->getTmpFileEngine()->getSessionFile($qualifiedName, $session->getId());
 	}
 
