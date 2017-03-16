@@ -100,9 +100,9 @@ class ImageFile {
 	}
 		
 	public function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
-		return new CommonFile($this->file->getFileSource()->getThumbManager()
-						->create($imageResource, $imageDimension),
-				$this->file->getOriginalName());
+		$thumbFileSource = $this->file->getFileSource()->getThumbManager()->create($imageResource, $imageDimension);
+		$thumbFileSource->getVariationEngine()->getVariationManager()->clear();
+		return new CommonFile($thumbFileSource, $this->file->getOriginalName());
 	}
 	
 	/**

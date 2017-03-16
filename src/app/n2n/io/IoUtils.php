@@ -155,8 +155,15 @@ class IoUtils {
 	 * @throws IoException
 	 * @return boolean
 	 */
-	public static function opendir($path, $context = null) {
-		if (false !== ($h = @opendir($path, $context))) {
+	public static function opendir($path, resource $context = null) {
+		$h = null;
+		if ($context === null) {
+			$h = @opendir($path);
+		} else {
+			$h = @opendir($path, $context);
+		}
+		
+		if (false !== $h) {
 			return $h;
 		}
 	
