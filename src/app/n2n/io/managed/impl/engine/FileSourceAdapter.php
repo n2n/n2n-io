@@ -71,7 +71,7 @@ abstract class FileSourceAdapter implements FileSource {
 	 */
 	public function getLastModified() {
 		$this->ensureValid();
-		return $this->fsPath->getLastMod();
+		return $this->fileFsPath->getLastMod();
 	}
 	
 	/**
@@ -80,7 +80,7 @@ abstract class FileSourceAdapter implements FileSource {
 	 */
 	public function buildHash(): string {
 		$this->ensureValid();
-		$fs = IoUtils::stat($this->fsPath);
+		$fs = IoUtils::stat($this->fileFsPath);
 		return sprintf('%x-%x-%s', $fs['ino'], $fs['size'], base_convert(str_pad($fs['mtime'], 16, '0'), 10, 16));
 	}
 	
