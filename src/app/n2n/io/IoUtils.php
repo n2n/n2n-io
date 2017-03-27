@@ -327,7 +327,7 @@ class IoUtils {
 		return $size;
 	}
 	
-	public static function readfile($path) {
+	public static function readfile(string $path) {
 		$numBytes = @readfile($path);
 		
 		if ($numBytes === false) {
@@ -347,12 +347,21 @@ class IoUtils {
 		return $num;
 	}
 	
-	public static function fread($handle, $length) {
+	public static function fread($handle, int $length = null) {
 		$str = fread($handle, $length);
 		if (false === $str) {
 			throw new IoResourceException('Could not read from file');
 		}
 		
+		return $str;
+	}
+	
+	public static function fgets($handle, int $length = null) {
+		$str = fgets($handle, $length);
+		if (false === $str) {
+			throw new IoResourceException('Could not read from file');
+		}
+	
 		return $str;
 	}
 	

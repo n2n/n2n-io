@@ -30,7 +30,6 @@ use n2n\io\managed\File;
 use n2n\io\managed\FileSource;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileListener;
-use n2n\io\IoUtils;
 use n2n\web\http\nav\UnavailableUrlException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\util\uri\Url;
@@ -234,8 +233,13 @@ class CommonFile implements \Serializable, File {
 	}
 	
 	public function responseOut() {
+		// @todo buffer
+		echo $this->getFileSource()->createInputStream()->read();
+		
 		//$this->fileSource->responseOut();
-        IoUtils::readfile((string) $this->getFileSource());
+//         while ('' !== ($out = $this->getFileSource()->createInputStream()->read(1024))) {
+//         	echo $out;
+//         }
 	}
 	
 	public function toUrl(string &$suggestedLabel = null): Url {
