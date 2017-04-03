@@ -233,13 +233,7 @@ class CommonFile implements \Serializable, File {
 	}
 	
 	public function responseOut() {
-		// @todo buffer
-		echo $this->getFileSource()->createInputStream()->read();
-		
-		//$this->fileSource->responseOut();
-//         while ('' !== ($out = $this->getFileSource()->createInputStream()->read(1024))) {
-//         	echo $out;
-//         }
+		echo $this->getFileSource()->out();
 	}
 	
 	public function toUrl(string &$suggestedLabel = null): Url {
