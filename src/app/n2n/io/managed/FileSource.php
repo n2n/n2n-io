@@ -34,6 +34,11 @@ interface FileSource {
 	public function createInputStream(): InputStream;
 	
 	/**
+	 * Prints file to standard output 
+	 */
+	public function out();
+	
+	/**
 	 * @return int
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
