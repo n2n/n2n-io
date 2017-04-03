@@ -112,6 +112,11 @@ abstract class FileSourceAdapter implements FileSource {
 		return IoUtils::createSafeFileInputStream($this->fileFsPath);
 	}
 	
+	public function out() {
+		$this->ensureValid();
+		IoUtils::readfile($this->fileFsPath);
+	}
+	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::getSize()
 	*/
