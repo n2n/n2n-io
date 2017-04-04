@@ -150,10 +150,13 @@ class ManagedThumbManager implements ThumbManager {
 	}
 	
 	public function clear() {
-		$fsPath = $this->fileSource->getFileFsPath();
-		
-		foreach ($this->findThumbFsPaths() as $filePath) {
-			$filePath->delete();
+		foreach ($this->findThumbFsPaths() as $thumbFsPath) {
+			try {
+				self::dirNameToDimension($thumbFsPath->getParent()->getName());
+			} catch (\InvalidArgumentException $e) {
+				continue;
+			}
+			$thumbFsPath->delete();
 		}
 	}
 	
