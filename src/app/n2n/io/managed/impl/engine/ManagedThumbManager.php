@@ -119,7 +119,11 @@ class ManagedThumbManager implements ThumbManager {
 		$imageDimensions = array();
 		foreach ($this->fileSource->getFileFsPath()->getParent()
 				->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX . '*') as $thumbFsPath) {
-			$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getName());
+			try {
+				$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getName());
+			} catch (\InvalidArgumentException $e) {
+				continue;
+			}
 		}
 		return $imageDimensions; 
 	}
@@ -130,7 +134,11 @@ class ManagedThumbManager implements ThumbManager {
 	public function getUsedImageDimensions(): array {
 		$imageDimensions = array();
 		foreach ($this->findThumbFsPaths() as $thumbFsPath) {
-			$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getParent()->getName());
+			try {
+				$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getParent()->getName());
+			} catch (\InvalidArgumentException $e) {
+				continue;
+			}
 		}
 		return $imageDimensions;
 	}
@@ -142,10 +150,13 @@ class ManagedThumbManager implements ThumbManager {
 	}
 	
 	public function clear() {
-		$fsPath = $this->fileSource->getFileFsPath();
-		
-		foreach ($this->findThumbFsPaths() as $filePath) {
-			$filePath->delete();
+		foreach ($this->findThumbFsPaths() as $thumbFsPath) {
+			try {
+				self::dirNameToDimension($thumbFsPath->getParent()->getName());
+			} catch (\InvalidArgumentException $e) {
+				continue;
+			}
+			$thumbFsPath->delete();
 		}
 	}
 	
