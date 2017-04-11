@@ -228,7 +228,7 @@ class CommonFile implements \Serializable, File {
 		$response->setHeader('Content-Length: ' . $this->getFileSource()->getSize());
 	}
 	
-	public function toKownResponseString() {
+	public function toKownResponseString(): string {
 		return $this->getOriginalName() . ' (' . $this->fileSource->__toString() . ')';
 	}
 	
