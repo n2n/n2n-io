@@ -47,12 +47,24 @@ class ManagedVariationManager implements VariationManager {
 		try {
 			return QualifiedNameBuilder::buildResFolderName(self::KEY_PREFIX . $key);
 		} catch (\InvalidArgumentException $e) {
-			throw new FileManagingException('Failed to create variation FileSource due to invalid key: ' . $key, 0, 
-					$e);
+			throw new FileManagingException('Failed to use variation key: ' . $key, 0, $e);
+		}
+	}
+	
+	public static function dirNameToKey(string $dirName) {
+		$resDirName = null;
+		try {
+			$resDirName = QualifiedNameBuilder::parseResName($dirName);
+		} catch (\InvalidArgumentException $e) {
+			throw new FileManagingException('Failed to determine variation key of dir name: ' . $dirName, 0, $e);
 		}
 		
-// 		return QualifiedNameBuilder::buildResFolderName(implode(self::THUMB_FOLDER_ATTRIBUTE_SEPARATOR,
-// 				array($dimension->getWidth(), $dimension->getHeight(), (boolean) $dimension->isCrop())));
+		$prefixLength = mb_strlen(self::KEY_PREFIX);
+		if (self::KEY_PREFIX !== mb_substr($resDirName, 0, $prefixLength)) {
+			return null;
+		}
+		
+		return mb_substr($resDirName, $prefixLength);
 	}
 	
 // 	public static function isDimensionDirName(string $dirName): bool {
@@ -167,14 +179,23 @@ class ManagedVariationManager implements VariationManager {
 	}
 	
 	public function getAll() {
-		$fsPath = $this->fileSource->getFsPath();
-		
-		$thumbFileSources = array();
-		foreach ($fsPath->getChildren(self::THUMB_FOLDER_PREFIX . '*' . DIRECTORY_SEPARATOR 
-				. $fsPath->getName()) as $filePath) {
-			$dimension = $this->dirNameToDimension($filePath->getParent()->getName());
-			$thumbFileSources[$dimension->__toString()] = $this->createVariationFileSource($filePath, $dimension);
+		$variationFileSources = array();
+		foreach ($this->findVariationFsPaths() as $fileFsPath) {
+			$key = self::dirNameToKey($fileFsPath->getParent()->getName());
+			if ($key === null) continue;
+			$variationFileSources[$key] = $this->createVariationFileSource($fileFsPath, $key);
 		}
-		return $thumbFileSources;
+		return $variationFileSources;
+	}
+	
+
+	public function getAllKeys() {
+		$variationKeys = array();
+		foreach ($this->findVariationFsPaths() as $fileFsPath) {
+			$key = self::dirNameToKey($fileFsPath->getParent()->getName());
+			if ($key === null) continue;
+			$variationKeys[] = $key;
+		}
+		return $variationKeys;
 	}
 }

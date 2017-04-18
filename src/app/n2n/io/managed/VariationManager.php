@@ -41,7 +41,7 @@ interface VariationManager {
 	
 	/**
 	 * @param string $key
-	 * @param ImageDimension $imageDimension
+	 * @param ImageResource $imageDimension
 	 * @return FileSource
 	 */
 	public function createImage(string $key, ImageResource $imageResource): FileSource;
@@ -52,7 +52,12 @@ interface VariationManager {
 	public function clear();
 	
 	/**
-	 * @return FileSource[]
+	 * @return FileSource[] array keys are variation keys.
 	 */
 	public function getAll();
+	
+	/**
+	 * @return string[] 
+	 */
+	public function getAllKeys();
 }

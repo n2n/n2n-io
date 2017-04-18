@@ -69,7 +69,7 @@ class FileAttachement implements ResponseContent {
 	/* (non-PHPdoc)
 	 * @see \n2n\web\http\ResponseThing::toKownResponseString()
 	 */
-	public function toKownResponseString() {
+	public function toKownResponseString(): string {
 		return $this->file->toResponseString();
 	}
 }

@@ -146,7 +146,7 @@ class UnknownFile implements File {
 	/* (non-PHPdoc)
 	 * @see \n2n\web\http\ResponseThing::toKownResponseString()
 	 */
-	public function toKownResponseString() {
+	public function toKownResponseString(): string {
 		return $this->__toString();
 	}
 
