@@ -29,5 +29,8 @@ interface VariationEngine {
 	 */
 	public function getVariationManager(): VariationManager;
 	
+	/**
+	 * 
+	 */
 	public function clear();
 }

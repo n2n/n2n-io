@@ -101,7 +101,6 @@ class ImageFile {
 		
 	public function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
 		$thumbFileSource = $this->file->getFileSource()->getThumbManager()->create($imageResource, $imageDimension);
-		$thumbFileSource->getVariationEngine()->getVariationManager()->clear();
 		return new CommonFile($thumbFileSource, $this->file->getOriginalName());
 	}
 	
@@ -130,6 +129,13 @@ class ImageFile {
 		return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()));
 	}
 	
+	public function createVariationFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
+		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);
+		
+		return new CommonFile($variationFileResource, $this->file->getOriginalName());
+	}
+	
 	public function getOrCreateVariation(ThumbStrategy $thumbStrategy): ImageFile {
 		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
@@ -150,5 +156,18 @@ class ImageFile {
 		$imageResource->destroy();
 	
 		return new ImageFile(new CommonFile($variationFileResource, $this->file->getOriginalName()));
+	}
+	
+	public function getVariationImageDimension() {
+		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		
+		$imageDimensions = array();
+		foreach ($variationManager->getAllKeys() as $key) {
+			try {
+				$imageDimensions[] = ImageDimension::createFromString($key);
+			} catch (\InvalidArgumentException $e) {}
+		}
+		
+		return $imageDimensions;
 	}
 }
