@@ -116,35 +116,35 @@ class UnknownFile implements File {
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseContent::responseOut()
+	 * @see \n2n\web\http\ResourceResponseObject::responseOut()
 	 */
 	public function responseOut() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseContent::getEtag()
+	 * @see \n2n\web\http\ResourceResponseObject::getEtag()
 	 */
 	public function getEtag() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseContent::getLastModified()
+	 * @see \n2n\web\http\ResourceResponseObject::getLastModified()
 	 */
 	public function getLastModified() {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseThing::prepareForResponse()
+	 * @see \n2n\web\http\ResponseObject::prepareForResponse()
 	 */
 	public function prepareForResponse(\n2n\web\http\Response $response) {
 		$this->throwException();
 	}
 
 	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseThing::toKownResponseString()
+	 * @see \n2n\web\http\ResponseObject::toKownResponseString()
 	 */
 	public function toKownResponseString(): string {
 		return $this->__toString();

@@ -206,7 +206,7 @@ class CommonFile implements \Serializable, File {
 	}
 	
 	/* (non-PHPdoc)
-	 * @see n2n\web\http.ResponseContent::getEtag()
+	 * @see n2n\web\http.ResourceResponseObject::getEtag()
 	 */
 	public function getEtag() {
 		return $this->fileSource->buildHash();
