@@ -32,9 +32,10 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\FileListener;
 use n2n\web\http\nav\UnavailableUrlException;
 use n2n\io\managed\InaccessibleFileSourceException;
+use n2n\web\http\ResourceResponseObject;
 use n2n\util\uri\Url;
 
-class CommonFile implements \Serializable, File {
+class CommonFile extends ResourceResponseObject implements \Serializable, File {
 	private $fileSource;
 	private $originalName;
 	private $originalExtension;

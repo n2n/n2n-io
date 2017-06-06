@@ -26,8 +26,9 @@ use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
 use n2n\web\http\nav\UnavailableUrlException;
 use n2n\util\uri\Url;
+use n2n\web\http\ResourceResponseObject;
 
-class UnknownFile implements File {
+class UnknownFile extends ResourceResponseObject implements File {
 	private $qualifiedName;
 	private $fileManagerName;
 	
