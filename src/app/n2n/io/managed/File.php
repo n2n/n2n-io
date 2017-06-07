@@ -21,10 +21,10 @@
  */
 namespace n2n\io\managed;
 
-use n2n\web\http\ResponseContent;
 use n2n\util\uri\Linkable;
+use n2n\web\http\ResponseObject;
 
-interface File extends ResponseContent, Linkable {
+interface File extends ResponseObject, Linkable {
 	
 	/**
 	 * @return bool 
