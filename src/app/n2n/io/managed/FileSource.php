@@ -78,6 +78,18 @@ interface FileSource {
 	public function getUrl(): Url;
 	
 	/**
+	 * @return bool
+	 */
+	public function hasFsPath(): bool;
+	
+	/**
+	 * 
+	 * @return FsPath
+	 * @throws InaccessibleFileSourceException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 */
+	public function getFsPath(): FsPath;
+	
+	/**
 	 * @return boolean
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
