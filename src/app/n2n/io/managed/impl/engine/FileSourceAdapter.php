@@ -24,12 +24,12 @@ namespace n2n\io\managed\impl\engine;
 use n2n\util\uri\Url;
 use n2n\io\managed\FileSource;
 use n2n\io\fs\FsPath;
-use n2n\io\managed\InvalidFileSourceException;
 use n2n\io\IoUtils;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
+use n2n\util\ex\IllegalStateException;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
@@ -49,6 +49,22 @@ abstract class FileSourceAdapter implements FileSource {
 	 */
 	public function getQualifiedName() {
 		return $this->qualifiedName;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::hasFsPath()
+	 */
+	public function hasFsPath(): bool {
+		return true;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::getFsPath()
+	 */
+	public function getFsPath(): FsPath {
+		return $this->fileFsPath;
 	}
 	
 	/**
@@ -92,12 +108,12 @@ abstract class FileSourceAdapter implements FileSource {
 	}
 	
 	/**
-	 * @throws InvalidFileSourceException
+	 * @throws IllegalStateException
 	 */
 	protected function ensureValid() {
 		if ($this->valid) return;
 		
-		throw new InvalidFileSourceException('FileSource no longer valid: ' . $this->__toString());
+		throw new InaccessibleFileSourceException('FileSource no longer valid: ' . $this->__toString());
 	}	
 	
 	public function isHttpaccessible(): bool {
