@@ -151,7 +151,7 @@ class IoUtils {
 	
 	/**
 	 * @param unknown $path
-	 * @param unknown $context
+	 * @param resource $context
 	 * @throws IoException
 	 * @return boolean
 	 */

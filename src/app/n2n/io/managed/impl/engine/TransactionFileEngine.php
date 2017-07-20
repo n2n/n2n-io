@@ -30,9 +30,9 @@ use n2n\util\uri\Url;
 use n2n\io\managed\File;
 use n2n\io\managed\FileLocator;
 use n2n\io\managed\FileManagingConstraintException;
-use n2n\io\managed\InvalidFileSourceException;
 use n2n\io\managed\impl\CommonFile;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\managed\InaccessibleFileSourceException;
 
 class TransactionFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
@@ -124,7 +124,7 @@ class TransactionFileEngine {
 
 	private function createFilePersistJob($dirLevelNames, $fileName, File $file) {
 		if (!$file->getFileSource()->isValid()) {
-			throw new InvalidFileSourceException('FileSource of File no longer valid: ' . $file);
+			throw new InaccessibleFileSourceException('FileSource of File no longer valid: ' . $file);
 		}
 		
 		$qnb = new QualifiedNameBuilder($dirLevelNames, $fileName);
@@ -277,43 +277,3 @@ class TransactionFileEngine {
 		$this->fileRemoveJobs = array();
 	}
 }
-
-
-// namespace n2n\io\fs;
-
-// use n2n\io\managed\FileLocator;
-// use n2n\io\fs\FsPath;
-// use n2n\util\HashUtils;
-// use n2n\util\StringUtils;
-// use n2n\core\SysTextUtils;
-// use n2n\io\IoUtils;
-
-// class FileAssignationFactory {
-
-// 	private $fileManager;
-// 	/**
-// 	 *
-// 	 * @param string $allowLevels
-// 	 * @param array $reservedPrefixes
-// 	*/
-// 	public function __construct(FileManager $fileManager, FsPath $baseDirPath, $dirPerm, $filePerm, array $reservedPrefixes = array()) {
-// 		$this->fileManager = $fileManager;
-// 		$this->baseDirPath = $baseDirPath;
-// 		$this->dirPerm = $dirPerm;
-// 		$this->filePerm = $filePerm;
-// 		$this->reservedPrefixes = $reservedPrefixes;
-// 	}
-
-// 	public function createTmp($prefix, $suffix = null) {
-// 		if (!isset($suffix)) {
-// 			$filePath = new FsPath(tempnam($this->baseDirPath, $prefix));
-// 			$filePath->chmod($this->filePerm);
-// 			return new FileAssignation($this->fileManager, $filePath, $filePath->getName());
-// 		}
-
-// 		$tmpPath = new FsPath(tempnam($this->baseDirPath, $prefix));
-// 		$tmpPath->delete();
-
-// 		$fileName = $tmpPath->getFileName() . $suffix . '.' . $tmpPath->getExtension();
-// 		return $this->createFilePath(array(), $this->qualifyFileName($fileName));
-// 	}
