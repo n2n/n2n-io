@@ -22,5 +22,10 @@
 namespace n2n\io;
 
 class IoException extends \Exception {
-	
+	public function __construct ($message = null, $code = null, $previous = null) {
+		echo '<pre>';
+		var_dump($message);
+		echo '</pre>';
+		parent::__construct($message, $code, $previous);
+	}
 }

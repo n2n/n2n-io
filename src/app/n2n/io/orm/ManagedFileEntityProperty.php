@@ -39,6 +39,7 @@ use n2n\persistence\orm\property\ColumnComparableEntityProperty;
 use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
 use n2n\persistence\orm\store\ValueHash;
 use n2n\persistence\orm\store\CommonValueHash;
+use n2n\reflection\CastUtils;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -108,7 +109,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $oldValueHash = null) {
+	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $valueHash, ValueHash $oldValueHash = null) {
 		$fileManager = $this->lookupFileManager($persistingJob->getActionQueue()->getEntityManager());
 		
 		$oldValue = null; 
@@ -131,6 +132,9 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 		}
 		
 		$qualifiedName = $fileManager->persist($value, $this->fileLocator);
+		CastUtils::assertTrue($valueHash instanceof CommonValueHash);
+		$valueHash->setHash($this->createHash($qualifiedName));
+		
 		if ($this->cascadeDelete && $oldQualifiedName !== null && $oldQualifiedName !== $qualifiedName) {
 			$fileManager->removeByQualifiedName($oldQualifiedName);
 		}
@@ -148,6 +152,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 			$this->lookupFileManager($removeAction->getActionQueue()->getEntityManager())->remove($value);
 		}
 	}
+	
 	const FM_FILE_VH_SEPERATOR = ':';
 	
 	/* (non-PHPdoc)
@@ -164,6 +169,10 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 			$qualifiedName = $this->lookupFileManager($em)->checkFile($value);
 		}
 		
-		return new CommonValueHash($this->fileManagerClassName . self::FM_FILE_VH_SEPERATOR . $qualifiedName);
+		return new CommonValueHash($this->createHash($qualifiedName));
+	}
+	
+	private function createHash($qualifiedName) {
+		return $this->fileManagerClassName . self::FM_FILE_VH_SEPERATOR . $qualifiedName;
 	}
 }

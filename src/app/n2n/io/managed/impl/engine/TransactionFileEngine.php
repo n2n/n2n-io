@@ -82,8 +82,8 @@ class TransactionFileEngine {
 	 * @throws FileManagingConstraintException
 	 */
 	public function persist(File $file, FileLocator $fileLocator = null) {
-		if ($this->containsFile($file)) {
-			return $file->getFileSource()->getQualifiedName();
+		if (null !== ($qn = $this->checkFile($file))) {
+			return $qn;
 		}
 		
 		$dirLevelNames = array();
@@ -152,6 +152,7 @@ class TransactionFileEngine {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
 		
+		$file->setFileSource(new UncommittedManagedFileSource($file->getFileSource(), $managedFileSource));
 		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock);
 		return $qualifiedName;
 	}
@@ -199,14 +200,19 @@ class TransactionFileEngine {
 	}
 	
 	public function containsFile(File $file) {
-		return $file->isValid() && $file->getFileSource() instanceof ManagedFileSource 
-				&& $file->getFileSource()->getFileManagerName() == $this->fileManagerName;
+		return null !== $this->checkFile($file);
 	}
 	
 	public function checkFile(File $file) {
 		$fileSource = $file->getFileSource();
-		if ($fileSource instanceof ManagedFileSource && $fileSource->isValid() 
-				&& $fileSource->getFileManagerName() == $this->fileManagerName) {
+		
+		if (!$fileSource->isValid()) return null;
+		
+		if ($fileSource instanceof UncommittedManagedFileSource) {
+			$fileSource = $fileSource->getNewManagedFileSource();
+		}
+		
+		if ($fileSource instanceof ManagedFileSource && $fileSource->getFileManagerName() == $this->fileManagerName) {
 			return $fileSource->getQualifiedName();
 		}
 		
@@ -225,10 +231,10 @@ class TransactionFileEngine {
 		}
 		
 		if (isset($this->filePersistJobs[$qualifiedName])) {
+			$this->filePersistJobs[$qualifiedName]->dispose();
 			unset($this->filePersistJobs[$qualifiedName]);
 			return;
 		}
-		
 		
 		$this->ensureWritable($managedFileSource->getFileFsPath());
 		return $this->fileRemoveJobs[$qualifiedName] = new FileRemoveJob($managedFileSource);
