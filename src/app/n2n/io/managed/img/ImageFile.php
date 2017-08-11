@@ -24,10 +24,12 @@ namespace n2n\io\managed\img;
 use n2n\io\managed\File;
 use n2n\io\img\ImageResource;
 use n2n\io\managed\impl\CommonFile;
+use n2n\io\img\ImageSource;
 
 class ImageFile {	
 	private $file;
 	private $imageSource;
+	
 	/**
 	 * @param File $file 
 	 */
@@ -35,13 +37,14 @@ class ImageFile {
 		$this->file = $file;
 		$this->imageSource = $this->file->getFileSource()->createImageSource();
 	}
+	
 	/**
-	 * 
 	 * @return File
 	 */
 	public function getFile() {
 		return $this->file;
 	}
+	
 	/**
 	 * @return \n2n\io\img\ImageSource
 	 */
@@ -136,7 +139,7 @@ class ImageFile {
 		return new CommonFile($variationFileResource, $this->file->getOriginalName());
 	}
 	
-	public function getOrCreateVariation(ThumbStrategy $thumbStrategy): ImageFile {
+	public function getOrCreateVariation(ThumbStrategy $thumbStrategy, ImageSource $orgImageSource = null): ImageFile {
 		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 	
@@ -149,7 +152,10 @@ class ImageFile {
 			return $this;
 		}
 	
-		$imageResource = $this->imageSource->createImageResource();
+		if ($orgImageSource === null) {
+			$orgImageSource = $this->imageSource;
+		}
+		$imageResource = $orgImageSource->createImageResource();
 		$thumbStrategy->resize($imageResource);
 	
 		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);

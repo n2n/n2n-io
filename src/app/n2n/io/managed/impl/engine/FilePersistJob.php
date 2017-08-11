@@ -52,8 +52,13 @@ class FilePersistJob {
 			$this->file->setFileSource($this->managedFileSource);
 			$this->lock->release();
 		} catch (IoException $e) {
+			$this->lock->release();
 			throw new FileManagingException($this->managedFileSource->getFileManagerName() 
 					. ' could not persist file source: ' . $this->managedFileSource, 0, $e);
 		}
+	}
+	
+	public function dispose() {
+		$this->lock->release();
 	}
 }
