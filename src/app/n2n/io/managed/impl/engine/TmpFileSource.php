@@ -26,11 +26,15 @@ use n2n\util\ex\UnsupportedOperationException;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\VariationEngine;
 use n2n\io\managed\VariationManager;
+use n2n\util\uri\Url;
+use n2n\util\StringUtils;
+use n2n\util\UnserializationFailedException;
 
-class TmpFileSource extends FileSourceAdapter {
+class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	private $sessionId;
 	
-	public function __construct($qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null, $sessionId = null) {
+	public function __construct(string $qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null, 
+			string $sessionId = null) {
 		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
 		$this->sessionId = $sessionId;
 	}
@@ -44,6 +48,37 @@ class TmpFileSource extends FileSourceAdapter {
 	
 	public function getVariationEngine(): VariationEngine {
 		return $this;
+	}
+	
+	public function serialize() {
+		return serialize(array('qualifiedName' => $this->qualifiedName, 'fileFsPath' => $this->fileFsPath,
+				'infoFsPath' => $this->infoFsPath, 'url' => $this->url, 'sessionId' => $this->sessionId));
+	}
+	
+	public function unserialize($serialized) {
+		$data = StringUtils::unserialize($serialized);
+		
+		UnserializationFailedException::assertTrue(isset($data['qualifiedName']) && is_scalar($data['qualifiedName'])
+				&& isset($data['fileFsPath']) && $data['fileFsPath'] instanceof FsPath
+				&& array_key_exists('infoFsPath', $data) && ($data['infoFsPath'] === null || $data['infoFsPath'] instanceof FsPath)
+				&& array_key_exists('url', $data) && ($data['url'] === null || $data['url'] instanceof Url)
+				&& array_key_exists('sessionId', $data) && ($data['sessionId'] === null || is_scalar($data['sessionId'])));
+		
+		$this->qualifiedName = $data['qualifiedName'];
+		$this->fileFsPath = $data['fileFsPath'];
+		$this->infoFsPath = $data['infoFsPath'];
+		$this->url = $data['url'];
+		$this->sessionId = $data['sessionId'];
+		
+		if (!$this->fileFsPath->exists()) {
+			$this->valid = false;
+			return;
+		}
+			
+		$this->fileFsPath->touch();
+		if ($this->infoFsPath !== null) {
+			$this->infoFsPath->touch();
+		}
 	}
 	
 	/* (non-PHPdoc)
