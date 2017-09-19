@@ -24,6 +24,7 @@ namespace n2n\io\managed\impl\engine;
 use n2n\io\managed\VariationEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\ThumbManager;
+use n2n\io\managed\VariationManager;
 
 class UnsupportedVariationEngine implements VariationEngine {
 	
