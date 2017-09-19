@@ -47,7 +47,7 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	}
 	
 	public function getVariationEngine(): VariationEngine {
-		return $this;
+		return new UnsupportedVariationEngine();
 	}
 	
 	public function serialize() {
