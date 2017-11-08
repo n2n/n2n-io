@@ -24,11 +24,10 @@ namespace n2n\io\orm;
 use n2n\io\managed\File;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
-use n2n\web\http\nav\UnavailableUrlException;
+use n2n\util\uri\UnavailableUrlException;
 use n2n\util\uri\Url;
-use n2n\web\http\ResourceResponseObject;
 
-class UnknownFile extends ResourceResponseObject implements File {
+class UnknownFile implements File {
 	private $qualifiedName;
 	private $fileManagerName;
 	
@@ -116,44 +115,9 @@ class UnknownFile extends ResourceResponseObject implements File {
 		$this->throwException();
 	}
 
-	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResourceResponseObject::responseOut()
-	 */
-	public function responseOut() {
-		$this->throwException();
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResourceResponseObject::getEtag()
-	 */
-	public function getEtag() {
-		$this->throwException();
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResourceResponseObject::getLastModified()
-	 */
-	public function getLastModified() {
-		$this->throwException();
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseObject::prepareForResponse()
-	 */
-	public function prepareForResponse(\n2n\web\http\Response $response) {
-		$this->throwException();
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\web\http\ResponseObject::toKownResponseString()
-	 */
-	public function toKownResponseString(): string {
-		return $this->__toString();
-	}
-
 	public function toUrl(string &$suggestedLabel = null): Url {
 		try {
-			return $this->getFileSource()->getUrl();
+			$this->throwException();
 		} catch (IllegalStateException $e) {
 			throw new UnavailableUrlException(false, null, 0, $e);
 		}

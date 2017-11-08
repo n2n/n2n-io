@@ -23,6 +23,7 @@ namespace n2n\io\fs;
 
 use n2n\io\IoUtils;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\managed\impl\FileFactory;
 
 class FsPath {
 	private $path;
@@ -400,8 +401,15 @@ class FsPath {
 		IoUtils::chmod($this->path, $perm);
 	}
 	
+	/**
+	 * @return \n2n\io\managed\File
+	 */
+	public function toFile() {
+		return FileFactory::createFromFs($this);
+	}
+	
 	public function equals($obj) {
-		return $obj instanceof FsPath && $obj->getPath() === $obj->getPath();
+		return $obj instanceof FsPath && $obj->__toString() === $this->__toString();
 	}
 	
 	public static function create($expression) {

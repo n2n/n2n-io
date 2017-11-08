@@ -21,21 +21,18 @@
  */
 namespace n2n\io\managed\impl;
 
-use n2n\web\http\Response;
 use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;
-use n2n\core\N2nVars;
 use n2n\reflection\ArgUtils;
 use n2n\io\managed\File;
 use n2n\io\managed\FileSource;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileListener;
-use n2n\web\http\nav\UnavailableUrlException;
 use n2n\io\managed\InaccessibleFileSourceException;
-use n2n\web\http\ResourceResponseObject;
 use n2n\util\uri\Url;
+use n2n\util\uri\UnavailableUrlException;
 
-class CommonFile extends ResourceResponseObject implements \Serializable, File {
+class CommonFile implements \Serializable, File {
 	private $fileSource;
 	private $originalName;
 	private $originalExtension;
@@ -204,37 +201,6 @@ class CommonFile extends ResourceResponseObject implements \Serializable, File {
 	 */
 	public function equals($o): bool {
 		return $o instanceof File && $this->fileSource->equals($o->getFileSource());
-	}
-	
-	/* (non-PHPdoc)
-	 * @see n2n\web\http.ResourceResponseObject::getEtag()
-	 */
-	public function getEtag() {
-		return $this->fileSource->buildHash();
-	}
-	
-	public function getLastModified() {
-		return $this->fileSource->getLastModified();
-	}
-	
-	public function prepareForResponse(Response $response) {
-		$mimeType = N2nVars::getMimeTypeDetector()->getMimeTypeByExtension($this->getOriginalExtension());
-		
-		if (isset($mimeType)) {
-			$response->setHeader('Content-Type: ' . $mimeType);
-		} else {
-			$response->setHeader('Content-Type: application/octet-stream');
-		}
-		
-		$response->setHeader('Content-Length: ' . $this->getFileSource()->getSize());
-	}
-	
-	public function toKownResponseString(): string {
-		return $this->getOriginalName() . ' (' . $this->fileSource->__toString() . ')';
-	}
-	
-	public function responseOut() {
-		echo $this->getFileSource()->out();
 	}
 	
 	public function toUrl(string &$suggestedLabel = null): Url {

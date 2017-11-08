@@ -103,7 +103,7 @@ class ImageSourceFactory {
 	 *
 	 * @param unknown_type $mimeType
 	 * @param unknown_type $path
-	 * @return FileSource
+	 * @return ImageSource
 	 * @throws UnsupportedImageTypeException
 	 */
 	public static function createFromFileName($fileName, $mineType) {
