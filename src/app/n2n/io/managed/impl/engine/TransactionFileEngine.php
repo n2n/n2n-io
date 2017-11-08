@@ -78,7 +78,7 @@ class TransactionFileEngine {
 	/**
 	 * @param string $fileName
 	 * @param FileLocator $fileLocator
-	 * @return \n2n\io\managed\FileAssignation
+	 * @return string
 	 * @throws FileManagingConstraintException
 	 */
 	public function persist(File $file, FileLocator $fileLocator = null) {
