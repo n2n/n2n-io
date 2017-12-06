@@ -66,6 +66,10 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 		return $this->scaleUpAllowed;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\img\ThumbStrategy::matches()
+	 */
 	public function matches(ImageSource $imageSource): bool {
 		if ($this->imageDimension->getWidth() == $imageSource->getWidth()
 				&& $this->imageDimension->getHeight() == $imageSource->getHeight()) {
@@ -78,6 +82,10 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 				&& $this->imageDimension->getHeight() >= $imageSource->getHeight();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\img\ThumbStrategy::resize()
+	 */
 	public function resize(ImageResource $imageResource) {
 		$imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
 				$this->getAutoCropMode());
