@@ -24,7 +24,7 @@ namespace n2n\io;
 interface OutputStream extends Stream {
 	/**
 	 * 
-	 * @param unknown_type $contents
+	 * @param string $contents
 	 * @throws IoException
 	 */
 	public function write($contents);

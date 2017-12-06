@@ -107,7 +107,7 @@ class QualifiedNameBuilder {
 		}
 	}
 	/**
-	 * @param unknown $fileName
+	 * @param string $fileName
 	 * @return string
 	 * @throws \InvalidArgumentException
 	 */

@@ -78,7 +78,7 @@ class ImageResource {
 	/**
 	 * adds a watermark to the image
 	 *
-	 * @param NN6FileImageResource $watermark
+	 * @param ImageResource $watermark
 	 * @param int $watermarkPos
 	 * @param int $watermarkMargin
 	 */
@@ -120,14 +120,13 @@ class ImageResource {
 	}
 	/**
 	 * 
-	 * @param unknown_type $destWidth
-	 * @param unknown_type $destHeight
-	 * @param unknown_type $cropWidth
-	 * @param unknown_type $cropHeight
-	 * @param unknown_type $x
-	 * @param unknown_type $y
-	 * @param unknown_type $crop
-	 * @throws NN6FileImageIsSmallerThenTheRequestedSizeException
+	 * @param int $destWidth
+	 * @param int $destHeight
+	 * @param int $cropWidth
+	 * @param int $cropHeight
+	 * @param int $x
+	 * @param int $y
+	 * @param bool $crop
 	 */
 	protected function calcResampleSizes(&$destWidth, &$destHeight, &$cropWidth, &$cropHeight, &$x, &$y, $crop = false) {
 		$maxWidth = $destWidth;
@@ -179,12 +178,12 @@ class ImageResource {
 	}
 	/**
 	 * 
-	 * @param unknown_type $startX
-	 * @param unknown_type $startY
-	 * @param unknown_type $originalW
-	 * @param unknown_type $originalH
-	 * @param unknown_type $destWidth
-	 * @param unknown_type $destHeight
+	 * @param int $startX
+	 * @param int $startY
+	 * @param int $originalW
+	 * @param int $originalH
+	 * @param int $destWidth
+	 * @param int $destHeight
 	 */
 	private function resample($startX, $startY, $originalW, $originalH, $destWidth, $destHeight) {
 		// check the ratios of the two formats match

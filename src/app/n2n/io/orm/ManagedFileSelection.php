@@ -28,7 +28,6 @@ use n2n\persistence\orm\query\select\Selection;
 use n2n\persistence\orm\query\select\EagerValueBuilder;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\persistence\orm\CorruptedDataException;
-use n2n\persistence\orm\property\EntityProperty;
 
 class ManagedFileSelection implements Selection {
 	private $queryItem;

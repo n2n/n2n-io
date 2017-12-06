@@ -21,9 +21,7 @@
  */
 namespace n2n\io\managed;
 
-use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
-use n2n\io\managed\FileSource;
 
 interface VariationManager {
 	

@@ -21,8 +21,6 @@
  */
 namespace n2n\io;
 
-use n2n\io\IoException;
-
 class StreamResourceUnavailbaleException extends IoException {
 	
 }

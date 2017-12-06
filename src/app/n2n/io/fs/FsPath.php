@@ -303,7 +303,7 @@ class FsPath {
 	 * @param string $fsPath
 	 * @param string $filePerm
 	 * @param bool $overwrite
-	 * @throws IoException
+	 * @throws \n2n\io\IoException
 	 * @return \n2n\io\fs\FsPath
 	 */
 	public function moveFile($fsPath, $filePerm, $overwrite = false) {
@@ -321,7 +321,7 @@ class FsPath {
 	 * @param string $fsPath
 	 * @param string $filePerm
 	 * @param bool $overwrite
-	 * @throws IoException
+	 * @throws \n2n\io\IoException
 	 * @return \n2n\io\fs\FsPath
 	 */
 	public function copyFile($fsPath, $filePerm, $overwrite = false) {

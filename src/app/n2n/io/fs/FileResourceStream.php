@@ -32,10 +32,10 @@ class FileResourceStream extends ResourceStream implements InputStream, OutputSt
 	private $lock;
 	/**
 	 *
-	 * @param unknown_type $fileName
-	 * @param unknown_type $mode
-	 * @param unknown_type $lock
-	 * @throws CouldNotAchieveFlockException
+	 * @param string $fileName
+	 * @param string $mode
+	 * @param int $lock
+	 * @throws \n2n\io\CouldNotAchieveFlockException
 	 */
 	public function __construct($fileName, $mode = 'c+', $lock = null) {
 		$this->fileName = (string) $fileName;

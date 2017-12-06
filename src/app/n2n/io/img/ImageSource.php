@@ -21,8 +21,6 @@
  */
 namespace n2n\io\img;
 
-use n2n\io\img\ImageResource;
-
 interface ImageSource {
 	/**
 	 * @return string 

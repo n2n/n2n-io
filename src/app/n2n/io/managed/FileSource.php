@@ -113,7 +113,7 @@ interface FileSource {
 	 * @param string $filePerm
 	 * @param bool $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
-	 * @throws IoException
+	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false);
@@ -123,14 +123,14 @@ interface FileSource {
 	 * @param string $filePerm
 	 * @param string $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
-	 * @throws IoException
+	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
 	public function copy(FsPath $fsPath, $filePerm, $overwrite = false);
 	
 	/**
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
-	 * @throws IoException
+	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be deleted.
 	 */
 	public function delete();

@@ -43,7 +43,7 @@ interface FileManager {
 	/**
 	 * @param string $qualifiedName
 	 * @return File or null if not found.
-	 * @throws QualifiedNameFormatException if qualifiedName is invalid
+	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException 
 	 */
 	public function getByQualifiedName(string $qualifiedName = null);
@@ -51,7 +51,7 @@ interface FileManager {
 	/**
 	 * @param string $qualifiedName
 	 * @param File $file
-	 * @throws QualifiedNameFormatException if qualifiedName is invalid
+	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException
 	 */
 	public function removeByQualifiedName($qualifiedName);

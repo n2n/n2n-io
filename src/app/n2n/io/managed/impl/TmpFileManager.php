@@ -30,6 +30,7 @@ use n2n\io\managed\impl\engine\TmpFileEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\File;
 use n2n\reflection\ObjectAdapter;
+use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 
 class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	const TMP_DIR = 'files';

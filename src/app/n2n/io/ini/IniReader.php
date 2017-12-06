@@ -30,7 +30,7 @@ class IniReader {
 	/**
 	 * 
 	 * @param string $iniString
-	 * @throws IniReaderException
+	 * @throws IniInitializationFailedException
 	 */
 	public function __construct($iniString, $processGroups = true) {
 		try {

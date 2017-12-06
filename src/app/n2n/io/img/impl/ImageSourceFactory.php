@@ -24,8 +24,8 @@ namespace n2n\io\img\impl;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\io\IoUtils;
 use n2n\io\img\UnsupportedImageTypeException;
-use n2n\io\managed\FileSource;
 use n2n\io\IoException;
+use n2n\io\img\ImageSource;
 
 class ImageSourceFactory {
 	const MIME_TYPE_JPEG = 'image/jpeg';
@@ -101,8 +101,8 @@ class ImageSourceFactory {
 	}
 	/**
 	 *
-	 * @param unknown_type $mimeType
-	 * @param unknown_type $path
+	 * @param string $fileName
+	 * @param string $mimeType
 	 * @return ImageSource
 	 * @throws UnsupportedImageTypeException
 	 */

@@ -21,7 +21,6 @@
  */
 namespace n2n\io;
 
-use n2n\io\IoException;
 use n2n\io\fs\FileResourceStream;
 use n2n\io\fs\FileOperationException;
 
@@ -150,12 +149,12 @@ class IoUtils {
 	}
 	
 	/**
-	 * @param unknown $path
+	 * @param string $path
 	 * @param resource $context
 	 * @throws IoException
 	 * @return boolean
 	 */
-	public static function opendir($path, resource $context = null) {
+	public static function opendir($path, $context = null) {
 		$h = null;
 		if ($context === null) {
 			$h = @opendir($path);
@@ -204,9 +203,11 @@ class IoUtils {
 	 * 
 	 * @param string $path
 	 * @param string $contents
+	 * @param int $flags
+	 * @param resource $context
 	 * @throws IoException
 	 */
-	public static function putContents($path, $contents, $flags = null, resource $context = null) {
+	public static function putContents($path, $contents, $flags = null, $context = null) {
 		if (is_numeric(@file_put_contents((string) $path, $contents, $flags, $context))) return;
 
 		$err = error_get_last();
@@ -289,8 +290,8 @@ class IoUtils {
 	}
 	/**
 	 * 
-	 * @param unknown_type $path
-	 * @param unknown_type $mode
+	 * @param string $path
+	 * @param string $mode
 	 * @throws IoException
 	 * @return resource
 	 */
@@ -387,7 +388,7 @@ class IoUtils {
 	}
 	/**
 	 * 
-	 * @param unknown_type $filePath
+	 * @param string $filePath
 	 * @return FileResourceStream
 	 */
 	public static function createSafeFileInputStream($filePath) {
@@ -529,8 +530,8 @@ class IoUtils {
 	}
 	/**
 	 * 
-	 * @param unknown_type $filePath
-	 * @param unknown_type $operation
+	 * @param string $filePath
+	 * @param int $operation
 	 * @return Flock
 	 */
 	public static function createFlock($filePath, $operation, $requried = true) {
@@ -544,7 +545,7 @@ class IoUtils {
 	/**
 	 * 
 	 * @param string $orgPath
-	 * @throws PathDoesNotExistException
+	 * @throws InvalidPathException
 	 */
 	public static function realpath($orgPath, $fileRequired = null) {
 		$path = realpath($orgPath);
@@ -609,7 +610,7 @@ class IoUtils {
 	/**
 	 * Returns a file size limit in bytes based on the PHP upload_max_filesize
 	 * and post_max_size
-	 * @return Ambigous <number, unknown>
+	 * @return int
 	 */
 	public static function determineFileUploadMaxSize() {
 		static $maxSize = -1;

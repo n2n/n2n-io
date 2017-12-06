@@ -21,7 +21,6 @@
  */
 namespace n2n\io\managed\img\impl;
 
-use n2n\io\managed\img\impl\ProportionalThumbStrategy;
 use n2n\io\img\ImageResource;
 
 class ThSt {
