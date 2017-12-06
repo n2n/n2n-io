@@ -74,8 +74,8 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 
 		if ($this->scaleUpAllowed) return false;
 
-		return $this->imageDimension->getWidth() > $imageSource->getWidth()
-				&& $this->imageDimension->getHeight() > $imageSource->getHeight();
+		return $this->imageDimension->getWidth() >= $imageSource->getWidth()
+				&& $this->imageDimension->getHeight() >= $imageSource->getHeight();
 	}
 
 	public function resize(ImageResource $imageResource) {
