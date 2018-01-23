@@ -78,8 +78,13 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * @throws \n2n\io\managed\FileManagingConstraintException if creating a temp file from passed File violates any
 	 * constraints.
 	 */
-	public function createCopyFromFile(File $file) {
-		return $this->getTmpFileEngine()->createCopyFromFile($file);
+	public function createCopyFromFile(File $file, Session $session = null) {
+		$sessionId = null;
+		if ($session !== null) {
+			$sessionId = $session->getId();
+		}
+		
+		return $this->getTmpFileEngine()->createCopyFromFile($file, $sessionId);
 	}
 	/**
 	 *
