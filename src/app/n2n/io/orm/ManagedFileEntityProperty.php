@@ -109,7 +109,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $valueHash, ValueHash $oldValueHash = null) {
+	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
 		$fileManager = $this->lookupFileManager($persistingJob->getActionQueue()->getEntityManager());
 		
 		$oldValue = null; 
