@@ -30,7 +30,7 @@ use n2n\io\managed\FileManager;
 use n2n\io\managed\impl\engine\TransactionFileEngine;
 
 class PrivateFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
-	const TMP_DIR = 'files';
+	const SRV_DIR = 'files';
 	
 	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, VarStore $varStore) {		
 		$privateDir = $filesConfig->getManagerPrivateDir();
