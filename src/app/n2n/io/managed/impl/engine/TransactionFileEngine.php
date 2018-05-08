@@ -33,12 +33,14 @@ use n2n\io\managed\FileManagingConstraintException;
 use n2n\io\managed\impl\CommonFile;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\InaccessibleFileSourceException;
+use n2n\io\managed\FileManagingException;
 
 class TransactionFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
 	
 	const FILE_SUFFIX = '.managed';
 	const FILEINFO_SUFFIX = '.inf';
+	const INFO_ORIGINAL_NAME_KEY = 'originalName';
 	
 	private $fileManagerName;
 	private $baseDirFsPath;
@@ -128,26 +130,33 @@ class TransactionFileEngine {
 		}
 		
 		$qnb = new QualifiedNameBuilder($dirLevelNames, $fileName);
-		$dirPath = $this->baseDirFsPath->ext($dirLevelNames);
-		$dirPath->mkdirs($this->dirPerm);
-		$this->ensureWritable($dirPath);
+		$dirFsPath = $this->baseDirFsPath->ext($dirLevelNames);
+		$dirFsPath->mkdirs($this->dirPerm);
+		$this->ensureWritable($dirFsPath);
 		
-		$filePath = $dirPath->ext($fileName);
+		$fileFsPath = $dirFsPath->ext($fileName);
 		
 		$ext = 2;
 		$usedFileName = $fileName;
 		$lock = null;
 
-		while ($filePath->exists() || null === ($lock = Sync::exNb($this, (string) $filePath))) {
+		while ($fileFsPath->exists() || null === ($lock = Sync::exNb($this, (string) $fileFsPath))) {
 			$fileNameParts = explode('.', $fileName);
 			$fileNameParts[0] .= $ext++;
 			$usedFileName = implode('.', $fileNameParts);
 			$qnb = new QualifiedNameBuilder($dirLevelNames, $usedFileName);
-			$filePath = $dirPath->ext($usedFileName);
+			$fileFsPath = $dirFsPath->ext($usedFileName);
+		}
+		
+		$infoFsPath = null;
+		if (!$this->customFileNamesAllowed) {
+			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
+			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
 		}
 		
 		$qualifiedName = $qnb->__toString();
-		$managedFileSource = new ManagedFileSource($filePath, $this->fileManagerName, $qualifiedName, $this->dirPerm, $this->filePerm);
+		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, $this->dirPerm, $this->filePerm);
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
@@ -189,14 +198,37 @@ class TransactionFileEngine {
 			return null;
 		}
 		
-		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName, 
+		$infoFsPath = null;
+		$originalName = null;
+		
+		if ($this->customFileNamesAllowed) {
+			$originalName = $fileFsPath->getName();
+		} else {
+			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
+			
+			$infoData = null;
+			try {
+				$infoData = $fileInfoDingsler->read();
+			} catch (FileManagingException $e) { }
+			
+			if ($infoData === null || !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
+				$fileFsPath->delete();
+				$infoFsPath->delete();
+				return null;
+			}
+			
+			$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
+		}
+		
+		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, 
 				$this->dirPerm, $this->filePerm);
 		
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnBuilder->toArray()));
 		}
 		
-		return new CommonFile($managedFileSource, $fileFsPath->getName());
+		return new CommonFile($managedFileSource, $originalName);
 	}
 	
 	public function containsFile(File $file) {
