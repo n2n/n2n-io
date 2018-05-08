@@ -34,9 +34,9 @@ class ManagedFileSource extends FileSourceAdapter implements VariationEngine {
 	private $filePerm;
 	private $persistent = false;
 	
-	public function __construct(FsPath $fileFsPath, string $fileManagerName, string $qualifiedName, 
+	public function __construct(FsPath $fileFsPath, ?FsPath $infoFsPath, string $fileManagerName, string $qualifiedName, 
 			string $dirPerm, string $filePerm) {
-		parent::__construct($qualifiedName, $fileFsPath, null);
+		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
 		$this->fileManagerName = $fileManagerName;
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
