@@ -49,7 +49,7 @@ class CommonFile implements \Serializable, File {
 	}
 	
 	public function isValid(): bool {
-		return true;
+		return $this->fileSource->isValid();
 	}
 	
 	/**
@@ -91,7 +91,7 @@ class CommonFile implements \Serializable, File {
 	 * @see \n2n\io\managed\File::getFileSource()
 	 */
 	public function getFileSource(): FileSource {
-		return $this->fileSource->isValid();
+		return $this->fileSource;
 	}
 	
 	/**
