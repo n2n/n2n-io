@@ -91,7 +91,7 @@ class CommonFile implements \Serializable, File {
 	 * @see \n2n\io\managed\File::getFileSource()
 	 */
 	public function getFileSource(): FileSource {
-		return $this->fileSource;
+		return $this->fileSource->isValid();
 	}
 	
 	/**
