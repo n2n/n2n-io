@@ -49,7 +49,7 @@ class CommonFile implements \Serializable, File {
 	}
 	
 	public function isValid(): bool {
-		return true;
+		return $this->fileSource->isValid();
 	}
 	
 	/**
