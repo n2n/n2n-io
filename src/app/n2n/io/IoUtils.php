@@ -366,7 +366,7 @@ class IoUtils {
 		return $str;
 	}
 	
-	public static function streamGetContents($handle, $maxlength = -1, $offset = -1) {
+	public static function streamGetContents($handle, int $maxlength = -1, int $offset = -1) {
 		$str = @stream_get_contents($handle, $maxlength, $offset);
 		if (false === $str) {
 			$err = error_get_last();
@@ -376,14 +376,14 @@ class IoUtils {
 		return $str;
 	}
 	
-	public static function createSafeFileStream($filePath) {
+	public static function createSafeFileStream(string $filePath) {
 		return new FileResourceStream($filePath, 'c+', LOCK_EX);
 	}
 	/**
 	 * 
 	 * @return FileResourceStream
 	 */
-	public static function createSafeFileOutputStream($filePath) {
+	public static function createSafeFileOutputStream(string $filePath) {
 		return new FileResourceStream($filePath, 'w', LOCK_EX);
 	}
 	/**
@@ -391,7 +391,7 @@ class IoUtils {
 	 * @param string $filePath
 	 * @return FileResourceStream
 	 */
-	public static function createSafeFileInputStream($filePath) {
+	public static function createSafeFileInputStream(string $filePath) {
 		return new FileResourceStream($filePath, 'r', LOCK_SH);
 	}
 	/**
@@ -400,7 +400,7 @@ class IoUtils {
 	 * @param string $contents
 	 * @throws IoException
 	 */
-	public static function putContentsSafe($path, $contents) {
+	public static function putContentsSafe(string $path, string $contents) {
 		$fileOutputStream = self::createSafeFileOutputStream($path);
 		$fileOutputStream->write($contents);
 		$fileOutputStream->close();
