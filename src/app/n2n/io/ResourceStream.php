@@ -51,8 +51,8 @@ class ResourceStream implements InputStream, OutputStream {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\OutputStream::write()
 	 */
-	public function write($contents) {
-		IoUtils::fwrite($this->getResource(), (string) $contents);
+	public function write(string $contents) {
+		IoUtils::fwrite($this->getResource(), $contents);
 	}
 	
 	public function read($length = null) {

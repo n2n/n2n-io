@@ -27,7 +27,7 @@ interface OutputStream extends Stream {
 	 * @param string $contents
 	 * @throws IoException
 	 */
-	public function write($contents);
+	public function write(string $contents);
 	/**
 	 * @throws IoException
 	 */
