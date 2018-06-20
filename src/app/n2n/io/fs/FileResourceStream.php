@@ -37,8 +37,8 @@ class FileResourceStream extends ResourceStream implements InputStream, OutputSt
 	 * @param int $lock
 	 * @throws \n2n\io\CouldNotAchieveFlockException
 	 */
-	public function __construct($fileName, $mode = 'c+', $lock = null) {
-		$this->fileName = (string) $fileName;
+	public function __construct(string $fileName, string $mode = 'c+', $lock = null) {
+		$this->fileName = $fileName;
 		$resource = IoUtils::fopen($this->fileName, $mode);
 		
 		$this->lock = $lock;
