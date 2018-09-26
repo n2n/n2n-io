@@ -126,16 +126,17 @@ class IoUtils {
 	 * @param string $path
 	 * @throws IoException
 	 */
-	public static function rmdirs($path) {
+	public static function rmdirs(string $path) {
 		if (is_dir($path)) {
 			if (!($handle = @opendir($path))) {
 				$err = error_get_last();
-				throw new IoException($err['message']);
+				throw new IoException($err['message'] . '; ' . $path);
 			}
 			
 			while (false !== ($fileName = readdir($handle))) {
 				if ($fileName == '.' || $fileName == '..') continue;
-					self::rmdirs($path . DIRECTORY_SEPARATOR . $fileName);
+				
+				self::rmdirs($path . DIRECTORY_SEPARATOR . $fileName);
 			}
 		
 			closedir($handle);
@@ -154,7 +155,7 @@ class IoUtils {
 	 * @throws IoException
 	 * @return boolean
 	 */
-	public static function opendir($path, $context = null) {
+	public static function opendir(string $path, $context = null) {
 		$h = null;
 		if ($context === null) {
 			$h = @opendir($path);
@@ -167,7 +168,7 @@ class IoUtils {
 		}
 	
 		$err = error_get_last();
-		throw new IoException($err['message']);
+		throw new IoException($err['message'] . '; ' . $path);
 	}
 	
 	/**
@@ -207,11 +208,11 @@ class IoUtils {
 	 * @param resource $context
 	 * @throws IoException
 	 */
-	public static function putContents($path, $contents, $flags = null, $context = null) {
+	public static function putContents(string $path, $contents, $flags = null, $context = null) {
 		if (is_numeric(@file_put_contents((string) $path, $contents, $flags, $context))) return;
 
 		$err = error_get_last();
-		throw new FileOperationException($err['message']);
+		throw new FileOperationException($err['message'] . '; ' . $path);
 	}
 	/**
 	 * 
@@ -219,12 +220,12 @@ class IoUtils {
 	 * @return string
 	 * @throws IoException
 	 */
-	public static function getContents($path) {
-		$contents = @file_get_contents((string) $path);
+	public static function getContents(string $path) {
+		$contents = @file_get_contents($path);
 
 		if ($contents === false) {
 			$err = error_get_last();
-			throw new FileOperationException($err['message']);
+			throw new FileOperationException($err['message'] . '; ' . $path);
 		}
 		
 		return $contents;
@@ -235,12 +236,12 @@ class IoUtils {
 	 * @return string
 	 * @throws IoException
 	 */
-	public static function file($path) {
+	public static function file(string $path) {
 		$contents = @file((string) $path);
 
 		if ($contents === false) {
 			$err = error_get_last();
-			throw new FileOperationException($err['message']);
+			throw new FileOperationException($err['message']  . '; ' . $path);
 		}
 		
 		return $contents;
@@ -277,7 +278,7 @@ class IoUtils {
 		if (@chmod($path, $filePermission)) return;
 
 		$err = error_get_last();
-		throw new FileOperationException($err['message']);
+		throw new FileOperationException($err['message'] . '; ' . $path . ' > ' . $filePermission);
 	}
 	/**
 	 * @todo add param time and atime  
@@ -286,7 +287,7 @@ class IoUtils {
 		if (@touch($filename)) return;
 			
 		$err = error_get_last();
-		throw new FileOperationException($err['message']);
+		throw new FileOperationException($err['message'] . '; ' . $filename);
 	}
 	/**
 	 * 
@@ -295,34 +296,34 @@ class IoUtils {
 	 * @throws IoException
 	 * @return resource
 	 */
-	public static function fopen($path, $mode) {
+	public static function fopen(string $path, string $mode) {
 		$fh = @fopen($path, $mode);
 		
 		if (!$fh) {
 			$err = error_get_last();
-			throw new IoException($err['message']);
+			throw new IoException($err['message'] . '; ' . $path . ' mode: ' . $mode);
 		}
 		
 		return $fh;
 	}
 	
-	public static function stat($path) {
+	public static function stat(string $path) {
 		$stat = @stat($path);
 		
 		if ($stat === false) {
 			$err = error_get_last();
-			throw new FileOperationException($err['message']);
+			throw new FileOperationException($err['message'] . '; ' . $path);
 		}
 		
 		return $stat;
 	}
 	
-	public static function filesize($path) {
+	public static function filesize(string $path) {
 		$size = @filesize($path);
 		
 		if ($size === false) {
 			$err = error_get_last();
-			throw new FileOperationException($err['message']);
+			throw new FileOperationException($err['message'] . '; ' . $path);
 		}
 		
 		return $size;
@@ -333,7 +334,7 @@ class IoUtils {
 		
 		if ($numBytes === false) {
 			$err = error_get_last();
-			throw new FileOperationException($err['message']);
+			throw new FileOperationException($err['message'] . '; ' . $path);
 		}
 		
 		return $numBytes;
