@@ -505,6 +505,15 @@ class IoUtils {
 			$err = error_get_last();
 			throw new IoException($err['message']);
 		}
+	}
+		
+		
+	public static function imageCreateFromWebp($filePath) {
+		$resource = @imagecreatefromwebp((string) $filePath);
+		if (!$resource) {
+			$err = error_get_last();
+			throw new IoException($err['message']);
+		}
 		
 		return $resource;
 	}
@@ -529,6 +538,14 @@ class IoUtils {
 		$err = error_get_last();
 		throw new IoException($err['message']);
 	}
+	
+	public static function imageWebp($resource, $filePath = null, $quality = null) {
+		if (@imagewebp($resource, $filePath, $quality)) return true;
+		
+		$err = error_get_last();
+		throw new IoException($err['message']);
+	}
+	
 	/**
 	 * 
 	 * @param string $filePath
