@@ -505,6 +505,8 @@ class IoUtils {
 			$err = error_get_last();
 			throw new IoException($err['message']);
 		}
+		
+		return $resource;
 	}
 		
 		
