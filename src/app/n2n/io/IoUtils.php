@@ -508,6 +508,17 @@ class IoUtils {
 		
 		return $resource;
 	}
+		
+		
+	public static function imageCreateFromWebp($filePath) {
+		$resource = @imagecreatefromwebp((string) $filePath);
+		if (!$resource) {
+			$err = error_get_last();
+			throw new IoException($err['message']);
+		}
+		
+		return $resource;
+	}
 	
 	public static function imagePng($resource, $filePath = null, $quality = null, $filters = null) {
 		if (@imagepng($resource, $filePath, $quality, $filters)) return true;
@@ -529,6 +540,14 @@ class IoUtils {
 		$err = error_get_last();
 		throw new IoException($err['message']);
 	}
+	
+	public static function imageWebp($resource, $filePath = null, $quality = null) {
+		if (@imagewebp($resource, $filePath, $quality)) return true;
+		
+		$err = error_get_last();
+		throw new IoException($err['message']);
+	}
+	
 	/**
 	 * 
 	 * @param string $filePath

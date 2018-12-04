@@ -31,10 +31,11 @@ class ImageSourceFactory {
 	const MIME_TYPE_JPEG = 'image/jpeg';
 	const MIME_TYPE_PNG = 'image/png';
 	const MIME_TYPE_GIF = 'image/gif';
+	const MIME_TYPE_WEBP = 'image/webp';
 	
 	private static $extensionMimeTypeMappings = array('png' => self::MIME_TYPE_PNG,
 			'jpg' => self::MIME_TYPE_JPEG, 'jpeg' => self::MIME_TYPE_JPEG,
-			'gif' => self::MIME_TYPE_GIF);
+			'gif' => self::MIME_TYPE_GIF, 'webp' => self::MIME_TYPE_WEBP);
 // 	/**
 // 	 *
 // 	 * @param string $extension
@@ -114,6 +115,8 @@ class ImageSourceFactory {
 				return new JpegFileImageSource($fileName);
 			case self::MIME_TYPE_GIF:
 				return new GifFileImageSource($fileName);
+			case self::MIME_TYPE_WEBP:
+				return new WebpFileImageSource($fileName);
 		}
 	
 		throw new UnsupportedImageTypeException('Unsupported image mime type \'' . $mineType 
