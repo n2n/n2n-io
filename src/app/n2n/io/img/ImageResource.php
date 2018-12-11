@@ -34,6 +34,8 @@ class ImageResource {
 	 * @param bool $keepHandleAlive if true handle doesn't get destroyed in __destruct()
 	 */
 	public function __construct($resource, $keepHandleAlive = false) {
+		ArgUtils::valType($resource, 'resource');
+		
 		$this->width = imagesx($resource);
 		$this->height = imagesy($resource);
 		$this->resource = $resource;
