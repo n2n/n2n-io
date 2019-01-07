@@ -23,7 +23,7 @@ namespace n2n\io\managed\impl;
 
 use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;
-use n2n\reflection\ArgUtils;
+use n2n\util\type\ArgUtils;
 use n2n\io\managed\File;
 use n2n\io\managed\FileSource;
 use n2n\io\fs\FsPath;

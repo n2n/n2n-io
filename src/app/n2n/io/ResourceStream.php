@@ -21,7 +21,7 @@
  */
 namespace n2n\io;
 
-use n2n\reflection\ArgUtils;
+use n2n\util\type\ArgUtils;
 use n2n\util\ex\NotYetImplementedException;
 
 class ResourceStream implements InputStream, OutputStream {

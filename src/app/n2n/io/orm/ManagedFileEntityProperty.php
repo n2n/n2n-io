@@ -33,13 +33,13 @@ use n2n\impl\persistence\orm\property\ColumnPropertyAdapter;
 use n2n\persistence\orm\store\action\PersistAction;
 use n2n\io\managed\FileManager;
 use n2n\persistence\orm\store\action\RemoveAction;
-use n2n\reflection\ArgUtils;
+use n2n\util\type\ArgUtils;
 use n2n\io\managed\File;
 use n2n\persistence\orm\property\ColumnComparableEntityProperty;
 use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
 use n2n\persistence\orm\store\ValueHash;
 use n2n\persistence\orm\store\CommonValueHash;
-use n2n\reflection\CastUtils;
+use n2n\util\type\CastUtils;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;

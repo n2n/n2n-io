@@ -25,7 +25,7 @@ use n2n\io\managed\img\ThumbStrategy;
 use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
-use n2n\reflection\ArgUtils;
+use n2n\util\type\ArgUtils;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
