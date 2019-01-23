@@ -35,7 +35,7 @@ use n2n\io\managed\VariationManager;
 use n2n\io\CouldNotAchieveFlockException;
 use n2n\io\fs\FileResourceStream;
 
-class FsFileSource extends FileSourceAdapter implements FileSource {
+class FsFileSource extends FileSourceAdapter implements FileSource, VariationEngine {
 	protected $fsPath;
 	
 	public function __construct(FsPath $fsPath) {
@@ -80,20 +80,23 @@ class FsFileSource extends FileSourceAdapter implements FileSource {
 		return $this;
 	}
 	
-	public function isThumbSupportAvailable(): bool {
+	public function hasThumbSupport(): bool {
 		return false;
 	}
 	
 	public function getThumbManager(): ThumbManager {
-		return new UnsupportedOperationException('No thumb support provided for file: ' . $this->fsPath);
+		throw new UnsupportedOperationException('No thumb support provided for file: ' . $this->fsPath);
 	}
 	
-	public function isVariationSupportAvailable() {
+	public function hasVariationSupport(): bool {
 		return false;
 	}
 	
 	public function getVariationManager(): VariationManager {
-		return new UnsupportedOperationException('No variation support provided for file: ' . $this->fsPath);
+		throw new UnsupportedOperationException('No variation support provided for file: ' . $this->fsPath);
+	}
+	
+	public function clear() {
 	}
 	
 	/* (non-PHPdoc)
