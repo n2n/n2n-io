@@ -152,7 +152,8 @@ class ManagedThumbManager implements ThumbManager {
 	public function clear() {
 		foreach ($this->findThumbFsPaths() as $thumbFsPath) {
 			try {
-				self::dirNameToDimension($thumbFsPath->getParent()->getName());
+				$thumb = $this->createThumbFileSource($thumbFsPath, self::dirNameToDimension($thumbFsPath->getParent()->getName()));
+				$thumb->clear();
 			} catch (\InvalidArgumentException $e) {
 				continue;
 			}
