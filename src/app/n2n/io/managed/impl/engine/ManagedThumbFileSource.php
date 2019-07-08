@@ -104,7 +104,7 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
 	 */
 	public function hasThumbSupport(): bool {
-		return $this->originalFileSource->isVariationSupportAvailable();
+		return $this->originalFileSource->hasThumbSupport();
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::getThumbManager()
@@ -128,10 +128,6 @@ class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, Va
 	}
 	
 	public function clear() {
-		if ($this->hasThumbSupport()) {
-			$this->getThumbManager()->clear();
-		}
-	
 		if ($this->hasVariationSupport()) {
 			$this->getVariationManager()->clear();
 		}
