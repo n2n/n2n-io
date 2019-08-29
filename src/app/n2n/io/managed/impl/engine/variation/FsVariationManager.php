@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\variation;
 
 use n2n\io\img\ImageResource;
 use n2n\io\img\impl\ImageSourceFactory;
@@ -27,18 +27,18 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
 use n2n\io\managed\VariationManager;
+use n2n\io\managed\impl\engine\FileSourceAdapter;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
-class ManagedVariationManager implements VariationManager {
+class FsVariationManager implements VariationManager {
 	const KEY_PREFIX = 'var-';
 
 	private $fileSource;
-	private $mimeType;
 	private $dirPerm;
 	private $filePerm;
 	
-	public function __construct(FileSourceAdapter $fileSource, string $mimeType = null, string $dirPerm, string $filePerm) {
+	public function __construct(FileSourceAdapter $fileSource, string $dirPerm, string $filePerm) {
 		$this->fileSource = $fileSource;
-		$this->mimeType = $mimeType;
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
 	}
@@ -96,12 +96,15 @@ class ManagedVariationManager implements VariationManager {
 	}
 	
 	private function createVariationFileSource(FsPath $fileFsPath, string $key) {
-		$thumbFileSource = new ManagedVariationFileSource($fileFsPath, $key, $this->mimeType, $this->fileSource);
+		$thumbFileSource = new FsVariationFileSource($fileFsPath);
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
 			$thumbUrl = $fileUrl->chPath($fileUrl->getPath()->getParent()->ext($fileFsPath->getParent()->getName(), $fileFsPath->getName()));
 			$thumbFileSource->setUrl($thumbUrl);
 		}
+		
+		$thumbFileSource->setVariationEngine($this->fileSource->getVariationEngine());
+		
 		return $thumbFileSource;
 	}
 	
@@ -111,14 +114,6 @@ class ManagedVariationManager implements VariationManager {
 			return $this->createVariationFileSource($fileFsPath, $key);
 		}
 		return null;
-	}
-	
-	private function getMimeType() {
-		if ($this->mimeType === null) {
-			$this->mimeType = ImageSourceFactory::getMimeTypeOfFile($this->fileSource->getFileFsPath()->getName());
-		}
-		
-		return $this->mimeType;
 	}
 	
 	public function createImage(string $key, ImageResource $imageResource): FileSource {

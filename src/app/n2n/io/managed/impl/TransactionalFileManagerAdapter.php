@@ -46,7 +46,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	
 	/**
 	 * @throws IllegalStateException
-	 * @return \n2n\io\managed\impl\engine\TransactionFileEngine
+	 * @return \n2n\io\managed\impl\engine\transactional\TransactionalFileEngine
 	 */
 	private function getFileEngine() {
 		if ($this->fileEngine === null) {

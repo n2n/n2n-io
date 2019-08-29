@@ -29,13 +29,13 @@ interface VariationManager {
 	 * @param string $key
 	 * @return FileSource|null null if not avaialable
 	 */
-	public function getByKey(string $key);
+	public function getByKey(string $key): ?FileSource;
 		
 	/**
 	 * @param string $key
 	 * @return FileSource
 	 */
-	public function create(string $key);
+	public function create(string $key): FileSource;
 	
 	/**
 	 * @param string $key

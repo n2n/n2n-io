@@ -47,7 +47,7 @@ interface FileSource {
 	/**
 	 * @return \DateTime|null null if not known 
 	 */
-	public function getLastModified();
+	public function getLastModified(): ?\DateTime;
 	
 	/**
 	 * @return string 
@@ -86,6 +86,7 @@ interface FileSource {
 	 * 
 	 * @return FsPath
 	 * @throws InaccessibleFileSourceException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@see self::hasFsPath()} returns false
 	 */
 	public function getFsPath(): FsPath;
 	

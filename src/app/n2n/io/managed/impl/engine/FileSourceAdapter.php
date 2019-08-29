@@ -30,6 +30,7 @@ use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\managed\VariationEngine;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
@@ -38,6 +39,7 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	protected $valid = true;
 	protected $url;
+	protected $variationEngine;
 	
 	public function __construct($qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null) {
 		$this->qualifiedName = $qualifiedName;
@@ -199,5 +201,17 @@ abstract class FileSourceAdapter implements FileSource {
 		$this->ensureValid();
 		return ImageSourceFactory::createFromFileName($this->fileFsPath,
 				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath));
+	}
+	
+	public function getVariationEngine(): VariationEngine {
+		$this->ensureValid();
+		
+		IllegalStateException::assertTrue($this->variationEngine);
+		
+		return $this->variationEngine;
+	}
+	
+	public function setVariationEngine(VariationEngine $variationEngine) {
+		$this->variationEngine = $variationEngine;
 	}
 }

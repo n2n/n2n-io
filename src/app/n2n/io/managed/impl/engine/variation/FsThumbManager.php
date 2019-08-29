@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\variation;
 
 use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
@@ -28,8 +28,10 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
+use n2n\io\managed\impl\engine\transactional\ManagedFileSource;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
-class ManagedThumbManager implements ThumbManager {
+class FsThumbManager implements ThumbManager {
 	const THUMB_FOLDER_ATTRIBUTE_SEPARATOR = '-';
 
 	private $fileSource;
@@ -37,7 +39,7 @@ class ManagedThumbManager implements ThumbManager {
 	private $dirPerm;
 	private $filePerm;
 	
-	public function __construct(ManagedFileSource $fileSource, $mimeType, $dirPerm, $filePerm) {
+	public function __construct(ManagedFileSource $fileSource, string $mimeType, string $dirPerm, string $filePerm) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
 		$this->dirPerm = $dirPerm;
@@ -85,12 +87,18 @@ class ManagedThumbManager implements ThumbManager {
 	}
 	
 	private function createThumbFileSource(FsPath $fileFsPath, ImageDimension $imageDimension) {
-		$thumbFileSource = new ManagedThumbFileSource($fileFsPath, $imageDimension, $this->mimeType, $this->fileSource);
+		$thumbFileSource = new FsVariationFileSource($fileFsPath, null, self::class, $this->fileSource);
+		
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
 			$thumbUrl = $fileUrl->chPath($fileUrl->getPath()->getParent()->ext($fileFsPath->getParent()->getName(), $fileFsPath->getName()));
 			$thumbFileSource->setUrl($thumbUrl);
 		}
+		
+		$variationEngine = new LazyFsVariationEngine($thumbFileSource, $this->dirPerm, $this->filePerm);
+		$variationEngine->setThumbDisabled(true);
+		$thumbFileSource->setVariationEngine($variationEngine);
+		
 		return $thumbFileSource;
 	}
 	

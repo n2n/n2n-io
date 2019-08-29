@@ -19,48 +19,32 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\transactional;
 
-use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\fs\FsPath;
 use n2n\io\managed\FileManagingConstraintException;
-use n2n\io\managed\ThumbManager;
-use n2n\io\managed\VariationEngine;
-use n2n\io\managed\VariationManager;
+use n2n\io\managed\impl\engine\FileSourceAdapter;
 
-class ManagedFileSource extends FileSourceAdapter implements VariationEngine {
+class ManagedFileSource extends FileSourceAdapter {
 	private $fileManagerName;
-	private $dirPerm;
-	private $filePerm;
-	private $persistent = false;
+// 	private $persistent = false;
 	
-	public function __construct(FsPath $fileFsPath, ?FsPath $infoFsPath, string $fileManagerName, string $qualifiedName, 
-			string $dirPerm, string $filePerm) {
+	public function __construct(FsPath $fileFsPath, ?FsPath $infoFsPath, string $fileManagerName, string $qualifiedName) {
 		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
 		$this->fileManagerName = $fileManagerName;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
-	}
-	
-	public function getDirPerm(): string {
-		return $this->dirPerm;
-	}
-	
-	public function getFilePerm(): string {
-		return $this->filePerm;
 	}
 	
 	public function getFileManagerName(): string {
 		return $this->fileManagerName;
 	}
 	
-	public function setPersisent($persistent) {
-		$this->persistent = (boolean) $persistent;
-	}
+// 	public function setPersisent($persistent) {
+// 		$this->persistent = (boolean) $persistent;
+// 	}
 	
-	public function isPersistent() {
-		return $this->persistent;
-	}
+// 	public function isPersistent() {
+// 		return $this->persistent;
+// 	}
 	
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false) {
 		$this->ensureValid();
@@ -74,46 +58,6 @@ class ManagedFileSource extends FileSourceAdapter implements VariationEngine {
 		
 		throw new FileManagingConstraintException('File is managed by ' . $this->fileManagerName 
 				. ' and can not be deleted: ' . $this->fileFsPath);
-	}
-	
-	public function getVariationEngine(): VariationEngine {
-		$this->ensureValid();
-		
-		return $this;
-	}
-	
-	public function hasThumbSupport(): bool {
-		return $this->isImage();
-	}
-	
-	public function getThumbManager(): ThumbManager {
-		$this->ensureValid();
-		
-		return new ManagedThumbManager($this, 
-				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath), 
-				$this->dirPerm, $this->filePerm);		
-	}
-	
-	public function hasVariationSupport(): bool {
-		return true;
-	}
-	
-	public function getVariationManager(): VariationManager {
-		$this->ensureValid();
-	
-		return new ManagedVariationManager($this,
-				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath, false),
-				$this->dirPerm, $this->filePerm);
-	}
-	
-	public function clear() {
-		if ($this->hasThumbSupport()) {
-			$this->getThumbManager()->clear();
-		}
-		
-		if ($this->hasVariationSupport()) {
-			$this->getVariationManager()->clear();
-		}
 	}
 	
 	/* (non-PHPdoc)

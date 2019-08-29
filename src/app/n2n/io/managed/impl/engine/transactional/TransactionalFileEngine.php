@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\transactional;
 
 use n2n\util\HashUtils;
 use n2n\util\type\ArgUtils;
@@ -34,8 +34,13 @@ use n2n\io\managed\impl\CommonFile;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\managed\FileManagingException;
+use n2n\io\managed\impl\engine\UncommittedManagedFileSource;
+use n2n\io\managed\impl\engine\FileInfoDingsler;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
+use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
+use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 
-class TransactionFileEngine {
+class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
 	
 	const FILE_SUFFIX = '.managed';
@@ -160,6 +165,7 @@ class TransactionFileEngine {
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
+		$managedFileSource->setVariationEngine(new LazyFsVariationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
 		
 		$file->setFileSource(new UncommittedManagedFileSource($file->getFileSource(), $managedFileSource));
 		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock);
@@ -221,12 +227,13 @@ class TransactionFileEngine {
 			$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
 		}
 		
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, 
-				$this->dirPerm, $this->filePerm);
+		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
 		
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnBuilder->toArray()));
 		}
+		
+		$managedFileSource->setVariationEngine(new LazyFsVariationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
 		
 		return new CommonFile($managedFileSource, $originalName);
 	}

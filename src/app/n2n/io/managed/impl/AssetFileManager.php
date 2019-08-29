@@ -26,12 +26,12 @@ use n2n\core\config\IoConfig;
 use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
 use n2n\context\RequestScoped;
-use n2n\io\managed\impl\engine\TransactionFileEngine;
+use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
 
 class AssetFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	
 	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, Request $request = null) {
-		$this->fileEngine = new TransactionFileEngine(FileManager::TYPE_PUBLIC, $filesConfig->getAssetsDir(),
+		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PUBLIC, $filesConfig->getAssetsDir(),
 				$ioConfig->getPublicDirPermission(), $ioConfig->getPublicFilePermission());
 		$this->fileEngine->setCustomFileNamesAllowed(true);
 		

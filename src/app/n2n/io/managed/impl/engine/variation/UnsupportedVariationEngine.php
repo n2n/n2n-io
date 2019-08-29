@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\variation;
 
 use n2n\io\managed\VariationEngine;
 use n2n\util\ex\IllegalStateException;

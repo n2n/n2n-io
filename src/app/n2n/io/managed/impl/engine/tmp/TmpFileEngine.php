@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\tmp;
 
 use n2n\io\fs\FsPath;
 use n2n\io\IoUtils;
@@ -28,6 +28,9 @@ use n2n\io\managed\File;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\CommonFile;
 use n2n\util\uri\Url;
+use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
+use n2n\io\managed\impl\engine\FileInfoDingsler;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
 class TmpFileEngine {
 	const INFO_SUFFIX = '.inf';
@@ -40,7 +43,7 @@ class TmpFileEngine {
 	private $fsPath;
 	private $filePerm;
 
-	public function __construct(FsPath $fsPath, $filePerm) {
+	public function __construct(FsPath $fsPath, string $filePerm) {
 		$this->fsPath = $fsPath;
 		$this->filePerm = $filePerm;
 	}
@@ -49,7 +52,9 @@ class TmpFileEngine {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		return new TmpFileSource($fileFsPath->getName(), $fileFsPath);
+		$tfs = new TmpFileSource($fileFsPath->getName(), $fileFsPath);
+		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+		return $tfs;
 	}
 
 	private function createSessionTmpFileSource($sessionId, $originalName) {
@@ -58,9 +63,11 @@ class TmpFileEngine {
 
 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 		$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $originalName,
-			self::INFO_SESSION_ID_KEY => $sessionId));
+				self::INFO_SESSION_ID_KEY => $sessionId));
 
-		return new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs =  new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+		return $tfs;
 	}
 
 
@@ -72,7 +79,7 @@ class TmpFileEngine {
 		return $this->createSessionTmpFileSource($sessionId, $originalName);
 	}
 
-	public function createFile($sessionId = null, $originalName = null) {
+	public function createFile(string $sessionId = null, string $originalName = null) {
 		$tmpFileSource = $this->createTmpFileSource($sessionId, $originalName);
 
 		if ($originalName === null) {
@@ -150,8 +157,9 @@ class TmpFileEngine {
 		}
 
 		try {
-			return new CommonFile(new TmpFileSource($qualifiedName, $fileFsPath, $infoFsPath, $sessionId),
-				$originalName);
+			$tfs = new TmpFileSource($qualifiedName, $fileFsPath, $infoFsPath, $sessionId);
+			$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+			return new CommonFile($tfs, $originalName);
 		} catch (\InvalidArgumentException $e) {
 			return null;
 		}

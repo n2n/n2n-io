@@ -27,7 +27,7 @@ use n2n\core\config\FilesConfig;
 use n2n\context\RequestScoped;
 use n2n\core\config\IoConfig;
 use n2n\io\managed\FileManager;
-use n2n\io\managed\impl\engine\TransactionFileEngine;
+use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
 
 class PrivateFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	const SRV_DIR = 'files';
@@ -38,7 +38,7 @@ class PrivateFileManager extends TransactionalFileManagerAdapter implements Requ
 			$privateDir = $varStore->requestDirFsPath(VarStore::CATEGORY_SRV, N2N::NS, self::SRV_DIR);
 		}
 		
-		$this->fileEngine = new TransactionFileEngine(FileManager::TYPE_PRIVATE, $privateDir,
+		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PRIVATE, $privateDir,
 				$ioConfig->getPublicDirPermission(), $ioConfig->getPublicFilePermission());
 	}
 }
