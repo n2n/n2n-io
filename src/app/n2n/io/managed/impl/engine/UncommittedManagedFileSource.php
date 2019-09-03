@@ -53,7 +53,7 @@ class UncommittedManagedFileSource implements FileSource {
 		return $this->srcFileSource->getSize();
 	}
 	
-	public function getLastModified() {
+	public function getLastModified(): ?\DateTime {
 		return $this->srcFileSource->getLastModified();
 	}
 	

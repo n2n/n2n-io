@@ -41,10 +41,12 @@ class TmpFileEngine {
 	const INFO_SESSION_ID_KEY = 'sessionId';
 
 	private $fsPath;
+	private $dirPerm;
 	private $filePerm;
 
-	public function __construct(FsPath $fsPath, string $filePerm) {
+	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm) {
 		$this->fsPath = $fsPath;
+		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
 	}
 
@@ -65,11 +67,10 @@ class TmpFileEngine {
 		$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $originalName,
 				self::INFO_SESSION_ID_KEY => $sessionId));
 
-		$tfs =  new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs = new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
-
 
 	private function createTmpFileSource($sessionId, $originalName) {
 		if ($sessionId === null) {
@@ -120,7 +121,7 @@ class TmpFileEngine {
 
 	public function containsSessionFile(File $file, $sessionId) {
 		return $file->getFileSource() instanceof TmpFileSource
-			&& $file->getFileSource()->getSessionId() === $sessionId;
+				&& $file->getFileSource()->getSessionId() === $sessionId;
 	}
 
 	public function getSessionFile($qualifiedName, $sessionId) {
@@ -138,7 +139,7 @@ class TmpFileEngine {
 		} catch (FileManagingException $e) { }
 
 		if ($infoData === null || !array_key_exists(self::INFO_SESSION_ID_KEY, $infoData)
-			|| !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
+				|| !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
 			$fileFsPath->delete();
 			$infoFsPath->delete();
 			return null;

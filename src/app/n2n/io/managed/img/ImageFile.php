@@ -32,6 +32,8 @@ class ImageFile {
 	
 	/**
 	 * @param File $file 
+	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws \n2n\io\img\UnsupportedImageTypeException if {@link self::isImage()} returns false.
 	 */
 	public function __construct(File $file) {
 		$this->file = $file;
@@ -93,7 +95,7 @@ class ImageFile {
 	}
 	
 	public function getThumbFile(ImageDimension $imageDimension) {
-		$thumbEngine = $this->file->getFileSource()->getThumbManager();
+		$thumbEngine = $this->file->getFileSource()->getVariationEngine()->getThumbManager();
 		
 		if (null !== ($thumbFileResource = $thumbEngine->getByDimension($imageDimension))) {
 			return new CommonFile($thumbFileResource, $this->file->getOriginalName());

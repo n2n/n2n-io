@@ -40,7 +40,8 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	private function _init(VarStore $varStore, IoConfig $ioConfig) {
 		$tmpDirFsPath = $varStore->requestDirFsPath(VarStore::CATEGORY_TMP, N2N::NS, self::TMP_DIR);
 
-		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateFilePermission());
+		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateDirPermission(), 
+				$ioConfig->getPrivateFilePermission());
 
 		$this->cleanUp();
 	}

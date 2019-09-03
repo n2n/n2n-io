@@ -87,7 +87,7 @@ abstract class FileSourceAdapter implements FileSource {
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\FileSource::getLastModified()
 	 */
-	public function getLastModified() {
+	public function getLastModified(): ?\DateTime {
 		$this->ensureValid();
 		return $this->fileFsPath->getLastMod();
 	}
@@ -206,7 +206,7 @@ abstract class FileSourceAdapter implements FileSource {
 	public function getVariationEngine(): VariationEngine {
 		$this->ensureValid();
 		
-		IllegalStateException::assertTrue($this->variationEngine);
+		IllegalStateException::assertTrue($this->variationEngine !== null);
 		
 		return $this->variationEngine;
 	}

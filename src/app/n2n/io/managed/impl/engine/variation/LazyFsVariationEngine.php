@@ -56,7 +56,7 @@ class LazyFsVariationEngine implements VariationEngine {
 	
 	private function getMimeType() {
 		if ($this->mimeType === null) {
-			$this->mimeType = ImageSourceFactory::getMimeTypeOfFile($this->fileSource->getFileFsPath()->getName());
+			$this->mimeType = ImageSourceFactory::getMimeTypeOfFile($this->origFileSource->getFileFsPath());
 		}
 		
 		return $this->mimeType;

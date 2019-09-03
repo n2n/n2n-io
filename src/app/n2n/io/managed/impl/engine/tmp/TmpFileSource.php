@@ -48,10 +48,6 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 		return $this->sessionId;
 	}
 	
-	public function getVariationEngine(): VariationEngine {
-		return new UnsupportedVariationEngine();
-	}
-	
 	public function serialize() {
 		return serialize(array('qualifiedName' => $this->qualifiedName, 'fileFsPath' => $this->fileFsPath,
 				'infoFsPath' => $this->infoFsPath, 'url' => $this->url, 'sessionId' => $this->sessionId));

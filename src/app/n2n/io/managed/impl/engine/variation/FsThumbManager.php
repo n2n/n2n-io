@@ -39,7 +39,7 @@ class FsThumbManager implements ThumbManager {
 	private $dirPerm;
 	private $filePerm;
 	
-	public function __construct(ManagedFileSource $fileSource, string $mimeType, string $dirPerm, string $filePerm) {
+	public function __construct(FileSource $fileSource, string $mimeType, string $dirPerm, string $filePerm) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
 		$this->dirPerm = $dirPerm;
