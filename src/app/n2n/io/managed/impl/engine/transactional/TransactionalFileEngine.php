@@ -161,14 +161,14 @@ class TransactionalFileEngine {
 		}
 		
 		$qualifiedName = $qnb->__toString();
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, $this->dirPerm, $this->filePerm);
+		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
 		$managedFileSource->setVariationEngine(new LazyFsVariationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
 		
 		$file->setFileSource(new UncommittedManagedFileSource($file->getFileSource(), $managedFileSource));
-		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock);
+		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock, $this->filePerm);
 		return $qualifiedName;
 	}
 	

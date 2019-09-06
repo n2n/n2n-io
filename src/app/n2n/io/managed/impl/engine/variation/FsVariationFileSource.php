@@ -32,7 +32,7 @@ class FsVariationFileSource extends FileSourceAdapter implements FileSource {
 	 * @param FsPath $fsPath
 	 */
 	public function __construct(FsPath $fsPath) {
-		parent::__construct(null, $fsPath);
+		parent::__construct(null, null, $fsPath);
 	}
 	
 	/* (non-PHPdoc)

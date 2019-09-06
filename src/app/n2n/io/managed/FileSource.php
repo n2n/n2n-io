@@ -25,8 +25,13 @@ use n2n\util\uri\Url;
 use n2n\io\fs\FsPath;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
+use n2n\util\ex\IllegalStateException;
 
 interface FileSource {
+	function getFileManagerName(): ?string;
+	
+	function getQualifiedName(): ?string;
+	
 	/**
 	 * @return InputStream
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
@@ -43,6 +48,11 @@ interface FileSource {
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
 	public function getSize(): int;
+	
+	/**
+	 * @return string
+	 */
+	public function getMimeType(): string;
 	
 	/**
 	 * @return \DateTime|null null if not known 
@@ -83,7 +93,6 @@ interface FileSource {
 	public function hasFsPath(): bool;
 	
 	/**
-	 * 
 	 * @return FsPath
 	 * @throws InaccessibleFileSourceException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 * @throws IllegalStateException if {@see self::hasFsPath()} returns false
@@ -117,7 +126,7 @@ interface FileSource {
 	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
-	public function move(FsPath $fsPath, $filePerm, $overwrite = false);
+	public function move(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
 	 * @param FsPath $fsPath
@@ -127,7 +136,7 @@ interface FileSource {
 	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
-	public function copy(FsPath $fsPath, $filePerm, $overwrite = false);
+	public function copy(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).

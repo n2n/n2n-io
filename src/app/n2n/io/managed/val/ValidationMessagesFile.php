@@ -19,34 +19,12 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine\transactional;
+namespace n2n\io\managed\val;
 
-use n2n\util\ex\IllegalStateException;
-use n2n\io\IoException;
-use n2n\io\managed\FileManagingException;
+use n2n\l10n\Message;
+use n2n\io\managed\File;
 
-class FileRemoveJob {
-	private $managedFileSource;
-	private $executed = false;
-
-	public function __construct(ManagedFileSource $managedFileSource) {
-		$this->managedFileSource = $managedFileSource;
-	}
-
-	public function execute() {
-		IllegalStateException::assertTrue(!$this->executed);
-		$this->executed = true;
-
-		$this->managedFileSource->getVariationEngine()->clear();
-		
-		$fsPath = $this->managedFileSource->getFileFsPath();
-		if (!$fsPath->exists()) return;
-			
-		try {
-			$fsPath->delete();
-		} catch (IoException $e) {
-			throw new FileManagingException($this->managedFileSource->getFileManagerName() 
-					. ' could not remove file source: ' . $this->managedFileSource, 0, $e);
-		}
-	}
+class ValidationMessagesFile {
+	
+	
 }

@@ -31,12 +31,14 @@ class FilePersistJob {
 	private $file;
 	private $managedFileSource;
 	private $lock;
+	private $filePerm;
 	private $executed = false;
 
-	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock) {
+	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock, string $filePerm) {
 		$this->file = $file;
 		$this->managedFileSource = $managedFileSource;
 		$this->lock = $lock;
+		$this->filePerm = $filePerm;
 	}
 	
 	public function getFile() {
@@ -48,7 +50,7 @@ class FilePersistJob {
 		$this->executed = true;
 
 		try {
-			$this->file->getFileSource()->move($this->managedFileSource->getFileFsPath(), $this->managedFileSource->getFilePerm());
+			$this->file->getFileSource()->move($this->managedFileSource->getFileFsPath(), $this->filePerm);
 			$this->file->setFileSource($this->managedFileSource);
 			$this->lock->release();
 		} catch (IoException $e) {

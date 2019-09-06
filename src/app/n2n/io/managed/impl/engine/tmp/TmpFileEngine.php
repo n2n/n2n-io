@@ -43,18 +43,20 @@ class TmpFileEngine {
 	private $fsPath;
 	private $dirPerm;
 	private $filePerm;
+	private $fileManagerName;
 
-	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm) {
+	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm, string $fileManagerName) {
 		$this->fsPath = $fsPath;
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
+		$this->fileManagerName = $fileManagerName;
 	}
 
 	private function createThreadTmpFileSource() {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		$tfs = new TmpFileSource($fileFsPath->getName(), $fileFsPath);
+		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath->getName(), $fileFsPath);
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
@@ -67,7 +69,7 @@ class TmpFileEngine {
 		$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $originalName,
 				self::INFO_SESSION_ID_KEY => $sessionId));
 
-		$tfs = new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs = new TmpFileSource($fileFsPath->getName(), $this->fileManagerName, $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
@@ -158,7 +160,7 @@ class TmpFileEngine {
 		}
 
 		try {
-			$tfs = new TmpFileSource($qualifiedName, $fileFsPath, $infoFsPath, $sessionId);
+			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $infoFsPath, $sessionId);
 			$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 			return new CommonFile($tfs, $originalName);
 		} catch (\InvalidArgumentException $e) {

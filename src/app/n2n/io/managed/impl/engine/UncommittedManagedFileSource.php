@@ -37,6 +37,14 @@ class UncommittedManagedFileSource implements FileSource {
 		$this->newManagedFileSource = $newManagedFileSource;
 	}
 	
+	public function getFileManagerName(): ?string {
+		return $this->newManagedFileSource->getFileManagerName();
+	}
+	
+	public function getQualifiedName(): ?string {
+		return $this->newManagedFileSource->getQualifiedName();
+	}
+	
 	public function getNewManagedFileSource() {
 		return $this->newManagedFileSource;
 	}
@@ -115,4 +123,9 @@ class UncommittedManagedFileSource implements FileSource {
 	public function __toString(): string {
 		return 'uncommitted ' . $this->srcFileSource . ' > ' . $this->newManagedFileSource;		
 	}
+	public function getMimeType(): string {
+		return $this->srcFileSource->getMimeType();
+	}
+
+
 }

@@ -22,22 +22,17 @@
 namespace n2n\io\managed\impl\engine\tmp;
 
 use n2n\io\fs\FsPath;
-use n2n\util\ex\UnsupportedOperationException;
-use n2n\io\managed\ThumbManager;
-use n2n\io\managed\VariationEngine;
-use n2n\io\managed\VariationManager;
 use n2n\util\uri\Url;
 use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;
-use n2n\io\managed\impl\engine\variation\UnsupportedVariationEngine;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 
 class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	private $sessionId;
 	
-	public function __construct(string $qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null, 
+	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath, FsPath $infoFsPath = null, 
 			string $sessionId = null) {
-		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
+		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath, $infoFsPath);
 		$this->sessionId = $sessionId;
 	}
 		

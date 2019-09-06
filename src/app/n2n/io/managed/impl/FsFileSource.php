@@ -39,7 +39,7 @@ class FsFileSource extends FileSourceAdapter implements FileSource, VariationEng
 	protected $fsPath;
 	
 	public function __construct(FsPath $fsPath) {
-		parent::__construct(null, $fsPath);
+		parent::__construct(null, null, $fsPath);
 		$this->fsPath = $fsPath;
 	}
 	

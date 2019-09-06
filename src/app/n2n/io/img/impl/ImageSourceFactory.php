@@ -56,12 +56,19 @@ class ImageSourceFactory {
 // 		return self::$extensionMimeTypeMappings;
 // 	}
 	
+	/**
+	 * @return string[]
+	 */
 	public static function getSupportedExtensions() {
 		return array_keys(self::$extensionMimeTypeMappings);
 	}
 	
-
-
+	/**
+	 * @return string[]
+	 */
+	public static function getSupportedMimeTypes() {
+		return [self::MIME_TYPE_PNG, self::MIME_TYPE_JPEG, self::MIME_TYPE_GIF, self::MIME_TYPE_WEBP];
+	}
 	
 // 	public static function isImageManagable(Managable $managable) {
 // 		try {

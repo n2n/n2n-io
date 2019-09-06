@@ -54,7 +54,7 @@ interface FileManager {
 	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException
 	 */
-	public function removeByQualifiedName($qualifiedName);
+	public function removeByQualifiedName(string $qualifiedName);
 	
 	/**
 	 * @param File $file

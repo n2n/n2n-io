@@ -26,16 +26,10 @@ use n2n\io\managed\FileManagingConstraintException;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 
 class ManagedFileSource extends FileSourceAdapter {
-	private $fileManagerName;
 // 	private $persistent = false;
 	
 	public function __construct(FsPath $fileFsPath, ?FsPath $infoFsPath, string $fileManagerName, string $qualifiedName) {
-		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
-		$this->fileManagerName = $fileManagerName;
-	}
-	
-	public function getFileManagerName(): string {
-		return $this->fileManagerName;
+		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath, $infoFsPath);
 	}
 	
 // 	public function setPersisent($persistent) {

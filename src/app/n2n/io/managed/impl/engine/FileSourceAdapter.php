@@ -34,6 +34,7 @@ use n2n\io\managed\VariationEngine;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
+	protected $fileManagerName;
 	protected $fileFsPath;
 	protected $infoFsPath;
 	
@@ -41,16 +42,22 @@ abstract class FileSourceAdapter implements FileSource {
 	protected $url;
 	protected $variationEngine;
 	
-	public function __construct($qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null) {
+	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
+			FsPath $infoFsPath = null) {
 		$this->qualifiedName = $qualifiedName;
+		$this->fileManagerName = $fileManagerName;
 		$this->fileFsPath = $fileFsPath;
 		$this->infoFsPath = $infoFsPath;
 	}
 	/**
 	 * @return string
 	 */
-	public function getQualifiedName() {
+	function getQualifiedName(): ?string {
 		return $this->qualifiedName;
+	}
+	
+	function getFileManagerName(): ?string {
+		return $this->fileManagerName;	
 	}
 	
 	/**
@@ -141,6 +148,11 @@ abstract class FileSourceAdapter implements FileSource {
 	public function getSize(): int {
 		$this->ensureValid();
 		return $this->fileFsPath->getSize();
+	}
+	
+	public function getMimeType(): string {
+		$this->ensureValid();
+		return mime_content_type((string) $this->fileFsPath);
 	}
 	
 	/* (non-PHPdoc)

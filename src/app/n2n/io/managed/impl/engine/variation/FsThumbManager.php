@@ -28,7 +28,6 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
-use n2n\io\managed\impl\engine\transactional\ManagedFileSource;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
 class FsThumbManager implements ThumbManager {
@@ -51,7 +50,7 @@ class FsThumbManager implements ThumbManager {
 			return QualifiedNameBuilder::buildResFolderName((string) $dimension);
 		} catch (\InvalidArgumentException $e) {
 			throw new FileManagingException('Failed to create ThumbFileSource due to invalid ImageDimension idExt: ' 
-				. $dimension->getIdExt(), 0, $e);
+					. $dimension->getIdExt(), 0, $e);
 		}
 		
 // 		return QualifiedNameBuilder::buildResFolderName(implode(self::THUMB_FOLDER_ATTRIBUTE_SEPARATOR,
