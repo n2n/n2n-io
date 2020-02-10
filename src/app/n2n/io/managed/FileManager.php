@@ -24,9 +24,10 @@ namespace n2n\io\managed;
 interface FileManager {
 	const TYPE_PUBLIC = 'n2n\io\managed\impl\PublicFileManager';
 	const TYPE_PRIVATE = 'n2n\io\managed\impl\PrivateFileManager';
+	
 	/**
 	 * @param File $file
-	 * @param FileLocator $fileLocator can be ignored by file manager
+	 * @param FileLocator|null $fileLocator can be ignored by file manager
 	 * @return string
 	 * @throws FileManagingConstraintException if passed File or FileLocator violates any FileManager constraints.
 	 * @throws FileManagingException on internal FileManager error 

@@ -181,5 +181,14 @@ class UnknownFile implements File, FileSource {
 	public function createImageSource(): ImageSource {
 		$this->throwException();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::getMimeType()
+	 */
+	public function getMimeType(): string {
+		$this->throwException();
+	}
+
 
 }
