@@ -84,7 +84,7 @@ class FileFactory {
 	 * @throws \InvalidArgumentException if the data url is corrupted
 	 * @throws IoException if file could not be written
 	 */
-	public static function createFromDataUrl(string $dataUrl, File $file) {
+	public static function createFromDataUrl(string $data, File $file) {
 		$type = null;
 		
 		if (!preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
@@ -104,7 +104,7 @@ class FileFactory {
 			throw new \InvalidArgumentException('base64_decode failed');
 		}
 		
-		$file->setOriginalName(getOriginalName() . '.' . $type);
+		$file->setOriginalName($file->getOriginalName() . '.' . $type);
 		$file->getFileSource()->createOutputStream()->write($data);
 		
 		return $file;
