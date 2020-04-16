@@ -30,6 +30,7 @@ use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\OutputStream;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
@@ -126,6 +127,11 @@ abstract class FileSourceAdapter implements FileSource {
 	public function createInputStream(): InputStream {
 		$this->ensureValid();
 		return IoUtils::createSafeFileInputStream($this->fileFsPath);
+	}
+	
+	public function createOutputStream(): OutputStream {
+		$this->ensureValid();
+		return IoUtils::createSafeFileOutputStream($this->fileFsPath);
 	}
 	
 	public function out() {

@@ -34,6 +34,7 @@ use n2n\io\managed\VariationEngine;
 use n2n\io\managed\VariationManager;
 use n2n\io\CouldNotAchieveFlockException;
 use n2n\io\fs\FileResourceStream;
+use n2n\io\OutputStream;
 
 class FsFileSource extends FileSourceAdapter implements FileSource, VariationEngine {
 	protected $fsPath;
@@ -62,6 +63,15 @@ class FsFileSource extends FileSourceAdapter implements FileSource, VariationEng
 		$this->ensureValid();
 		try {
 			return IoUtils::createSafeFileInputStream($this->fsPath);
+		} catch (CouldNotAchieveFlockException $e) {
+			return new FileResourceStream($this->fsPath, 'r');
+		}
+	}
+	
+	public function createOutputStream(): OutputStream {
+		$this->ensureValid();
+		try {
+			return IoUtils::createSafeFileOutputStream($this->fsPath);
 		} catch (CouldNotAchieveFlockException $e) {
 			return new FileResourceStream($this->fsPath, 'r');
 		}
