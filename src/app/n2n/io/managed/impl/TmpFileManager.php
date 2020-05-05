@@ -70,6 +70,10 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	public function createFileFromUrl($url, $originalName = null) {
 		return $this->getTmpFileEngine()->createFileFromUrl($url, null, $originalName);
 	}
+	
+	function createFromDataUrl(string $dataUrl, $originalName = null) {
+		return FileFactory::createFromDataUrl($dataUrl, $this->createFile($originalName));
+	}
 
 	/**
 	 * @param File $file
