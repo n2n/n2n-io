@@ -32,7 +32,7 @@ class IoUtils {
 // 	}
 	/**
  	 * strips and converts characters of a string so it can be enbedded into urls
- 	 * or file paths whitout any encoding nessesary 
+ 	 * or file paths without any encoding nessesary 
  	 *
  	 * @param string $string string to be cleaned
  	 * @return string
