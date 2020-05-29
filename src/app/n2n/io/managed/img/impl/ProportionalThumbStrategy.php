@@ -26,6 +26,7 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
 use n2n\util\type\ArgUtils;
+use n2n\io\managed\img\ThumbCut;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
@@ -86,7 +87,7 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\img\ThumbStrategy::resize()
 	 */
-	public function resize(ImageResource $imageResource) {
+	public function resize(ImageResource $imageResource): ThumbCut {
 		$imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
 				$this->getAutoCropMode());
 	}

@@ -31,23 +31,24 @@ use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\VariationEngine;
+use n2n\io\managed\FileInfo;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
 	protected $fileManagerName;
 	protected $fileFsPath;
-	protected $infoFsPath;
+	protected $originalFileSource;
 	
 	protected $valid = true;
 	protected $url;
 	protected $variationEngine;
 	
 	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
-			FsPath $infoFsPath = null) {
+			FileSource $originalFileSource = null) {
 		$this->qualifiedName = $qualifiedName;
 		$this->fileManagerName = $fileManagerName;
 		$this->fileFsPath = $fileFsPath;
-		$this->infoFsPath = $infoFsPath;
+		$this->originalFileSource = $originalFileSource;
 	}
 	/**
 	 * @return string
@@ -58,6 +59,10 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	function getFileManagerName(): ?string {
 		return $this->fileManagerName;	
+	}
+	
+	function getOriginalFileSource(): ?FileSource {
+		return $this->originalFileSource;
 	}
 	
 	/**
@@ -81,13 +86,6 @@ abstract class FileSourceAdapter implements FileSource {
 	 */
 	public function getFileFsPath(): FsPath {
 		return $this->fileFsPath;
-	}
-	
-	/**
-	 * @return FsPath
-	 */
-	public function getInfoFsPath() {
-		return $this->infoFsPath;
 	}
 
 	/**
@@ -163,9 +161,8 @@ abstract class FileSourceAdapter implements FileSource {
 	
 		$this->valid = false;
 		$this->fileFsPath->moveFile($fsPath, $filePerm, $overwrite);
-		if ($this->infoFsPath !== null) {
-			$this->infoFsPath->delete();
-		}
+		
+		(new FileInfoDingsler($this->fileFsPath))->delete();
 	}
 	
 	/* (non-PHPdoc)
@@ -185,9 +182,13 @@ abstract class FileSourceAdapter implements FileSource {
 		$this->ensureValid();
 	
 		$this->valid = false;
+		
 		$this->fileFsPath->delete();
-		if ($this->infoFsPath !== null) {
-			$this->infoFsPath->delete();
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		$fileInfoDingsler->delete();
+		
+		if ($this->variationEngine !== null) {
+			$this->variationEngine->clear();
 		}
 	}
 	
@@ -226,4 +227,19 @@ abstract class FileSourceAdapter implements FileSource {
 	public function setVariationEngine(VariationEngine $variationEngine) {
 		$this->variationEngine = $variationEngine;
 	}
+	
+	function writeFileInfo(FileInfo $fileInfo) {
+		if ($this->infoFsPath === null) {
+			throw new IllegalStateException();
+		}
+		
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		$fileInfoDingsler->write($fileInfo);
+	}
+	
+	function readFileInfo(): FileInfo {
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		return $fileInfoDingsler->read();
+	}
+	
 }

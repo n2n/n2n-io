@@ -32,7 +32,7 @@ class QualifiedNameBuilder {
 	const RES_FOLDER_PREFIX = 'res-';
 	const RES_FOLDER_PREFIX_REPLACEMENT = 're-';
 	
-	private static $FORBIDDEN_EXTENSION_NEEDLES = array('php', 'htaccess', 'htpasswd');
+	private static $FORBIDDEN_EXTENSION_NEEDLES = array('php', 'htaccess', 'htpasswd', FileInfoDingsler::INFO_EXTENSION);
 	
 	private $dirLevelNames;
 	private $fileName;

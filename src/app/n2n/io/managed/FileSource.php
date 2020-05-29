@@ -28,52 +28,64 @@ use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
 
 interface FileSource {
+	
+	/**
+	 * @return string|null
+	 */
 	function getFileManagerName(): ?string;
 	
+	/**
+	 * @return string|null
+	 */
 	function getQualifiedName(): ?string;
+	
+	/**
+	 * @return FileSource|NULL
+	 */
+	function getOriginalFileSource(): ?FileSource;
 	
 	/**
 	 * @return InputStream
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
-	public function createInputStream(): InputStream;
+	function createInputStream(): InputStream;
 	
 	/**
 	 * Prints file to standard output 
 	 */
-	public function out();
+	function out();
 	
 	/**
 	 * @return int
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
-	public function getSize(): int;
+	function getSize(): int;
 	
 	/**
 	 * @return string
 	 */
-	public function getMimeType(): string;
+	function getMimeType(): string;
 	
 	/**
 	 * @return \DateTime|null null if not known 
 	 */
-	public function getLastModified(): ?\DateTime;
+	function getLastModified(): ?\DateTime;
 	
 	/**
 	 * @return string 
 	 */
-	public function buildHash(): string;
+	function buildHash(): string;
 
 	/**
 	 * @return boolean false if {@link FileSource} is the FileSource is no longer accessible.
 	 */
-	public function isValid(): bool;
+	function isValid(): bool;
 	
 	/**
 	 * @return boolean
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
-	public function isHttpaccessible(): bool;
+	function isHttpaccessible(): bool;
 	
 	/**
 	 * @param Url $url
@@ -131,7 +143,7 @@ interface FileSource {
 	/**
 	 * @param FsPath $fsPath
 	 * @param string $filePerm
-	 * @param string $overwrite
+	 * @param bool $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
 	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
@@ -144,6 +156,16 @@ interface FileSource {
 	 * @throws FileManagingConstraintException if file is not allowed to be deleted.
 	 */
 	public function delete();
+	
+	/**
+	 * @return FileInfo
+	 */
+	function readFileInfo(): FileInfo;
+	
+	/**
+	 * @param FileInfo $fileInfo
+	 */
+	function writeFileInfo(FileInfo $fileInfo);
 	
 	/**
 	 * @return string

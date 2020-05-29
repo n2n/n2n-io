@@ -29,6 +29,7 @@ use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
+use n2n\io\managed\FileLocator;
 
 class FsThumbManager implements ThumbManager {
 	const THUMB_FOLDER_ATTRIBUTE_SEPARATOR = '-';
@@ -119,13 +120,30 @@ class FsThumbManager implements ThumbManager {
 		return $this->createThumbFileSource($fileFsPath, $imageDimension);
 	}
 	
+	function remove(ImageDimension $imageDimension) {
+		$fileFsPath = $this->createThumbFilePath($imageDimension);
+		
+		if (!$fileFsPath->exists()) {
+			return;
+		}
+		
+		$this->createThumbFileSource($fileFsPath, $imageDimension)->delete();
+	}
+	
 	/**
 	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
 	public function getPossibleImageDimensions(): array {
+		return self::determinePossibleImageDimensions($this->fileSource->getFileFsPath()->getParent());
+	}
+	
+	/**
+	 * @param FsPath $dirFsPath
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	static function determinePossibleImageDimensions(FsPath $dirFsPath) {
 		$imageDimensions = array();
-		foreach ($this->fileSource->getFileFsPath()->getParent()
-				->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX . '*') as $thumbFsPath) {
+		foreach ($dirFsPath->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX . '*') as $thumbFsPath) {
 			try {
 				$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getName());
 			} catch (\InvalidArgumentException $e) {
@@ -152,8 +170,8 @@ class FsThumbManager implements ThumbManager {
 	
 	private function findThumbFsPaths() {
 		$fsPath = $this->fileSource->getFileFsPath();
-		return $fsPath->getParent()->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX .
-				'*' . DIRECTORY_SEPARATOR . $fsPath->getName());
+		return $fsPath->getParent()->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX 
+				. '*' . DIRECTORY_SEPARATOR . $fsPath->getName());
 	}
 	
 	public function clear() {

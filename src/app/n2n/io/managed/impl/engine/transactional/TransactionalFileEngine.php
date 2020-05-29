@@ -39,6 +39,7 @@ use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
+use n2n\io\managed\impl\engine\variation\FsThumbManager;
 
 class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
@@ -153,12 +154,12 @@ class TransactionalFileEngine {
 			$fileFsPath = $dirFsPath->ext($usedFileName);
 		}
 		
-		$infoFsPath = null;
-		if (!$this->customFileNamesAllowed) {
+// 		$infoFsPath = null;
+// 		if (!$this->customFileNamesAllowed) {
 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
 			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
-		}
+// 		}
 		
 		$qualifiedName = $qnb->__toString();
 		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
@@ -211,20 +212,19 @@ class TransactionalFileEngine {
 			$originalName = $fileFsPath->getName();
 		} else {
 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
 			
 			$infoData = null;
 			try {
 				$infoData = $fileInfoDingsler->read();
 			} catch (FileManagingException $e) { }
 			
-			if ($infoData === null || !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
+			if ($infoData === null || null === $infoData->getOriginalName()) {
 				$fileFsPath->delete();
-				$infoFsPath->delete();
+				$fileInfoDingsler->delete();
 				return null;
 			}
 			
-			$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
+			$originalName = $infoData->getOriginalName();;
 		}
 		
 		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
@@ -320,5 +320,18 @@ class TransactionalFileEngine {
 		$this->persistedFiles = array();
 		$this->filePersistJobs = array();
 		$this->fileRemoveJobs = array();
+	}
+	
+	/**
+	 * @param File $file
+	 * @param FileLocator $fileLocator
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null) {
+		$dirFsPath = $this->baseDirFsPath;
+		if ($fileLocator !== null) {
+			$dirFsPath = $this->baseDirFsPath->ext($fileLocator->buildDirLevelNames($file));
+		}
+		return FsThumbManager::determinePossibleImageDimensions($dirFsPath);
 	}
 }

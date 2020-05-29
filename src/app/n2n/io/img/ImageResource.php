@@ -22,6 +22,7 @@
 namespace n2n\io\img;
 
 use n2n\util\type\ArgUtils;
+use n2n\io\managed\img\ThumbCut;
 
 class ImageResource {	
 	private $resource;
@@ -50,6 +51,7 @@ class ImageResource {
 	 * @param int $width
 	 * @param int $height
 	 * @param bool $cropAllowed
+	 * @return ThumbCut
 	 */
 	public function proportionalResize($width, $height, string $autoCropMode = null) {
 		ArgUtils::valEnum($autoCropMode, self::getAutoCropModes(), null, true);
@@ -62,6 +64,7 @@ class ImageResource {
 		}
 		
 		$this->resample($x, $y, $cropWidth, $cropHeight, $width, $height);
+		return new ThumbCut($x, $y, $cropWidth, $cropWidth);
 	}
 	
 	public static function getAutoCropModes() {

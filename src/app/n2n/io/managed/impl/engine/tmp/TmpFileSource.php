@@ -30,9 +30,8 @@ use n2n\io\managed\impl\engine\FileSourceAdapter;
 class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	private $sessionId;
 	
-	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath, FsPath $infoFsPath = null, 
-			string $sessionId = null) {
-		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath, $infoFsPath);
+	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath, string $sessionId = null) {
+		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath);
 		$this->sessionId = $sessionId;
 	}
 		

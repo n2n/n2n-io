@@ -31,6 +31,7 @@ use n2n\util\uri\Url;
 use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
 use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
+use n2n\io\managed\FileInfo;
 
 class TmpFileEngine {
 	const INFO_SUFFIX = '.inf';
@@ -65,11 +66,11 @@ class TmpFileEngine {
 		$fileFsPath = new FsPath(tempnam($this->fsPath, self::SESS_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-		$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $originalName,
-				self::INFO_SESSION_ID_KEY => $sessionId));
+// 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+// 		$fileInfoDingsler->write();
 
-		$tfs = new TmpFileSource($fileFsPath->getName(), $this->fileManagerName, $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs = new TmpFileSource($fileFsPath->getName(), $this->fileManagerName, $fileFsPath, $sessionId);
+		$tfs->writeFileInfo((new FileInfo($originalName))->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]));
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
@@ -135,15 +136,17 @@ class TmpFileEngine {
 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 		$infoFsPath = $fileInfoDingsler->getInfoFsPath();
 
+		$infoFile = null;
 		$infoData = null;
 		try {
-			$infoData = $fileInfoDingsler->read();
+			$infoFile = $fileInfoDingsler->read();
+			$infoData = $infoFile->getCustomInfo(TmpFileEngine::class);
 		} catch (FileManagingException $e) { }
 
-		if ($infoData === null || !array_key_exists(self::INFO_SESSION_ID_KEY, $infoData)
-				|| !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
+		if ($infoFile === null || $infoFile->getOriginalName() === null 
+				|| $infoData === null || !array_key_exists(self::INFO_SESSION_ID_KEY, $infoData)) {
 			$fileFsPath->delete();
-			$infoFsPath->delete();
+			$fileInfoDingsler->delete();
 			return null;
 		}
 
@@ -154,19 +157,18 @@ class TmpFileEngine {
 		$fileFsPath->touch();
 		$infoFsPath->touch();
 
-		$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
-		if ($originalName === null) {
-			$originalName = $fileFsPath->getName();
-		}
+// 		$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
+// 		if ($originalName === null) {
+// 			$originalName = $fileFsPath->getName();
+// 		}
 
 		try {
 			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $infoFsPath, $sessionId);
 			$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
-			return new CommonFile($tfs, $originalName);
+			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
 			return null;
 		}
-
 	}
 
 	public function deleteOldSessionFiles($gcMaxLifetime) {
