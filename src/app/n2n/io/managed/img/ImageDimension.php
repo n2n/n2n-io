@@ -24,6 +24,9 @@ namespace n2n\io\managed\img;
 class ImageDimension {
 	const STR_ATTR_SEPARATOR = 'x';
 	
+	const CROP_ID_PREFIX = 'c';
+	const SCALE_UP_ID_PREFIX = 's';
+	
 	private $width;
 	private $height;
 	private $cropped;
