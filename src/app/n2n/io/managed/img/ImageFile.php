@@ -24,7 +24,6 @@ namespace n2n\io\managed\img;
 use n2n\io\managed\File;
 use n2n\io\img\ImageResource;
 use n2n\io\managed\impl\CommonFile;
-use n2n\io\img\ImageSource;
 use n2n\io\managed\FileInfo;
 
 class ImageFile {	

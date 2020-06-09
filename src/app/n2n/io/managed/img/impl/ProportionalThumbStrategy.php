@@ -27,11 +27,15 @@ use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
 use n2n\util\type\ArgUtils;
 use n2n\io\managed\img\ThumbCut;
+use n2n\util\StringUtils;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
 	private $scaleUpAllowed;
 	private $imageDimension;
+	
+	const CROP_ID_PREFIX = 'c';
+	const SCALE_UP_ID_PREFIX = 's';
 
 	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true) {
 		ArgUtils::valEnum($autoCropMode, ImageResource::getAutoCropModes(), null, true);
@@ -43,10 +47,10 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	private function buildIdExt() {
 		$idExt = null;
 		if ($this->autoCropMode !== null) {
-			$idExt .= 'c' . $this->autoCropMode;
+			$idExt .= self::CROP_ID_PREFIX . $this->autoCropMode;
 		}
 		if ($this->scaleUpAllowed) {
-			$idExt .= 's';
+			$idExt .= self::SCALE_UP_ID_PREFIX;
 		}
 		return $idExt;
 	}
@@ -82,7 +86,7 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 		return $this->imageDimension->getWidth() >= $imageSource->getWidth()
 				&& $this->imageDimension->getHeight() >= $imageSource->getHeight();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\img\ThumbStrategy::resize()
@@ -90,5 +94,25 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	public function resize(ImageResource $imageResource): ThumbCut {
 		$imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
 				$this->getAutoCropMode());
+	}
+	
+	static function fromImageDimension(ImageDimension $imageDimension) {
+		$idExt = $imageDimension->getIdExt();
+		
+		$autoCropMode = null;
+		foreach (ImageResource::getAutoCropModes() as $cropMode) {
+			if (!StringUtils::startsWith(self::CROP_ID_PREFIX . $cropMode, $idExt)) {
+				continue;
+			}
+			
+			$autoCropMode = $cropMode;
+			$idExt = mb_substr($idExt, mb_strlen($autoCropMode));
+			break;
+		}
+		
+		$scaleUp = $idExt === self::SCALE_UP_ID_PREFIX;
+		
+		return new ProportionalThumbStrategy($imageDimension->getWidth(), $imageDimension->getHeight(),
+				$autoCropMode, $scaleUp);
 	}
 }

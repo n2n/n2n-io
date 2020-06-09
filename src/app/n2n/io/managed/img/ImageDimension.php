@@ -26,9 +26,10 @@ class ImageDimension {
 	
 	private $width;
 	private $height;
+	private $cropped;
 	private $idExt;
 	
-	public function __construct(int $width, int $height, string $idExt = null) {
+	public function __construct(int $width, int $height, bool $cropped, string $idExt = null) {
 		$this->width = $width;
 		$this->height = $height;
 		$this->idExt = $idExt;
@@ -40,6 +41,10 @@ class ImageDimension {
 	
 	public function getHeight(): int {
 		return $this->height;
+	}
+	
+	public function isCropped(): bool {
+		return $this->cropped;
 	}
 	
 	public function getIdExt() {

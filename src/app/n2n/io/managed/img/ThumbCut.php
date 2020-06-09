@@ -37,12 +37,46 @@ class ThumbCut implements \JsonSerializable {
 		$this->width = $width;
 		$this->height = $height;
 	}
-
-	function resize(ImageResource $imageResource) {
-		$imageResource->crop($this->x, $this->y, $this->width, $this->height);
-		$imageResource->proportionalResize($this->width, $this->height);
+	
+	/**
+	 * @return int
+	 */
+	function getX() {
+		return $this->x;
 	}
 	
+	/**
+	 * @return int
+	 */
+	function getY() {
+		return $this->y;
+	}
+	
+	/**
+	 * @return int
+	 */
+	function getWidth() {
+		return $this->width;
+	}
+	
+	/**
+	 * @return int
+	 */
+	function getHeight() {
+		return $this->height;
+	}
+
+	/**
+	 * @param ImageResource $imageResource
+	 */
+	function cut(ImageResource $imageResource) {
+		$imageResource->crop($this->x, $this->y, $this->width, $this->height);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \JsonSerializable::jsonSerialize()
+	 */
 	function jsonSerialize() {
 		return [
 			'x' => $this->x,
@@ -59,7 +93,7 @@ class ThumbCut implements \JsonSerializable {
 	 */
 	static function auto(ImageSource $imageSource, ImageDimension $imageDimension) {
 		$widthRatio = $imageSource->getWidth() / $imageDimension->getWidth();
-		$heightRatio = $imageSource->getHeigt() / $imageDimension->getHeight();
+		$heightRatio = $imageSource->getHeight() / $imageDimension->getHeight();
 		
 		$ratio = ($widthRatio > $heightRatio ? $heightRatio : $widthRatio);
 		
