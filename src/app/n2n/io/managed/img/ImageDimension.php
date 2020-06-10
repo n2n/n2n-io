@@ -21,47 +21,92 @@
  */
 namespace n2n\io\managed\img;
 
+use n2n\util\StringUtils;
+
 class ImageDimension {
 	const STR_ATTR_SEPARATOR = 'x';
 	
-	const CROP_ID_PREFIX = 'c';
+	const CROP_ID_PREFIX = 'ccenter';
 	const SCALE_UP_ID_PREFIX = 's';
 	
 	private $width;
 	private $height;
 	private $cropped;
+	private $scaledUp;
 	private $idExt;
 	
-	public function __construct(int $width, int $height, bool $cropped, string $idExt = null) {
+	/**
+	 * @param int $width
+	 * @param int $height
+	 * @param bool $cropped
+	 * @param bool $scaledUp
+	 * @param string $idExt
+	 */
+	public function __construct(int $width, int $height, bool $cropped, bool $scaledUp, string $idExt = null) {
 		$this->width = $width;
 		$this->height = $height;
+		$this->cropped = $cropped;
+		$this->scaledUp = $scaledUp;
 		$this->idExt = $idExt;
 	}
 	
-	public function getWidth(): int {
+	/**
+	 * @return int
+	 */
+	public function getWidth() {
 		return $this->width;
 	}
 	
-	public function getHeight(): int {
+	/**
+	 * @return int
+	 */
+	public function getHeight() {
 		return $this->height;
 	}
 	
-	public function isCropped(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isCropped() {
 		return $this->cropped;
 	}
 	
+	/**
+	 * @return bool
+	 */
+	public function isScaledUp() {
+		return $this->scaledUp;
+	}
+	
+	/**
+	 * @return string|null
+	 */
 	public function getIdExt() {
 		return $this->idExt;
 	}
 	
 	public function __toString(): string {
-		return $this->width . self::STR_ATTR_SEPARATOR . $this->height 
-				. ($this->idExt !== null ? self::STR_ATTR_SEPARATOR . $this->idExt : '');
+		$id =  $this->width . self::STR_ATTR_SEPARATOR . $this->height;
+		
+		if (!$this->cropped && !$this->scaledUp && $this->idExt === null) {
+			return $id;
+		}
+		
+		$id .= self::STR_ATTR_SEPARATOR . ($this->cropped ? self::CROP_ID_PREFIX : '') 
+				. ($this->scaledUp ? self::SCALED_UP_ID_PREFIX : '');
+		
+		if ($this->idExt === null) {
+			return $id;
+		}
+		
+		$id .= self::STR_ATTR_SEPARATOR . $this->idExt;
+		
+		return $id;
 	}
 	
-	public static function createFromString($string): ImageDimension {
-		$partParts = explode(self::STR_ATTR_SEPARATOR, trim($string), 3);
-		if (2 > sizeof($partParts) || !is_numeric($partParts[0]) || !is_numeric($partParts[1])) {
+	static function createFromString($string): ImageDimension {
+		$partParts = explode(self::STR_ATTR_SEPARATOR, trim($string), 4);
+		if (2 > count($partParts) || !is_numeric($partParts[0]) || !is_numeric($partParts[1])) {
 			throw new \InvalidArgumentException('Dimension is invalid: ' . $string);
 		}
 		
@@ -72,11 +117,28 @@ class ImageDimension {
 			throw new \InvalidArgumentException();
 		}
 		
-		$idExt = null;
+		$cropped = false;
+		$scaledUp = false;
 		if (isset($partParts[2])) {
-			$idExt = $partParts[2];
+			$part = $partParts[2];
+			if (StringUtils::startsWith(self::CROP_ID_PREFIX, $part)) {
+				$cropped = true;
+				$part = mb_substr($part, mb_strlen(self::CROP_ID_PREFIX));
+			}
+			
+			$scaledUp = $part === self::SCALE_UP_ID_PREFIX;
+			
+			if ($part !== '' && $part !== self::SCALE_UP_ID_PREFIX) {
+				throw new \InvalidArgumentException('Dimension is invalid: ' . $string);
+			}
+		}
+		
+		$idExt = null;
+		if (isset($partParts[3])) {
+			$idExt = $partParts[3];
 		}
 			
-		return new ImageDimension($width, $height, $idExt);
+		return new ImageDimension($width, $height, $cropped, $scaledUp, $idExt);
 	}
+	
 }

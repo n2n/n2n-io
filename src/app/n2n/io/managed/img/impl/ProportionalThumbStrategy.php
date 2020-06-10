@@ -42,17 +42,6 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 		$this->imageDimension = new ImageDimension($width, $height, $this->buildIdExt());
 	}
 	
-	private function buildIdExt() {
-		$idExt = null;
-		if ($this->autoCropMode !== null) {
-			$idExt .= self::CROP_ID_PREFIX . $this->autoCropMode;
-		}
-		if ($this->scaleUpAllowed) {
-			$idExt .= self::SCALE_UP_ID_PREFIX;
-		}
-		return $idExt;
-	}
-	
 	public function getImageDimension(): ImageDimension {
 		return $this->imageDimension;
 	}
@@ -94,23 +83,23 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 				$this->getAutoCropMode());
 	}
 	
-	static function fromImageDimension(ImageDimension $imageDimension) {
-		$idExt = $imageDimension->getIdExt();
+// 	static function fromImageDimension(ImageDimension $imageDimension) {
+// 		$idExt = $imageDimension->getIdExt();
 		
-		$autoCropMode = null;
-		foreach (ImageResource::getAutoCropModes() as $cropMode) {
-			if (!StringUtils::startsWith(self::CROP_ID_PREFIX . $cropMode, $idExt)) {
-				continue;
-			}
+// 		$autoCropMode = null;
+// 		foreach (ImageResource::getAutoCropModes() as $cropMode) {
+// 			if (!StringUtils::startsWith(self::CROP_ID_PREFIX . $cropMode, $idExt)) {
+// 				continue;
+// 			}
 			
-			$autoCropMode = $cropMode;
-			$idExt = mb_substr($idExt, mb_strlen($autoCropMode));
-			break;
-		}
+// 			$autoCropMode = $cropMode;
+// 			$idExt = mb_substr($idExt, mb_strlen($autoCropMode));
+// 			break;
+// 		}
 		
-		$scaleUp = $idExt === self::SCALE_UP_ID_PREFIX;
+// 		$scaleUp = $idExt === self::SCALE_UP_ID_PREFIX;
 		
-		return new ProportionalThumbStrategy($imageDimension->getWidth(), $imageDimension->getHeight(),
-				$autoCropMode, $scaleUp);
-	}
+// 		return new ProportionalThumbStrategy($imageDimension->getWidth(), $imageDimension->getHeight(),
+// 				$autoCropMode, $scaleUp);
+// 	}
 }
