@@ -27,7 +27,6 @@ use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
 use n2n\util\type\ArgUtils;
 use n2n\io\managed\img\ThumbCut;
-use n2n\util\StringUtils;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
@@ -35,18 +34,26 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	private $imageDimension;
 	
 
-	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true) {
+	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true, 
+			string $idExt = null) {
 		ArgUtils::valEnum($autoCropMode, ImageResource::getAutoCropModes(), null, true);
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;
-		$this->imageDimension = new ImageDimension($width, $height, $this->buildIdExt());
+		$this->imageDimension = new ImageDimension($width, $height, $autoCropMode !== null, $scaleUpAllowed, $idExt);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\img\ThumbStrategy::getImageDimension()
+	 */
 	public function getImageDimension(): ImageDimension {
 		return $this->imageDimension;
 	}
 
-	public function isAutoCropEnabled(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isAutoCropEnabled() {
 		return $this->autoCropMode !== null;
 	}
 	
@@ -54,7 +61,10 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 		return $this->autoCropMode;
 	}
 
-	public function isScaleUpAllowed(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isScaleUpAllowed() {
 		return $this->scaleUpAllowed;
 	}
 
@@ -68,7 +78,9 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 			return true;
 		}
 
-		if ($this->scaleUpAllowed) return false;
+		if ($this->scaleUpAllowed) {
+			return false;
+		}
 
 		return $this->imageDimension->getWidth() >= $imageSource->getWidth()
 				&& $this->imageDimension->getHeight() >= $imageSource->getHeight();

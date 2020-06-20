@@ -96,12 +96,12 @@ class ThumbCut implements \JsonSerializable {
 		$heightRatio = $imageSource->getHeight() / $imageDimension->getHeight();
 		
 		$ratio = ($widthRatio > $heightRatio ? $heightRatio : $widthRatio);
-		
+
 		$width = $imageDimension->getWidth() * $ratio;
 		$height = $imageDimension->getHeight() * $ratio;
 		
-		$x = min(0, ($imageSource->getWidth() - $width) / 2);
-		$y = min(0, ($imageSource->getHeight() - $height) / 2);
+		$x = max(0, ($imageSource->getWidth() - $width) / 2);
+		$y = max(0, ($imageSource->getHeight() - $height) / 2);
 		
 		return new ThumbCut($x, $y, $width, $height);
 	}

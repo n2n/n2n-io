@@ -26,8 +26,8 @@ use n2n\util\StringUtils;
 class ImageDimension {
 	const STR_ATTR_SEPARATOR = 'x';
 	
-	const CROP_ID_PREFIX = 'ccenter';
-	const SCALE_UP_ID_PREFIX = 's';
+	const CROP_ID_KEY = 'ccenter';
+	const SCALE_UP_ID_KEY = 's';
 	
 	private $width;
 	private $height;
@@ -92,8 +92,8 @@ class ImageDimension {
 			return $id;
 		}
 		
-		$id .= self::STR_ATTR_SEPARATOR . ($this->cropped ? self::CROP_ID_PREFIX : '') 
-				. ($this->scaledUp ? self::SCALED_UP_ID_PREFIX : '');
+		$id .= self::STR_ATTR_SEPARATOR . ($this->cropped ? self::CROP_ID_KEY : '') 
+				. ($this->scaledUp ? self::SCALE_UP_ID_KEY : '');
 		
 		if ($this->idExt === null) {
 			return $id;
@@ -121,14 +121,14 @@ class ImageDimension {
 		$scaledUp = false;
 		if (isset($partParts[2])) {
 			$part = $partParts[2];
-			if (StringUtils::startsWith(self::CROP_ID_PREFIX, $part)) {
+			if (StringUtils::startsWith(self::CROP_ID_KEY, $part)) {
 				$cropped = true;
-				$part = mb_substr($part, mb_strlen(self::CROP_ID_PREFIX));
+				$part = mb_substr($part, mb_strlen(self::CROP_ID_KEY));
 			}
 			
-			$scaledUp = $part === self::SCALE_UP_ID_PREFIX;
+			$scaledUp = $part === self::SCALE_UP_ID_KEY;
 			
-			if ($part !== '' && $part !== self::SCALE_UP_ID_PREFIX) {
+			if ($part !== '' && $part !== self::SCALE_UP_ID_KEY) {
 				throw new \InvalidArgumentException('Dimension is invalid: ' . $string);
 			}
 		}
