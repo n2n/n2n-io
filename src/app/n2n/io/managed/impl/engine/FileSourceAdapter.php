@@ -229,10 +229,6 @@ abstract class FileSourceAdapter implements FileSource {
 	}
 	
 	function writeFileInfo(FileInfo $fileInfo) {
-		if ($this->infoFsPath === null) {
-			throw new IllegalStateException();
-		}
-		
 		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
 		$fileInfoDingsler->write($fileInfo);
 	}

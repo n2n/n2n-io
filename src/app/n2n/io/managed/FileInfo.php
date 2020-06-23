@@ -21,6 +21,8 @@
  */
 namespace n2n\io\managed;
 
+use n2n\util\type\attrs\DataMap;
+
 class FileInfo implements \JsonSerializable {
 	private $originalName;
 	private $customInfos = [];
@@ -78,5 +80,17 @@ class FileInfo implements \JsonSerializable {
 			'originalName' => $this->originalName,
 			'customInfos' => $this->customInfos
 		];
+	}
+	
+	static function fromArray(array $data) {
+		$dm = new DataMap($data);
+		
+		try {
+			$fileInfo = new FileInfo($dm->optString('originalName'));
+			$fileInfo->customInfos = $dm->reqArray('customInfos', 'array');
+			return $fileInfo;
+		} catch (\n2n\util\type\attrs\InvalidAttributeException $e) {
+			throw new \InvalidArgumentException(null, 0, $e);
+		}
 	}
 }

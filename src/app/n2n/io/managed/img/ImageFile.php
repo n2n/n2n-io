@@ -113,7 +113,7 @@ class ImageFile {
 		if (!isset($data['thumbCuts'])) {
 			$data['thumbCuts'] = [];
 		}
-		$data['thumbCuts'][($imageDimension)] = $thumbCut;
+		$data['thumbCuts'][(string) $imageDimension] = $thumbCut;
 		$fileInfo->setCustomInfo(ImageFile::class, $data);
 		
 		$this->file->getFileSource()->writeFileInfo($fileInfo);

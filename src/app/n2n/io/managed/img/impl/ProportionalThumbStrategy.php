@@ -91,7 +91,7 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	 * @see \n2n\io\managed\img\ThumbStrategy::resize()
 	 */
 	public function resize(ImageResource $imageResource): ThumbCut {
-		$imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
+		return $imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
 				$this->getAutoCropMode());
 	}
 	
