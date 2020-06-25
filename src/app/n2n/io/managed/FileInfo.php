@@ -51,9 +51,11 @@ class FileInfo implements \JsonSerializable {
 	/**
 	 * @param string $refTypeName
 	 * @param array $data
+	 * @return FileInfo
 	 */
 	function setCustomInfo(string $refTypeName, array $data) {
 		$this->customInfos[$refTypeName] = $data;
+		return $this;
 	}
 	
 	/**

@@ -70,7 +70,9 @@ class TmpFileEngine {
 // 		$fileInfoDingsler->write();
 
 		$tfs = new TmpFileSource($fileFsPath->getName(), $this->fileManagerName, $fileFsPath, $sessionId);
-		$tfs->writeFileInfo((new FileInfo($originalName))->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]));
+		$fileInfo = new FileInfo($originalName);
+		$fileInfo->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]);
+		$tfs->writeFileInfo($fileInfo);
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
