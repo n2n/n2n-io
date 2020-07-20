@@ -27,6 +27,7 @@ use n2n\io\InputStream;
 use n2n\util\uri\Url;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\VariationEngine;
+use n2n\io\OutputStream;
 
 class UncommittedManagedFileSource implements FileSource {
 	private $srcFileSource;
@@ -51,6 +52,10 @@ class UncommittedManagedFileSource implements FileSource {
 	
 	public function createInputStream(): InputStream {
 		return $this->srcFileSource->createInputStream();
+	}
+	
+	public function createOutputStream(): OutputStream {
+		return $this->srcFileSource->createOutputStream();
 	}
 	
 	public function out() {
