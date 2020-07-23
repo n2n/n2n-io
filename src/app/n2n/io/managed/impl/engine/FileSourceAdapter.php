@@ -233,6 +233,10 @@ abstract class FileSourceAdapter implements FileSource {
 		$fileInfoDingsler->write($fileInfo);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::readFileInfo()
+	 */
 	function readFileInfo(): FileInfo {
 		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
 		return $fileInfoDingsler->read();

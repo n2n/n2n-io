@@ -128,12 +128,12 @@ class ImageFile {
 		$fileInfo = $this->file->getFileSource()->readFileInfo();
 		$data = $fileInfo->getCustomInfo(ImageFile::class);
 		
-		if ($data === null || !isset($data[$imgDimStr])) {
+		if ($data === null || !isset($data['thumbCuts'][$imgDimStr])) {
 			return null;
 		}
 		
 		try {
-			return FileInfo::fromArray($data[$imgDimStr]);
+			return ThumbCut::fromArray($data['thumbCuts'][$imgDimStr]);
 		} catch (\InvalidArgumentException $e) {
 			return null;
 		}
@@ -187,7 +187,8 @@ class ImageFile {
 		$imageResource = $this->imageSource->createImageResource();
 		
 		if (null !== $thumbCut) {
-			$thumbCut->resize($imageResource);
+			$thumbCut->cut($imageResource);
+			$thumbStrategy->resize($imageResource);
 		} else {
 			$thumbCut = $thumbStrategy->resize($imageResource);
 			$this->setThumbCut($thumbStrategy->getImageDimension(), $thumbCut);

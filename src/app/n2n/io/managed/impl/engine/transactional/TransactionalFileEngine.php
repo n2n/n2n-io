@@ -40,6 +40,7 @@ use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\io\managed\impl\engine\variation\FsThumbManager;
+use n2n\io\managed\FileInfo;
 
 class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
@@ -154,15 +155,16 @@ class TransactionalFileEngine {
 			$fileFsPath = $dirFsPath->ext($usedFileName);
 		}
 		
-// 		$infoFsPath = null;
-// 		if (!$this->customFileNamesAllowed) {
-			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
-			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
-// 		}
+// // 		$infoFsPath = null;
+// // 		if (!$this->customFileNamesAllowed) {
+// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+// 			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
+// 			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
+// // 		}
 		
 		$qualifiedName = $qnb->__toString();
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
+		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
+		$managedFileSource->writeFileInfo($file->getFileSource()->readFileInfo());
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
@@ -191,6 +193,7 @@ class TransactionalFileEngine {
 	/**
 	 * @param string $qualifiedName
 	 * @return File
+	 * @throws FileManagingException
 	 */
 	public function getByQualifiedName(string $qualifiedName) {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
@@ -205,29 +208,39 @@ class TransactionalFileEngine {
 			return null;
 		}
 		
-		$infoFsPath = null;
 		$originalName = null;
+		
+// 		if ($this->customFileNamesAllowed) {
+// 			$originalName = $fileFsPath->getName();
+// 		} else {
+// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+			
+// 			$infoData = null;
+// 			try {
+// 				$infoData = $fileInfoDingsler->read();
+// 			} catch (FileManagingException $e) { }
+			
+// 			if ($infoData === null || null === $infoData->getOriginalName()) {
+// 				$fileFsPath->delete();
+// 				$fileInfoDingsler->delete();
+// 				return null;
+// 			}
+			
+// 			$originalName = $infoData->getOriginalName();;
+// 		}
+		
+		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
 		
 		if ($this->customFileNamesAllowed) {
 			$originalName = $fileFsPath->getName();
 		} else {
-			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+			$fileInfo = $managedFileSource->readFileInfo();
+			$originalName = $fileInfo->getOriginalName();
 			
-			$infoData = null;
-			try {
-				$infoData = $fileInfoDingsler->read();
-			} catch (FileManagingException $e) { }
-			
-			if ($infoData === null || null === $infoData->getOriginalName()) {
-				$fileFsPath->delete();
-				$fileInfoDingsler->delete();
-				return null;
+			if ($originalName === null) {
+				$managedFileSource->delete();
 			}
-			
-			$originalName = $infoData->getOriginalName();;
 		}
-		
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName);
 		
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnBuilder->toArray()));

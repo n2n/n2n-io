@@ -28,8 +28,8 @@ use n2n\io\managed\impl\engine\FileSourceAdapter;
 class ManagedFileSource extends FileSourceAdapter {
 // 	private $persistent = false;
 	
-	public function __construct(FsPath $fileFsPath, ?FsPath $infoFsPath, string $fileManagerName, string $qualifiedName) {
-		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath, $infoFsPath);
+	public function __construct(FsPath $fileFsPath, string $fileManagerName, string $qualifiedName) {
+		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath);
 	}
 	
 // 	public function setPersisent($persistent) {

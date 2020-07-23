@@ -22,11 +22,14 @@
 namespace n2n\io\managed\impl\engine;
 
 use n2n\io\fs\FsPath;
+use n2n\io\managed\FileInfo;
 use n2n\io\managed\FileSource;
 use n2n\io\InputStream;
 use n2n\util\uri\Url;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\VariationEngine;
+use n2n\util\ex\NotYetImplementedException;
+use n2n\util\ex\UnsupportedOperationException;
 
 class UncommittedManagedFileSource implements FileSource {
 	private $srcFileSource;
@@ -126,6 +129,16 @@ class UncommittedManagedFileSource implements FileSource {
 	public function getMimeType(): string {
 		return $this->srcFileSource->getMimeType();
 	}
+	
+	public function getOriginalFileSource(): ?FileSource {
+		throw new UnsupportedOperationException();
+	}
 
+	public function readFileInfo(): FileInfo {
+		return $this->newManagedFileSource->readFileInfo();
+	}
 
+	public function writeFileInfo(FileInfo $fileInfo) {
+		$this->newManagedFileSource->writeFileInfo($fileInfo);
+	}
 }

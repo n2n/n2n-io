@@ -159,6 +159,7 @@ interface FileSource {
 	
 	/**
 	 * @return FileInfo
+	 * @throws FileManagingException
 	 */
 	function readFileInfo(): FileInfo;
 	

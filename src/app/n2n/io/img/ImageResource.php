@@ -64,7 +64,7 @@ class ImageResource {
 		}
 		
 		$this->resample($x, $y, $cropWidth, $cropHeight, $width, $height);
-		return new ThumbCut($x, $y, $cropWidth, $cropWidth);
+		return new ThumbCut($x, $y, $cropWidth, $cropHeight);
 	}
 	
 	public static function getAutoCropModes() {
@@ -78,7 +78,7 @@ class ImageResource {
 	 * @param int $destHeight
 	 */
 	public function crop($startX, $startY, $destWidth, $destHeight) {
-		$this->resample($startX, $startY, $destWidth, $destHeight, $this->width, $this->height);
+		$this->resample($startX, $startY, $this->width, $this->height, $destWidth, $destHeight);
 	}
 	/**
 	 * adds a watermark to the image
