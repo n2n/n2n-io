@@ -27,6 +27,8 @@ use n2n\io\fs\FsPath;
 use n2n\io\IoErrorException;
 use n2n\io\UploadedFileExceedsMaxSizeException;
 use n2n\io\IncompleteFileUploadException;
+use n2n\io\managed\File;
+use n2n\io\IoException;
 
 class FileFactory {
 	/**
@@ -74,5 +76,37 @@ class FileFactory {
 			default:
 				throw new IoErrorException('Unknown configuration error');
 		}
+	}
+	
+	/**
+	 * 
+	 * @param string $str
+	 * @throws \InvalidArgumentException if the data url is corrupted
+	 * @throws IoException if file could not be written
+	 */
+	public static function createFromDataUrl(string $data, File $file) {
+		$type = null;
+		
+		if (!preg_match('/^data:image\/(\w+);base64,/', $data, $type)) {
+			throw new \InvalidArgumentException('Data url not supported.');
+		}
+		
+		$data = substr($data, strpos($data, ',') + 1);
+		$type = strtolower($type[1]); // jpg, png, gif
+			
+// 			if (!in_array($type, [ 'jpg', 'jpeg', 'gif', 'png' ])) {
+// 				throw new \Exception('invalid image type');
+// 			}
+			
+		$data = base64_decode($data, true);
+		
+		if ($data === false) {
+			throw new \InvalidArgumentException('base64_decode failed');
+		}
+		
+		$file->setOriginalName($file->getOriginalName() . '.' . $type);
+		$file->getFileSource()->createOutputStream()->write($data);
+		
+		return $file;
 	}
 }

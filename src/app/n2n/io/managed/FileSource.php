@@ -26,6 +26,7 @@ use n2n\io\fs\FsPath;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\OutputStream;
 
 interface FileSource {
 	
@@ -49,6 +50,13 @@ interface FileSource {
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
 	function createInputStream(): InputStream;
+	
+	/**
+	 * @return OuputStream
+	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
+	 * @throws FileManagingException if it is not possible to create an output stream for this file.
+	 */
+	public function createOutputStream(): OutputStream;
 	
 	/**
 	 * Prints file to standard output 
