@@ -61,26 +61,24 @@ class ImageFile {
 	}
 	
 	public function crop($x, $y, $width, $height) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
+		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->crop($x, $y, $width, $height);
-		$imageSource->saveImageResource($imageResource);
+		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 
 	public function resize($width, $height){
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
-		$imageResource->resize($width, $height);
-		$this->saveImageResource($imageResource);
+		$imageResource = $this->imageSource->createImageResource();
+		$imageResource->proportionalResize($width, $height);
+		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 	
 	public function proportionalResize($width, $height, $cropAllowed = false) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
-		$imageResource->proportionalResize($width, $height, $cropAllowed);
-		$this->saveImageResource($imageResource);
+		$imageResource = $this->imageSource->createImageResource();
+		$imageResource->proportionalResize($width, $height,
+				($cropAllowed ? ImageResource::AUTO_CROP_MODE_CENTER : null));
+		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 
