@@ -72,7 +72,7 @@ class UnknownFile implements File, FileSource {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\File::getOriginalExtension()
 	 */
-	public function getOriginalExtension() {
+	public function getOriginalExtension(): ?string {
 		$this->throwException();
 	}
 	

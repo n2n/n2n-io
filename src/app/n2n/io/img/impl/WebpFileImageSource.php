@@ -59,6 +59,6 @@ class WebpFileImageSource extends FsImageSourceAdapter implements ImageSource {
 		$mb = 1048576;  // number of bytes in 1M
 		$k64 = 65536;	// number of bytes in 64K
 		$tweakfactor = 1.62;
-		return round(( $imageData[0] * $imageData[1] * $imageData['bits'] * $imageData['channels'] / 8 + $k64) * $tweakfactor);
+		return round(( $imageData[0] * $imageData[1] * $imageData['bits'] / 8 + $k64) * $tweakfactor);
 	}
 }
