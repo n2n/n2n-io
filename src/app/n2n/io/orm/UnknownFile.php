@@ -22,9 +22,11 @@
 namespace n2n\io\orm;
 
 use n2n\io\InputStream;
+use n2n\io\OutputStream;
 use n2n\io\fs\FsPath;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\File;
+use n2n\io\managed\FileInfo;
 use n2n\io\managed\VariationEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
@@ -189,6 +191,20 @@ class UnknownFile implements File, FileSource {
 	public function getMimeType(): string {
 		$this->throwException();
 	}
+	
+	public function getOriginalFileSource(): ?FileSource {
+		return null;
+	}
 
+	public function createOutputStream(): OutputStream {
+		$this->throwException();
+	}
 
+	public function writeFileInfo(FileInfo $fileInfo) {
+		$this->throwException();
+	}
+
+	public function readFileInfo(): FileInfo {
+		$this->throwException();
+	}
 }
