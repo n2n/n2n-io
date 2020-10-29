@@ -108,7 +108,7 @@ class FsVariationManager implements VariationManager {
 		return $thumbFileSource;
 	}
 	
-	public function getByKey(string $key) {
+	public function getByKey(string $key): ?FileSource {
 		$fileFsPath = $this->createVariationFileFsPath($key);
 		if ($fileFsPath->exists()) {
 			return $this->createVariationFileSource($fileFsPath, $key);
@@ -125,7 +125,7 @@ class FsVariationManager implements VariationManager {
 		return $this->createVariationFileSource($fileFsPath, $key);
 	}
 	
-	public function create(string $key) {
+	public function create(string $key): FileSource {
 		$fileFsPath = $this->createVariationFileFsPath($key);
 		$fileFsPath->mkdirsAndCreateFile($this->dirPerm, $this->filePerm);
 		
