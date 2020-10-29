@@ -78,7 +78,7 @@ class ImageResource {
 	 * @param int $destHeight
 	 */
 	public function crop($startX, $startY, $destWidth, $destHeight) {
-		$this->resample($startX, $startY, $this->width, $this->height, $destWidth, $destHeight);
+		$this->resample($startX, $startY, $destWidth, $destHeight, $this->width, $this->height);
 	}
 	/**
 	 * adds a watermark to the image

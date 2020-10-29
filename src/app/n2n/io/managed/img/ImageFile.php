@@ -66,20 +66,13 @@ class ImageFile {
 	
 	
 	public function crop($x, $y, $width, $height) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
 		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->crop($x, $y, $width, $height);
-		$imageSource->saveImageResource($imageResource);
 		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 	
 	public function resize($width, $height){
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
-		$imageResource->resize($width, $height);
-		$this->saveImageResource($imageResource);
 		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->proportionalResize($width, $height);
 		$this->imageSource->saveImageResource($imageResource);
@@ -87,17 +80,13 @@ class ImageFile {
 	}
 	
 	public function proportionalResize($width, $height, $cropAllowed = false) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
-		$imageResource->proportionalResize($width, $height, $cropAllowed);
-		$this->saveImageResource($imageResource);
 		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->proportionalResize($width, $height,
 				($cropAllowed ? ImageResource::AUTO_CROP_MODE_CENTER : null));
 		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
-
+	
 	function watermark(ImageResource $watermark, $watermarkPos = 4, $watermarkMargin = 10) {
 		$imageSource = $this->createImageSource();
 		$imageResource = $imageSource->createResource();
@@ -148,7 +137,7 @@ class ImageFile {
 			return null;
 		}
 	}
-	
+
 	function removeThumbCut(ImageDimension $imageDimension) {
 		$fileInfo = $this->file->getFileSource()->readFileInfo();
 		
@@ -161,22 +150,22 @@ class ImageFile {
 		
 		$this->file->getFileSource()->writeFileInfo($fileInfo);
 	}
-	
+
 	function removeThumbCuts() {
 		$fileInfo = $this->file->getFileSource()->readFileInfo();
 		$fileInfo->removeCustomInfo(ImageFile::class);
 		$this->file->getFileSource()->writeFileInfo($fileInfo);
 	}
-		
+
 	function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
 		$thumbFileSource = $this->file->getFileSource()->getThumbManager()->create($imageResource, $imageDimension);
 		return new CommonFile($thumbFileSource, $this->file->getOriginalName());
 	}
-	
+
 	function removeThumbFile(ImageDimension $imageDimension) {
 		$this->file->getFileSource()->getVariationEngine()->getThumbManager()->remove($imageDimension);
 	}
-	
+
 	/**
 	 * @return ImageFile
 	 */
