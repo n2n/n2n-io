@@ -109,7 +109,7 @@ class LazyFsVariationEngine implements VariationEngine {
 	 */
 	public function getVariationManager(): VariationManager {
 		if (!$this->hasVariationSupport()) {
-			throw new IllegalStateException('No variation support avaialble.');
+			throw new IllegalStateException('No variation support available.');
 		}
 		
 		if ($this->variationManager !== null) {
