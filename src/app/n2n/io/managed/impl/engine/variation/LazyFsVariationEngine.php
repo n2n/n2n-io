@@ -100,7 +100,7 @@ class LazyFsVariationEngine implements VariationEngine {
 	 * @see \n2n\io\managed\VariationEngine::hasVariationSupport()
 	 */
 	function hasVariationSupport(): bool {
-		return $this->variationManager !== null;
+		return true;
 	}
 
 	/**

@@ -218,8 +218,9 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	public function createImageSource(): ImageSource {
 		$this->ensureValid();
+		
 		return ImageSourceFactory::createFromFileName($this->fileFsPath,
-				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath));
+				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath, true));
 	}
 	
 	public function getVariationEngine(): VariationEngine {

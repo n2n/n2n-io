@@ -619,6 +619,11 @@ class IoUtils {
 // 						array('file' => $file->getPath(), 'file_name' => $file->getOriginalName())));
 // 	}
 	
+	/**
+	 * @param string $filename
+	 * @throws IoException
+	 * @return string
+	 */
 	public static function getimagesize($filename) {
 		$imagesize = @getimagesize($filename);
 		if (false === $imagesize) {

@@ -91,16 +91,24 @@ class ImageSourceFactory {
 		}
 	}	
 	
+	/**
+	 * @param string $fileName
+	 * @param bool $required
+	 * @throws UnsupportedImageTypeException
+	 * @throws IoException
+	 * @return string|NULL
+	 */
 	public static function getMimeTypeOfFile($fileName, bool $required = false) {
-		$prevE = null;
-		try {
+// 		$prevE = null;
+// 		try {
 			$size = IoUtils::getimagesize((string) $fileName);
 			if (in_array($size['mime'], self::$extensionMimeTypeMappings)) {
 				return $size['mime'];
 			}
-		} catch (IoException $e) {
-			$prevE = $e;
-		}
+// 		} catch (IoException $e) {
+// 			$prevE = $e;
+// 			throw $prevE;
+// 		}
 		
 		if (!$required) return null;
 		

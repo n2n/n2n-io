@@ -120,7 +120,7 @@ class FsVariationManager implements VariationManager {
 		$fileFsPath = $this->createVariationFileFsPath($key);
 		$fileFsPath->mkdirsAndCreateFile($this->dirPerm, $this->filePerm);	
 		
-		ImageSourceFactory::createFromFileName($fileFsPath, $this->getMimeType())->saveImageResource($imageResource);
+		ImageSourceFactory::createFromFileName($fileFsPath, $this->fileSource->getMimeType())->saveImageResource($imageResource);
 				
 		return $this->createVariationFileSource($fileFsPath, $key);
 	}
