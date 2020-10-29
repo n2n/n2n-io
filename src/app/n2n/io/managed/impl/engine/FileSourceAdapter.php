@@ -223,6 +223,14 @@ abstract class FileSourceAdapter implements FileSource {
 				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath, true));
 	}
 	
+	/**
+	 * Hack for older rocket versions.
+	 * @return \n2n\io\managed\ThumbManager
+	 */
+	function getThumbManager() {
+		return $this->getVariationEngine()->getThumbManager();
+	}
+	
 	public function getVariationEngine(): VariationEngine {
 		$this->ensureValid();
 		
