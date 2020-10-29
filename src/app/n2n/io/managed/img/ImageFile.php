@@ -263,6 +263,17 @@ class ImageFile {
 		return null;
 	}
 	
+	/**
+	 * @deprecated use {@link self::getVariationImageDimensions()}
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	function getVariationImageDimension() {
+		return $this->getVariationImageDimensions();
+	}
+	
+	/**
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
 	function getVariationImageDimensions() {
 		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
 		
