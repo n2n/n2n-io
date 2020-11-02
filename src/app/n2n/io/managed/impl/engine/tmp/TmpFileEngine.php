@@ -57,7 +57,7 @@ class TmpFileEngine {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath->getName(), $fileFsPath);
+		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
 		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
@@ -165,7 +165,7 @@ class TmpFileEngine {
 // 		}
 
 		try {
-			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $infoFsPath, $sessionId);
+			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $sessionId);
 			$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
 			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
