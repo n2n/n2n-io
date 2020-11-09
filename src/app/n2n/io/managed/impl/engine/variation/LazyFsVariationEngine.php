@@ -116,7 +116,7 @@ class LazyFsVariationEngine implements VariationEngine {
 			return $this->variationManager;
 		}
 		
-		return $this->variationManager = new FsVariationManager($this->origFileSource, $this->getMimeType(),
+		return $this->variationManager = new FsVariationManager($this->origFileSource, /*$this->getMimeType(),*/
 				$this->dirPerm, $this->filePerm);
 	}
 	
