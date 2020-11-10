@@ -27,7 +27,7 @@ use n2n\io\fs\FsPath;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\File;
 use n2n\io\managed\FileInfo;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
 use n2n\util\uri\UnavailableUrlException;
@@ -152,7 +152,7 @@ class UnknownFile implements File, FileSource {
 		$this->throwException();
 	}
 
-	public function getVariationEngine(): VariationEngine {
+	public function getAffiliationEngine(): AffiliationEngine {
 		$this->throwException();
 	}
 

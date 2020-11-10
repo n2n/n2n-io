@@ -84,8 +84,8 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 		if ($this->sessionId === null && $this->isValid()) {
 			$this->delete();
 			
-			if ($this->variationEngine !== null) {
-				$this->variationEngine->clear();
+			if ($this->affiliationEngine !== null) {
+				$this->affiliationEngine->clear();
 			}
 		}
 	}

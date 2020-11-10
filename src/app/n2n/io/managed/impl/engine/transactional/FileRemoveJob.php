@@ -37,7 +37,7 @@ class FileRemoveJob {
 		IllegalStateException::assertTrue(!$this->executed);
 		$this->executed = true;
 
-		$this->managedFileSource->getVariationEngine()->clear();
+		$this->managedFileSource->getAffiliationEngine()->clear();
 		
 		$fsPath = $this->managedFileSource->getFileFsPath();
 		if (!$fsPath->exists()) return;

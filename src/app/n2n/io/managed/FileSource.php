@@ -52,7 +52,7 @@ interface FileSource {
 	function createInputStream(): InputStream;
 	
 	/**
-	 * @return OuputStream
+	 * @return OutputStream
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 * @throws FileManagingException if it is not possible to create an output stream for this file.
 	 */
@@ -133,10 +133,10 @@ interface FileSource {
 	public function createImageSource(): ImageSource;
 	
 	/**
-	 * @return VariationEngine
+	 * @return AffiliationEngine
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
-	public function getVariationEngine(): VariationEngine;
+	public function getAffiliationEngine(): AffiliationEngine;
 	
 	/**
 	 * @param FsPath $fsPath

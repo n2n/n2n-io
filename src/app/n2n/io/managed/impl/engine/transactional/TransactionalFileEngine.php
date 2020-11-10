@@ -37,7 +37,7 @@ use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\engine\UncommittedManagedFileSource;
 use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
-use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
+use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\io\managed\impl\engine\variation\FsThumbManager;
 use n2n\io\managed\FileInfo;
@@ -168,7 +168,7 @@ class TransactionalFileEngine {
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
-		$managedFileSource->setVariationEngine(new LazyFsVariationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
+		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
 		
 		$file->setFileSource(new UncommittedManagedFileSource($file->getFileSource(), $managedFileSource));
 		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock, $this->filePerm);
@@ -246,7 +246,8 @@ class TransactionalFileEngine {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnBuilder->toArray()));
 		}
 		
-		$managedFileSource->setVariationEngine(new LazyFsVariationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
+		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, 
+				$this->filePerm));
 		
 		return new CommonFile($managedFileSource, $originalName);
 	}

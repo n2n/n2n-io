@@ -27,7 +27,7 @@ use n2n\io\managed\FileSource;
 use n2n\io\InputStream;
 use n2n\util\uri\Url;
 use n2n\io\img\ImageSource;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\io\OutputStream;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\util\ex\UnsupportedOperationException;
@@ -109,8 +109,8 @@ class UncommittedManagedFileSource implements FileSource {
 		return $this->srcFileSource->createImageSource();
 	}
 	
-	public function getVariationEngine(): VariationEngine {
-		return $this->srcFileSource->getVariationEngine();
+	public function getAffiliationEngine(): AffiliationEngine {
+		return $this->srcFileSource->getAffiliationEngine();
 	}
 	
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false) {

@@ -96,7 +96,7 @@ class ImageFile {
 	}
 	
 	function getThumbFile(ImageDimension $imageDimension) {
-		$thumbEngine = $this->file->getFileSource()->getVariationEngine()->getThumbManager();
+		$thumbEngine = $this->file->getFileSource()->getAffiliationEngine()->getThumbManager();
 		
 		if (null !== ($thumbFileResource = $thumbEngine->getByDimension($imageDimension))) {
 			return new CommonFile($thumbFileResource, $this->file->getOriginalName());
@@ -163,14 +163,14 @@ class ImageFile {
 	}
 
 	function removeThumbFile(ImageDimension $imageDimension) {
-		$this->file->getFileSource()->getVariationEngine()->getThumbManager()->remove($imageDimension);
+		$this->file->getFileSource()->getAffiliationEngine()->getThumbManager()->remove($imageDimension);
 	}
 
 	/**
 	 * @return ImageFile
 	 */
 	function getOrCreateThumb(ThumbStrategy $thumbStrategy): ImageFile {
-		$thumbEngine = $this->file->getFileSource()->getVariationEngine()->getThumbManager();
+		$thumbEngine = $this->file->getFileSource()->getAffiliationEngine()->getThumbManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 		
 		$thumbCut = $this->getThumbCut($imageDimension);
@@ -200,14 +200,14 @@ class ImageFile {
 	}
 	
 	function createVariationFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);
 		
 		return new CommonFile($variationFileResource, $this->file->getOriginalName());
 	}
 	
 	function getOrCreateVariation(ThumbStrategy $thumbStrategy): ImageFile {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 
 		$variationFileResource = $variationManager->getByKey($imageDimension);
@@ -226,7 +226,7 @@ class ImageFile {
 			$imageResource = $this->imageSource->createImageResource();
 		} else {
 			$imageResource = $origFileSource->createImageSource()->createImageResource();
-			$this->thumbCut->resize($imageResource);
+			$this->thumbCut->cut($imageResource);
 		}
 
 		$thumbStrategy->resize($imageResource);
@@ -243,7 +243,7 @@ class ImageFile {
 	 * @return \n2n\io\managed\impl\CommonFile|null
 	 */
 	function getVariationFile(ImageDimension $imageDimension) {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		
 		if (null !== ($variationFileResource = $variationManager->getByKey($imageDimension))) {
 			return new CommonFile($variationFileResource, $this->file->getOriginalName());
@@ -264,7 +264,7 @@ class ImageFile {
 	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
 	function getVariationImageDimensions() {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		
 		$imageDimensions = array();
 		foreach ($variationManager->getAllKeys() as $key) {

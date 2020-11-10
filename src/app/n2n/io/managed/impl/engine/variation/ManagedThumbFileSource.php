@@ -30,10 +30,10 @@
 // use n2n\io\InputStream;
 // use n2n\io\img\ImageSource;
 // use n2n\io\managed\ThumbManager;
-// use n2n\io\managed\VariationEngine;
+// use n2n\io\managed\AffiliationEngine;
 // use n2n\io\managed\VariationManager;
 
-// class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, VariationEngine {
+// class ManagedThumbFileSource extends FileSourceAdapter implements FileSource, AffiliationEngine {
 // 	private $imageDimension;
 // 	private $mimeType;
 // 	private $originalFileSource;
@@ -96,7 +96,7 @@
 // 		return ImageSourceFactory::createFromFileName($this->fileFsPath, $this->mimeType);
 // 	}
 	
-// 	public function getVariationEngine(): VariationEngine {
+// 	public function getAffiliationEngine(): AffiliationEngine {
 // 		return $this;
 // 	}
 	

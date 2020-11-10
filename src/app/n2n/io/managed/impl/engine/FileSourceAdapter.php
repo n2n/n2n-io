@@ -30,7 +30,7 @@ use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\io\OutputStream;
 use n2n\io\managed\FileInfo;
 
@@ -42,7 +42,7 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	protected $valid = true;
 	protected $url;
-	protected $variationEngine;
+	protected $affiliationEngine;
 	
 	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
 			FileSource $originalFileSource = null) {
@@ -193,8 +193,8 @@ abstract class FileSourceAdapter implements FileSource {
 		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
 		$fileInfoDingsler->delete();
 		
-		if ($this->variationEngine !== null) {
-			$this->variationEngine->clear();
+		if ($this->affiliationEngine !== null) {
+			$this->affiliationEngine->clear();
 		}
 	}
 	
@@ -228,19 +228,19 @@ abstract class FileSourceAdapter implements FileSource {
 	 * @return \n2n\io\managed\ThumbManager
 	 */
 	function getThumbManager() {
-		return $this->getVariationEngine()->getThumbManager();
+		return $this->getAffiliationEngine()->getThumbManager();
 	}
 	
-	public function getVariationEngine(): VariationEngine {
+	public function getAffiliationEngine(): AffiliationEngine {
 		$this->ensureValid();
 		
-		IllegalStateException::assertTrue($this->variationEngine !== null);
+		IllegalStateException::assertTrue($this->affiliationEngine !== null);
 		
-		return $this->variationEngine;
+		return $this->affiliationEngine;
 	}
 	
-	public function setVariationEngine(VariationEngine $variationEngine) {
-		$this->variationEngine = $variationEngine;
+	public function setAffiliationEngine(AffiliationEngine $affiliationEngine) {
+		$this->affiliationEngine = $affiliationEngine;
 	}
 	
 	function writeFileInfo(FileInfo $fileInfo) {

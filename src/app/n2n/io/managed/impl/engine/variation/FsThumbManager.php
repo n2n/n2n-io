@@ -29,7 +29,6 @@ use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
-use n2n\io\managed\FileLocator;
 
 class FsThumbManager implements ThumbManager {
 	const THUMB_FOLDER_ATTRIBUTE_SEPARATOR = '-';
@@ -87,7 +86,7 @@ class FsThumbManager implements ThumbManager {
 	}
 	
 	private function createThumbFileSource(FsPath $fileFsPath, ImageDimension $imageDimension) {
-		$thumbFileSource = new FsVariationFileSource($fileFsPath, null, self::class, $this->fileSource);
+		$thumbFileSource = new FsAffiliationFileSource($fileFsPath, $this->fileSource);
 		
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
@@ -95,9 +94,9 @@ class FsThumbManager implements ThumbManager {
 			$thumbFileSource->setUrl($thumbUrl);
 		}
 		
-		$variationEngine = new LazyFsVariationEngine($thumbFileSource, $this->dirPerm, $this->filePerm);
-		$variationEngine->setThumbDisabled(true);
-		$thumbFileSource->setVariationEngine($variationEngine);
+		$affiliationEngine = new LazyFsAffiliationEngine($thumbFileSource, $this->dirPerm, $this->filePerm);
+		$affiliationEngine->setThumbDisabled(true);
+		$thumbFileSource->setAffiliationEngine($affiliationEngine);
 		
 		return $thumbFileSource;
 	}

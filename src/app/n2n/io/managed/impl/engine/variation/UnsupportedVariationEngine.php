@@ -21,16 +21,16 @@
  */
 namespace n2n\io\managed\impl\engine\variation;
 
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\VariationManager;
 
-class UnsupportedVariationEngine implements VariationEngine {
+class UnsupportedAffiliationEngine implements AffiliationEngine {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\io\managed\VariationEngine::hasThumbSupport()
+	 * @see \n2n\io\managed\AffiliationEngine::hasThumbSupport()
 	 */
 	public function hasThumbSupport(): bool {
 		return false;
@@ -38,7 +38,7 @@ class UnsupportedVariationEngine implements VariationEngine {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\io\managed\VariationEngine::getThumbManager()
+	 * @see \n2n\io\managed\AffiliationEngine::getThumbManager()
 	 */
 	public function getThumbManager(): ThumbManager {
 		throw new IllegalStateException('No thumb support avaialble.');
@@ -46,7 +46,7 @@ class UnsupportedVariationEngine implements VariationEngine {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\io\managed\VariationEngine::hasVariationSupport()
+	 * @see \n2n\io\managed\AffiliationEngine::hasVariationSupport()
 	 */
 	public function hasVariationSupport(): bool {
 		return false;
@@ -54,7 +54,7 @@ class UnsupportedVariationEngine implements VariationEngine {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\io\managed\VariationEngine::getVariationManager()
+	 * @see \n2n\io\managed\AffiliationEngine::getVariationManager()
 	 */
 	public function getVariationManager(): VariationManager {
 		throw new IllegalStateException('No variation support avaialble.');
@@ -62,7 +62,7 @@ class UnsupportedVariationEngine implements VariationEngine {
 	
 	/**	
 	 * {@inheritDoc}
-	 * @see \n2n\io\managed\VariationEngine::clear()
+	 * @see \n2n\io\managed\AffiliationEngine::clear()
 	 */
 	public function clear() {
 	}

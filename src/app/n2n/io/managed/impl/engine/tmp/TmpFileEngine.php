@@ -28,7 +28,7 @@ use n2n\io\managed\File;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\CommonFile;
 use n2n\util\uri\Url;
-use n2n\io\managed\impl\engine\variation\LazyFsVariationEngine;
+use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\FileInfo;
@@ -58,7 +58,7 @@ class TmpFileEngine {
 		$fileFsPath->chmod($this->filePerm);
 
 		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
-		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
 
@@ -73,7 +73,7 @@ class TmpFileEngine {
 		$fileInfo = new FileInfo($originalName);
 		$fileInfo->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]);
 		$tfs->writeFileInfo($fileInfo);
-		$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
 		return $tfs;
 	}
 
@@ -166,7 +166,7 @@ class TmpFileEngine {
 
 		try {
 			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $sessionId);
-			$tfs->setVariationEngine(new LazyFsVariationEngine($tfs, $this->dirPerm, $this->filePerm));
+			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
 			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
 			return null;

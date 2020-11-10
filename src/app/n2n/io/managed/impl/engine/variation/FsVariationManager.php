@@ -96,14 +96,14 @@ class FsVariationManager implements VariationManager {
 	}
 	
 	private function createVariationFileSource(FsPath $fileFsPath, string $key) {
-		$thumbFileSource = new FsVariationFileSource($fileFsPath);
+		$thumbFileSource = new FsAffiliationFileSource($fileFsPath);
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
 			$thumbUrl = $fileUrl->chPath($fileUrl->getPath()->getParent()->ext($fileFsPath->getParent()->getName(), $fileFsPath->getName()));
 			$thumbFileSource->setUrl($thumbUrl);
 		}
 		
-		$thumbFileSource->setVariationEngine($this->fileSource->getVariationEngine());
+		$thumbFileSource->setAffiliationEngine($this->fileSource->getAffiliationEngine());
 		
 		return $thumbFileSource;
 	}
@@ -162,7 +162,7 @@ class FsVariationManager implements VariationManager {
 	}
 	
 	public function clear() {
-		$fsPath = $this->fileSource->getFileFsPath();
+// 		$fsPath = $this->fileSource->getFileFsPath();
 		
 		foreach ($this->findVariationFsPaths() as $filePath) {
 			$filePath->delete();
