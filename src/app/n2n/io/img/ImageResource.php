@@ -31,11 +31,11 @@ class ImageResource {
 	private $keepHandleAlive;
 	/**
 	 * 
-	 * @param resource $resource
+	 * @param mixed $resource type resource in php 7 and GdImage in php 8
 	 * @param bool $keepHandleAlive if true handle doesn't get destroyed in __destruct()
 	 */
 	public function __construct($resource, $keepHandleAlive = false) {
-		ArgUtils::valType($resource, 'resource');
+// 		ArgUtils::valType($resource, 'resource');
 		
 		$this->width = imagesx($resource);
 		$this->height = imagesy($resource);
