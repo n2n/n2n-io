@@ -119,7 +119,7 @@ class ImageResource {
 
 		// set transparency true
 		imagealphablending($this->resource, true);
-		$watermarkRes = $watermark->getResource();
+		$watermarkRes = $watermark->getHandle();
 		imagealphablending($watermarkRes, true);
 		imagecopy($this->resource, $watermarkRes, $watermarkdestX, $watermarkdestY, 0, 0, $watermark->getWidth(), $watermark->getHeight());
 	}

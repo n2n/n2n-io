@@ -88,10 +88,9 @@ class ImageFile {
 	}
 	
 	function watermark(ImageResource $watermark, $watermarkPos = 4, $watermarkMargin = 10) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
+		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->watermark($watermark, $watermarkPos, $watermarkMargin);
-		$this->saveImageResource($imageResource);
+		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 	
