@@ -125,12 +125,12 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	 * @see \n2n\io\managed\AffiliationEngine::clear()
 	 */
 	public function clear() {
-		if ($this->variationManager !== null) {
-			$this->variationManager->clear();
+		if ($this->hasVariationSupport()) {
+			$this->getVariationManager()->clear();
 		}
 		
-		if ($this->thumbManager !== null) {
-			$this->thumbManager->clear();
+		if ($this->hasThumbSupport()) {
+			$this->getThumbManager()->clear();
 		}
 	}
 }

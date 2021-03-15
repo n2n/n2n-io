@@ -46,10 +46,13 @@ class FsAffiliationFileSource extends FileSourceAdapter implements FileSource {
 	 * @see \n2n\io\managed\FileSource::delete()
 	 */
 	public function delete() {
-		$this->ensureValid();
+		$this->getAffiliationEngine()->clear();
+		$this->fileFsPath->delete();
 		
-		throw new FileManagingConstraintException('Variation file can not be delete: '
-				. $this->fileFsPath);
+// 		$this->ensureValid();
+		
+// 		throw new FileManagingConstraintException('Variation file can not be delete: '
+// 				. $this->fileFsPath);
 	}
 	
 	/* (non-PHPdoc)
