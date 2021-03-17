@@ -22,6 +22,7 @@
 namespace n2n\io\img;
 
 use n2n\util\type\ArgUtils;
+use n2n\io\managed\img\ThumbCut;
 
 class ImageResource {	
 	private $resource;
@@ -30,11 +31,11 @@ class ImageResource {
 	private $keepHandleAlive;
 	/**
 	 * 
-	 * @param resource $resource
+	 * @param mixed $resource type resource in php 7 and GdImage in php 8
 	 * @param bool $keepHandleAlive if true handle doesn't get destroyed in __destruct()
 	 */
 	public function __construct($resource, $keepHandleAlive = false) {
-		ArgUtils::valType($resource, 'resource');
+// 		ArgUtils::valType($resource, 'resource');
 		
 		$this->width = imagesx($resource);
 		$this->height = imagesy($resource);
@@ -50,8 +51,9 @@ class ImageResource {
 	 * @param int $width
 	 * @param int $height
 	 * @param bool $cropAllowed
+	 * @return ThumbCut
 	 */
-	public function proportionalResize($width, $height, string $autoCropMode = null) {
+	public function proportionalResize(int $width, int $height, string $autoCropMode = null) {
 		ArgUtils::valEnum($autoCropMode, self::getAutoCropModes(), null, true);
 		
 		$cropWidth = null; $cropHeight = null; $x = null; $y = null;
@@ -62,6 +64,7 @@ class ImageResource {
 		}
 		
 		$this->resample($x, $y, $cropWidth, $cropHeight, $width, $height);
+		return new ThumbCut($x, $y, $cropWidth, $cropHeight);
 	}
 	
 	public static function getAutoCropModes() {
@@ -116,7 +119,7 @@ class ImageResource {
 
 		// set transparency true
 		imagealphablending($this->resource, true);
-		$watermarkRes = $watermark->getResource();
+		$watermarkRes = $watermark->getHandle();
 		imagealphablending($watermarkRes, true);
 		imagecopy($this->resource, $watermarkRes, $watermarkdestX, $watermarkdestY, 0, 0, $watermark->getWidth(), $watermark->getHeight());
 	}

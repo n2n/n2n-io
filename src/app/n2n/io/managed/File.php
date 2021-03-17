@@ -44,7 +44,7 @@ interface File extends Linkable {
 	/**
 	 * @return string or null
 	 */
-	public function getOriginalExtension();
+	public function getOriginalExtension(): ?string;
 	
 	/**
 	 * @param FileSource $fileSource

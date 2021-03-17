@@ -22,12 +22,15 @@
 namespace n2n\io\managed\impl\engine;
 
 use n2n\io\fs\FsPath;
+use n2n\io\managed\FileInfo;
 use n2n\io\managed\FileSource;
 use n2n\io\InputStream;
 use n2n\util\uri\Url;
 use n2n\io\img\ImageSource;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\io\OutputStream;
+use n2n\util\ex\NotYetImplementedException;
+use n2n\util\ex\UnsupportedOperationException;
 
 class UncommittedManagedFileSource implements FileSource {
 	private $srcFileSource;
@@ -36,6 +39,14 @@ class UncommittedManagedFileSource implements FileSource {
 	public function __construct(FileSource $srcFileSource, FileSource $newManagedFileSource) {
 		$this->srcFileSource = $srcFileSource;
 		$this->newManagedFileSource = $newManagedFileSource;
+	}
+	
+	public function getFileManagerName(): ?string {
+		return $this->newManagedFileSource->getFileManagerName();
+	}
+	
+	public function getQualifiedName(): ?string {
+		return $this->newManagedFileSource->getQualifiedName();
 	}
 	
 	public function getNewManagedFileSource() {
@@ -58,7 +69,7 @@ class UncommittedManagedFileSource implements FileSource {
 		return $this->srcFileSource->getSize();
 	}
 	
-	public function getLastModified() {
+	public function getLastModified(): ?\DateTime {
 		return $this->srcFileSource->getLastModified();
 	}
 	
@@ -98,8 +109,8 @@ class UncommittedManagedFileSource implements FileSource {
 		return $this->srcFileSource->createImageSource();
 	}
 	
-	public function getVariationEngine(): VariationEngine {
-		return $this->srcFileSource->getVariationEngine();
+	public function getAffiliationEngine(): AffiliationEngine {
+		return $this->srcFileSource->getAffiliationEngine();
 	}
 	
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false) {
@@ -119,5 +130,20 @@ class UncommittedManagedFileSource implements FileSource {
 	 */
 	public function __toString(): string {
 		return 'uncommitted ' . $this->srcFileSource . ' > ' . $this->newManagedFileSource;		
+	}
+	public function getMimeType(): string {
+		return $this->srcFileSource->getMimeType();
+	}
+	
+	public function getOriginalFileSource(): ?FileSource {
+		throw new UnsupportedOperationException();
+	}
+
+	public function readFileInfo(): FileInfo {
+		return $this->newManagedFileSource->readFileInfo();
+	}
+
+	public function writeFileInfo(FileInfo $fileInfo) {
+		$this->newManagedFileSource->writeFileInfo($fileInfo);
 	}
 }

@@ -21,24 +21,27 @@
  */
 namespace n2n\io\managed;
 
+use n2n\io\managed\img\ImageDimension;
+
 interface FileManager {
 	const TYPE_PUBLIC = 'n2n\io\managed\impl\PublicFileManager';
 	const TYPE_PRIVATE = 'n2n\io\managed\impl\PrivateFileManager';
+	
 	/**
 	 * @param File $file
-	 * @param FileLocator $fileLocator can be ignored by file manager
+	 * @param FileLocator|null $fileLocator can be ignored by file manager
 	 * @return string
 	 * @throws FileManagingConstraintException if passed File or FileLocator violates any FileManager constraints.
 	 * @throws FileManagingException on internal FileManager error 
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null): string;
+	function persist(File $file, FileLocator $fileLocator = null): string;
 	
 	/**
 	 * @param File
 	 * @return string qualified name or null if not managed by this FileManager.
 	 * @throws FileManagingException
 	 */
-	public function checkFile(File $file);
+	function checkFile(File $file);
 	
 	/**
 	 * @param string $qualifiedName
@@ -46,7 +49,7 @@ interface FileManager {
 	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException 
 	 */
-	public function getByQualifiedName(string $qualifiedName = null);
+	function getByQualifiedName(string $qualifiedName = null);
 	
 	/**
 	 * @param string $qualifiedName
@@ -54,16 +57,28 @@ interface FileManager {
 	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException
 	 */
-	public function removeByQualifiedName($qualifiedName);
+	function removeByQualifiedName(string $qualifiedName);
 	
 	/**
 	 * @param File $file
 	 * @throws FileManagingConstraintException if passed File violates any FileManager constraints.
 	 */
-	public function remove(File $file);
+	function remove(File $file);
 	
 	/**
 	 * @throws FileManagingException on internal FileManager error 
 	 */
-	public function clear();
+	function clear();
+	
+	/**
+	 * @return bool
+	 */
+	function hasThumbSupport(): bool;
+	
+	/**
+	 * @param File $file
+	 * @param FileLocator $fileLocator
+	 * @return ImageDimension[]
+	 */
+	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null): array;
 }

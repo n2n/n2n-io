@@ -19,23 +19,19 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\tmp;
 
 use n2n\io\fs\FsPath;
-use n2n\util\ex\UnsupportedOperationException;
-use n2n\io\managed\ThumbManager;
-use n2n\io\managed\VariationEngine;
-use n2n\io\managed\VariationManager;
 use n2n\util\uri\Url;
 use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;
+use n2n\io\managed\impl\engine\FileSourceAdapter;
 
 class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	private $sessionId;
 	
-	public function __construct(string $qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null, 
-			string $sessionId = null) {
-		parent::__construct($qualifiedName, $fileFsPath, $infoFsPath);
+	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath, string $sessionId = null) {
+		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath);
 		$this->sessionId = $sessionId;
 	}
 		
@@ -44,10 +40,6 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	 */
 	public function getSessionId() {
 		return $this->sessionId;
-	}
-	
-	public function getVariationEngine(): VariationEngine {
-		return new UnsupportedVariationEngine();
 	}
 	
 	public function serialize() {
@@ -80,34 +72,6 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 			$this->infoFsPath->touch();
 		}
 	}
-	
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
-	 */
-	public function hasThumbSupport(): bool {
-		return false;
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getThumbManager()
-	 */
-	public function getThumbManager(): ThumbManager {
-		throw new UnsupportedOperationException('Thumb support not available for tmp file: ' . $this->fileFsPath);
-	}
-	
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::isThumbSupportAvailable()
-	 */
-	public function hasVariationSupport(): bool {
-		return false;
-	}
-	
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\FileSource::getThumbManager()
-	 */
-	public function getVariationManager(): VariationManager {
-		throw new UnsupportedOperationException('Variation support not available for tmp file: ' . $this->fileFsPath);
-	}
 
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::__toString()
@@ -119,6 +83,10 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	public function __destruct() {
 		if ($this->sessionId === null && $this->isValid()) {
 			$this->delete();
+			
+			if ($this->affiliationEngine !== null) {
+				$this->affiliationEngine->clear();
+			}
 		}
 	}
 }

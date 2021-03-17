@@ -76,7 +76,7 @@ class CommonFile implements \Serializable, File {
 	/**
 	 * @return string
 	 */
-	public function getOriginalExtension() {
+	public function getOriginalExtension(): ?string {
 		return $this->originalExtension;
 	}
 	

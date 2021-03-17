@@ -24,41 +24,46 @@ namespace n2n\io\managed\img;
 use n2n\io\managed\File;
 use n2n\io\img\ImageResource;
 use n2n\io\managed\impl\CommonFile;
-use n2n\io\img\ImageSource;
+use n2n\io\managed\FileInfo;
 
 class ImageFile {	
 	private $file;
 	private $imageSource;
+	private $thumbCut;
 	
 	/**
 	 * @param File $file 
+	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws \n2n\io\img\UnsupportedImageTypeException if {@link self::isImage()} returns false.
 	 */
-	public function __construct(File $file) {
+	function __construct(File $file, ThumbCut $thumbCut = null) {
 		$this->file = $file;
 		$this->imageSource = $this->file->getFileSource()->createImageSource();
+		$this->thumbCut = $thumbCut;
 	}
 	
 	/**
 	 * @return File
 	 */
-	public function getFile() {
+	function getFile() {
 		return $this->file;
 	}
 	
 	/**
 	 * @return \n2n\io\img\ImageSource
 	 */
-	public function getImageSource() {
+	function getImageSource() {
 		return $this->imageSource;
 	}
 	
-	public function getWidth() {
+	function getWidth() {
 		return $this->imageSource->getWidth();
 	}
 	
-	public function getHeight() {
+	function getHeight() {
 		return $this->imageSource->getHeight();
 	}
+	
 	
 	public function crop($x, $y, $width, $height) {
 		$imageResource = $this->imageSource->createImageResource();
@@ -66,7 +71,7 @@ class ImageFile {
 		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
-
+	
 	public function resize($width, $height){
 		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->proportionalResize($width, $height);
@@ -81,17 +86,16 @@ class ImageFile {
 		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
-
-	public function watermark(ImageResource $watermark, $watermarkPos = 4, $watermarkMargin = 10) {
-		$imageSource = $this->createImageSource();
-		$imageResource = $imageSource->createResource();
+	
+	function watermark(ImageResource $watermark, $watermarkPos = 4, $watermarkMargin = 10) {
+		$imageResource = $this->imageSource->createImageResource();
 		$imageResource->watermark($watermark, $watermarkPos, $watermarkMargin);
-		$this->saveImageResource($imageResource);
+		$this->imageSource->saveImageResource($imageResource);
 		$imageResource->destroy();
 	}
 	
-	public function getThumbFile(ImageDimension $imageDimension) {
-		$thumbEngine = $this->file->getFileSource()->getThumbManager();
+	function getThumbFile(ImageDimension $imageDimension) {
+		$thumbEngine = $this->file->getFileSource()->getAffiliationEngine()->getThumbManager();
 		
 		if (null !== ($thumbFileResource = $thumbEngine->getByDimension($imageDimension))) {
 			return new CommonFile($thumbFileResource, $this->file->getOriginalName());
@@ -99,22 +103,79 @@ class ImageFile {
 		
 		return null;
 	}
+	
+	function setThumbCut(ImageDimension $imageDimension, ThumbCut $thumbCut) {
+		$fileInfo = $this->file->getFileSource()->readFileInfo(); 
 		
-	public function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
-		$thumbFileSource = $this->file->getFileSource()->getThumbManager()->create($imageResource, $imageDimension);
-		return new CommonFile($thumbFileSource, $this->file->getOriginalName());
+		$data = $fileInfo->getCustomInfo(ImageFile::class);
+		if (!isset($data['thumbCuts'])) {
+			$data['thumbCuts'] = [];
+		}
+		$data['thumbCuts'][(string) $imageDimension] = $thumbCut;
+		$fileInfo->setCustomInfo(ImageFile::class, $data);
+		
+		$this->file->getFileSource()->writeFileInfo($fileInfo);
 	}
 	
 	/**
+	 * @param ImageDimension $imageDimension
+	 * @return ThumbCut|null
+	 */
+	function getThumbCut(ImageDimension $imageDimension) {
+		$imgDimStr = (string) $imageDimension;
+		$fileInfo = $this->file->getFileSource()->readFileInfo();
+		$data = $fileInfo->getCustomInfo(ImageFile::class);
+		
+		if ($data === null || !isset($data['thumbCuts'][$imgDimStr])) {
+			return null;
+		}
+		
+		try {
+			return ThumbCut::fromArray($data['thumbCuts'][$imgDimStr]);
+		} catch (\InvalidArgumentException $e) {
+			return null;
+		}
+	}
+
+	function removeThumbCut(ImageDimension $imageDimension) {
+		$fileInfo = $this->file->getFileSource()->readFileInfo();
+		
+		$data = $fileInfo->getCustomInfo(ImageFile::class);
+		if (!isset($data['thumbCuts'])) {
+			$data['thumbCuts'] = [];
+		}
+		unset($data['thumbCuts'][(string) $imageDimension]);
+		$fileInfo->setCustomInfo(ImageFile::class, $data);
+		
+		$this->file->getFileSource()->writeFileInfo($fileInfo);
+	}
+
+	function removeThumbCuts() {
+		$fileInfo = $this->file->getFileSource()->readFileInfo();
+		$fileInfo->removeCustomInfo(ImageFile::class);
+		$this->file->getFileSource()->writeFileInfo($fileInfo);
+	}
+
+	function createThumbFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
+		$thumbFileSource = $this->file->getFileSource()->getThumbManager()->create($imageResource, $imageDimension);
+		return new CommonFile($thumbFileSource, $this->file->getOriginalName());
+	}
+
+	function removeThumbFile(ImageDimension $imageDimension) {
+		$this->file->getFileSource()->getAffiliationEngine()->getThumbManager()->remove($imageDimension);
+	}
+
+	/**
 	 * @return ImageFile
 	 */
-	public function getOrCreateThumb(ThumbStrategy $thumbStrategy): ImageFile {
-		$thumbEngine = $this->file->getFileSource()->getVariationEngine()->getThumbManager();
+	function getOrCreateThumb(ThumbStrategy $thumbStrategy): ImageFile {
+		$thumbEngine = $this->file->getFileSource()->getAffiliationEngine()->getThumbManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
 		
+		$thumbCut = $this->getThumbCut($imageDimension);
 		$thumbFileResource = $thumbEngine->getByDimension($imageDimension);
 		if ($thumbFileResource !== null) {
-			return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()));
+			return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()), $thumbCut);
 		}
 		
 		if ($thumbStrategy->matches($this->imageSource)) {
@@ -122,48 +183,87 @@ class ImageFile {
 		}
 		
 		$imageResource = $this->imageSource->createImageResource();
-		$thumbStrategy->resize($imageResource);
+		
+		if (null !== $thumbCut) {
+			$thumbCut->cut($imageResource);
+			$thumbStrategy->resize($imageResource);
+		} else {
+			$thumbCut = $thumbStrategy->resize($imageResource);
+			$this->setThumbCut($thumbStrategy->getImageDimension(), $thumbCut);
+		}
 		
 		$thumbFileResource = $thumbEngine->create($imageResource, $imageDimension);
 		$imageResource->destroy();
 		
-		return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()));
+		return new ImageFile(new CommonFile($thumbFileResource, $this->file->getOriginalName()), $thumbCut);
 	}
 	
-	public function createVariationFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+	function createVariationFile(ImageDimension $imageDimension, ImageResource $imageResource): File {
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);
 		
 		return new CommonFile($variationFileResource, $this->file->getOriginalName());
 	}
 	
-	public function getOrCreateVariation(ThumbStrategy $thumbStrategy, ImageSource $orgImageSource = null): ImageFile {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+	function getOrCreateVariation(ThumbStrategy $thumbStrategy): ImageFile {
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		$imageDimension = $thumbStrategy->getImageDimension();
-	
+
 		$variationFileResource = $variationManager->getByKey($imageDimension);
 		if ($variationFileResource !== null) {
 			return new ImageFile(new CommonFile($variationFileResource, $this->file->getOriginalName()));
 		}
-	
+
 		if ($thumbStrategy->matches($this->imageSource)) {
 			return $this;
 		}
-	
-		if ($orgImageSource === null) {
-			$orgImageSource = $this->imageSource;
+
+		$imageResource = null;
+		
+		$origFileSource = $this->file->getFileSource()->getOriginalFileSource();
+		if ($origFileSource === null || $this->thumbCut === null) {
+			$imageResource = $this->imageSource->createImageResource();
+		} else {
+			$imageResource = $origFileSource->createImageSource()->createImageResource();
+			$this->thumbCut->cut($imageResource);
 		}
-		$imageResource = $orgImageSource->createImageResource();
+
 		$thumbStrategy->resize($imageResource);
-	
+
 		$variationFileResource = $variationManager->createImage($imageDimension, $imageResource);
 		$imageResource->destroy();
-	
+
 		return new ImageFile(new CommonFile($variationFileResource, $this->file->getOriginalName()));
 	}
 	
-	public function getVariationImageDimension() {
-		$variationManager = $this->file->getFileSource()->getVariationEngine()->getVariationManager();
+	/**
+	 * 
+	 * @param ImageDimension $imageDimension
+	 * @return \n2n\io\managed\impl\CommonFile|null
+	 */
+	function getVariationFile(ImageDimension $imageDimension) {
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
+		
+		if (null !== ($variationFileResource = $variationManager->getByKey($imageDimension))) {
+			return new CommonFile($variationFileResource, $this->file->getOriginalName());
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * @deprecated use {@link self::getVariationImageDimensions()}
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	function getVariationImageDimension() {
+		return $this->getVariationImageDimensions();
+	}
+	
+	/**
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	function getVariationImageDimensions() {
+		$variationManager = $this->file->getFileSource()->getAffiliationEngine()->getVariationManager();
 		
 		$imageDimensions = array();
 		foreach ($variationManager->getAllKeys() as $key) {
@@ -175,3 +275,5 @@ class ImageFile {
 		return $imageDimensions;
 	}
 }
+
+

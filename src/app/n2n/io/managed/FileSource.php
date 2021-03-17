@@ -25,17 +25,34 @@ use n2n\util\uri\Url;
 use n2n\io\fs\FsPath;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
+use n2n\util\ex\IllegalStateException;
 use n2n\io\OutputStream;
 
 interface FileSource {
+	
+	/**
+	 * @return string|null
+	 */
+	function getFileManagerName(): ?string;
+	
+	/**
+	 * @return string|null
+	 */
+	function getQualifiedName(): ?string;
+	
+	/**
+	 * @return FileSource|NULL
+	 */
+	function getOriginalFileSource(): ?FileSource;
+	
 	/**
 	 * @return InputStream
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
-	public function createInputStream(): InputStream;
+	function createInputStream(): InputStream;
 	
 	/**
-	 * @return OuputStream
+	 * @return OutputStream
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 * @throws FileManagingException if it is not possible to create an output stream for this file.
 	 */
@@ -44,34 +61,39 @@ interface FileSource {
 	/**
 	 * Prints file to standard output 
 	 */
-	public function out();
+	function out();
 	
 	/**
 	 * @return int
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
-	public function getSize(): int;
+	function getSize(): int;
+	
+	/**
+	 * @return string
+	 */
+	function getMimeType(): string;
 	
 	/**
 	 * @return \DateTime|null null if not known 
 	 */
-	public function getLastModified();
+	function getLastModified(): ?\DateTime;
 	
 	/**
 	 * @return string 
 	 */
-	public function buildHash(): string;
+	function buildHash(): string;
 
 	/**
 	 * @return boolean false if {@link FileSource} is the FileSource is no longer accessible.
 	 */
-	public function isValid(): bool;
+	function isValid(): bool;
 	
 	/**
 	 * @return boolean
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
-	public function isHttpaccessible(): bool;
+	function isHttpaccessible(): bool;
 	
 	/**
 	 * @param Url $url
@@ -91,9 +113,9 @@ interface FileSource {
 	public function hasFsPath(): bool;
 	
 	/**
-	 * 
 	 * @return FsPath
 	 * @throws InaccessibleFileSourceException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@see self::hasFsPath()} returns false
 	 */
 	public function getFsPath(): FsPath;
 	
@@ -111,10 +133,10 @@ interface FileSource {
 	public function createImageSource(): ImageSource;
 	
 	/**
-	 * @return VariationEngine
+	 * @return AffiliationEngine
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
-	public function getVariationEngine(): VariationEngine;
+	public function getAffiliationEngine(): AffiliationEngine;
 	
 	/**
 	 * @param FsPath $fsPath
@@ -124,17 +146,17 @@ interface FileSource {
 	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
-	public function move(FsPath $fsPath, $filePerm, $overwrite = false);
+	public function move(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
 	 * @param FsPath $fsPath
 	 * @param string $filePerm
-	 * @param string $overwrite
+	 * @param bool $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
 	 * @throws \n2n\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
-	public function copy(FsPath $fsPath, $filePerm, $overwrite = false);
+	public function copy(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
@@ -142,6 +164,17 @@ interface FileSource {
 	 * @throws FileManagingConstraintException if file is not allowed to be deleted.
 	 */
 	public function delete();
+	
+	/**
+	 * @return FileInfo
+	 * @throws FileManagingException
+	 */
+	function readFileInfo(): FileInfo;
+	
+	/**
+	 * @param FileInfo $fileInfo
+	 */
+	function writeFileInfo(FileInfo $fileInfo);
 	
 	/**
 	 * @return string

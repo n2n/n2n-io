@@ -26,35 +26,34 @@ use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
 use n2n\util\type\ArgUtils;
+use n2n\io\managed\img\ThumbCut;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
 	private $scaleUpAllowed;
 	private $imageDimension;
+	
 
-	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true) {
+	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true, 
+			string $idExt = null) {
 		ArgUtils::valEnum($autoCropMode, ImageResource::getAutoCropModes(), null, true);
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;
-		$this->imageDimension = new ImageDimension($width, $height, $this->buildIdExt());
+		$this->imageDimension = new ImageDimension($width, $height, $autoCropMode !== null, $scaleUpAllowed, $idExt);
 	}
 	
-	private function buildIdExt() {
-		$idExt = null;
-		if ($this->autoCropMode !== null) {
-			$idExt .= 'c' . $this->autoCropMode;
-		}
-		if ($this->scaleUpAllowed) {
-			$idExt .= 's';
-		}
-		return $idExt;
-	}
-	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\img\ThumbStrategy::getImageDimension()
+	 */
 	public function getImageDimension(): ImageDimension {
 		return $this->imageDimension;
 	}
 
-	public function isAutoCropEnabled(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isAutoCropEnabled() {
 		return $this->autoCropMode !== null;
 	}
 	
@@ -62,7 +61,10 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 		return $this->autoCropMode;
 	}
 
-	public function isScaleUpAllowed(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isScaleUpAllowed() {
 		return $this->scaleUpAllowed;
 	}
 
@@ -76,18 +78,40 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 			return true;
 		}
 
-		if ($this->scaleUpAllowed) return false;
+		if ($this->scaleUpAllowed) {
+			return false;
+		}
 
 		return $this->imageDimension->getWidth() >= $imageSource->getWidth()
 				&& $this->imageDimension->getHeight() >= $imageSource->getHeight();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\img\ThumbStrategy::resize()
 	 */
-	public function resize(ImageResource $imageResource) {
-		$imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
+	public function resize(ImageResource $imageResource): ThumbCut {
+		return $imageResource->proportionalResize($this->imageDimension->getWidth(), $this->imageDimension->getHeight(),
 				$this->getAutoCropMode());
 	}
+	
+// 	static function fromImageDimension(ImageDimension $imageDimension) {
+// 		$idExt = $imageDimension->getIdExt();
+		
+// 		$autoCropMode = null;
+// 		foreach (ImageResource::getAutoCropModes() as $cropMode) {
+// 			if (!StringUtils::startsWith(self::CROP_ID_PREFIX . $cropMode, $idExt)) {
+// 				continue;
+// 			}
+			
+// 			$autoCropMode = $cropMode;
+// 			$idExt = mb_substr($idExt, mb_strlen($autoCropMode));
+// 			break;
+// 		}
+		
+// 		$scaleUp = $idExt === self::SCALE_UP_ID_PREFIX;
+		
+// 		return new ProportionalThumbStrategy($imageDimension->getWidth(), $imageDimension->getHeight(),
+// 				$autoCropMode, $scaleUp);
+// 	}
 }

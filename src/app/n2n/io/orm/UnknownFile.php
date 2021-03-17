@@ -21,13 +21,19 @@
  */
 namespace n2n\io\orm;
 
+use n2n\io\InputStream;
+use n2n\io\OutputStream;
+use n2n\io\fs\FsPath;
+use n2n\io\img\ImageSource;
 use n2n\io\managed\File;
+use n2n\io\managed\FileInfo;
+use n2n\io\managed\AffiliationEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
 use n2n\util\uri\UnavailableUrlException;
 use n2n\util\uri\Url;
 
-class UnknownFile implements File {
+class UnknownFile implements File, FileSource {
 	private $qualifiedName;
 	private $fileManagerName;
 	
@@ -38,6 +44,10 @@ class UnknownFile implements File {
 	
 	public function isValid(): bool {
 		return false;
+	}
+	
+	function getFileManagerName(): ?string {
+		return $this->fileManagerName;
 	}
 	
 	public function getQualifiedName(): string {
@@ -64,7 +74,7 @@ class UnknownFile implements File {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\File::getOriginalExtension()
 	 */
-	public function getOriginalExtension() {
+	public function getOriginalExtension(): ?string {
 		$this->throwException();
 	}
 	
@@ -78,7 +88,7 @@ class UnknownFile implements File {
 	 * @see \n2n\io\managed\File::getFileSource()
 	 */
 	public function getFileSource(): FileSource {
-		$this->throwException();
+		return $this;
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\File::__toString()
@@ -121,5 +131,80 @@ class UnknownFile implements File {
 		} catch (IllegalStateException $e) {
 			throw new UnavailableUrlException(false, null, 0, $e);
 		}
+	}
+	public function getLastModified(): ?\DateTime {
+		$this->throwException();
+	}
+
+	public function out() {
+		$this->throwException();
+	}
+
+	public function getFsPath(): FsPath {
+		$this->throwException();
+	}
+
+	public function isHttpaccessible(): bool {
+		$this->throwException();
+	}
+
+	public function buildHash(): string {
+		$this->throwException();
+	}
+
+	public function getAffiliationEngine(): AffiliationEngine {
+		$this->throwException();
+	}
+
+	public function createInputStream(): InputStream {
+		$this->throwException();
+	}
+
+	public function setUrl(Url $url) {
+		$this->throwException();
+	}
+
+	public function getUrl(): Url {
+		$this->throwException();
+	}
+
+	public function getSize(): int {
+		$this->throwException();
+	}
+
+	public function isImage(): bool {
+		$this->throwException();
+	}
+
+	public function hasFsPath(): bool {
+		$this->throwException();
+	}
+
+	public function createImageSource(): ImageSource {
+		$this->throwException();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::getMimeType()
+	 */
+	public function getMimeType(): string {
+		$this->throwException();
+	}
+	
+	public function getOriginalFileSource(): ?FileSource {
+		return null;
+	}
+
+	public function createOutputStream(): OutputStream {
+		$this->throwException();
+	}
+
+	public function writeFileInfo(FileInfo $fileInfo) {
+		$this->throwException();
+	}
+
+	public function readFileInfo(): FileInfo {
+		$this->throwException();
 	}
 }

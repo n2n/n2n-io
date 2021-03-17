@@ -19,34 +19,48 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\transactional;
 
+use n2n\core\Lock;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\managed\File;
 use n2n\io\IoException;
 use n2n\io\managed\FileManagingException;
 
-class FileRemoveJob {
+class FilePersistJob {
+	private $file;
 	private $managedFileSource;
+	private $lock;
+	private $filePerm;
 	private $executed = false;
 
-	public function __construct(ManagedFileSource $managedFileSource) {
+	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock, string $filePerm) {
+		$this->file = $file;
 		$this->managedFileSource = $managedFileSource;
+		$this->lock = $lock;
+		$this->filePerm = $filePerm;
+	}
+	
+	public function getFile() {
+		return $this->file;
 	}
 
 	public function execute() {
 		IllegalStateException::assertTrue(!$this->executed);
 		$this->executed = true;
 
-		$this->managedFileSource->clear();
-		
-		$fsPath = $this->managedFileSource->getFileFsPath();
-		if (!$fsPath->exists()) return;
-			
 		try {
-			$fsPath->delete();
+			$this->file->getFileSource()->move($this->managedFileSource->getFileFsPath(), $this->filePerm);
+			$this->file->setFileSource($this->managedFileSource);
+			$this->lock->release();
 		} catch (IoException $e) {
+			$this->lock->release();
 			throw new FileManagingException($this->managedFileSource->getFileManagerName() 
-					. ' could not remove file source: ' . $this->managedFileSource, 0, $e);
+					. ' could not persist file source: ' . $this->managedFileSource, 0, $e);
 		}
+	}
+	
+	public function dispose() {
+		$this->lock->release();
 	}
 }

@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\variation;
 
 use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
@@ -28,8 +28,9 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
-class ManagedThumbManager implements ThumbManager {
+class FsThumbManager implements ThumbManager {
 	const THUMB_FOLDER_ATTRIBUTE_SEPARATOR = '-';
 
 	private $fileSource;
@@ -37,7 +38,7 @@ class ManagedThumbManager implements ThumbManager {
 	private $dirPerm;
 	private $filePerm;
 	
-	public function __construct(ManagedFileSource $fileSource, $mimeType, $dirPerm, $filePerm) {
+	public function __construct(FileSource $fileSource, string $mimeType, string $dirPerm, string $filePerm) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
 		$this->dirPerm = $dirPerm;
@@ -49,7 +50,7 @@ class ManagedThumbManager implements ThumbManager {
 			return QualifiedNameBuilder::buildResFolderName((string) $dimension);
 		} catch (\InvalidArgumentException $e) {
 			throw new FileManagingException('Failed to create ThumbFileSource due to invalid ImageDimension idExt: ' 
-				. $dimension->getIdExt(), 0, $e);
+					. $dimension->getIdExt(), 0, $e);
 		}
 		
 // 		return QualifiedNameBuilder::buildResFolderName(implode(self::THUMB_FOLDER_ATTRIBUTE_SEPARATOR,
@@ -85,12 +86,18 @@ class ManagedThumbManager implements ThumbManager {
 	}
 	
 	private function createThumbFileSource(FsPath $fileFsPath, ImageDimension $imageDimension) {
-		$thumbFileSource = new ManagedThumbFileSource($fileFsPath, $imageDimension, $this->mimeType, $this->fileSource);
+		$thumbFileSource = new FsAffiliationFileSource($fileFsPath, $this->fileSource);
+		
 		if ($this->fileSource->isHttpaccessible()) {
 			$fileUrl = $this->fileSource->getUrl();
 			$thumbUrl = $fileUrl->chPath($fileUrl->getPath()->getParent()->ext($fileFsPath->getParent()->getName(), $fileFsPath->getName()));
 			$thumbFileSource->setUrl($thumbUrl);
 		}
+		
+		$affiliationEngine = new LazyFsAffiliationEngine($thumbFileSource, $this->dirPerm, $this->filePerm);
+		$affiliationEngine->setThumbDisabled(true);
+		$thumbFileSource->setAffiliationEngine($affiliationEngine);
+		
 		return $thumbFileSource;
 	}
 	
@@ -112,13 +119,30 @@ class ManagedThumbManager implements ThumbManager {
 		return $this->createThumbFileSource($fileFsPath, $imageDimension);
 	}
 	
+	function remove(ImageDimension $imageDimension) {
+		$fileFsPath = $this->createThumbFilePath($imageDimension);
+		
+		if (!$fileFsPath->exists()) {
+			return;
+		}
+		
+		$this->createThumbFileSource($fileFsPath, $imageDimension)->delete();
+	}
+	
 	/**
 	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
 	public function getPossibleImageDimensions(): array {
+		return self::determinePossibleImageDimensions($this->fileSource->getFileFsPath()->getParent());
+	}
+	
+	/**
+	 * @param FsPath $dirFsPath
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	static function determinePossibleImageDimensions(FsPath $dirFsPath) {
 		$imageDimensions = array();
-		foreach ($this->fileSource->getFileFsPath()->getParent()
-				->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX . '*') as $thumbFsPath) {
+		foreach ($dirFsPath->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX . '*') as $thumbFsPath) {
 			try {
 				$imageDimensions[] = self::dirNameToDimension($thumbFsPath->getName());
 			} catch (\InvalidArgumentException $e) {
@@ -145,8 +169,8 @@ class ManagedThumbManager implements ThumbManager {
 	
 	private function findThumbFsPaths() {
 		$fsPath = $this->fileSource->getFileFsPath();
-		return $fsPath->getParent()->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX .
-				'*' . DIRECTORY_SEPARATOR . $fsPath->getName());
+		return $fsPath->getParent()->getChildren(QualifiedNameBuilder::RES_FOLDER_PREFIX 
+				. '*' . DIRECTORY_SEPARATOR . $fsPath->getName());
 	}
 	
 	public function clear() {

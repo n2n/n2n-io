@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\tmp;
 
 use n2n\io\fs\FsPath;
 use n2n\io\IoUtils;
@@ -28,6 +28,10 @@ use n2n\io\managed\File;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\CommonFile;
 use n2n\util\uri\Url;
+use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
+use n2n\io\managed\impl\engine\FileInfoDingsler;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
+use n2n\io\managed\FileInfo;
 
 class TmpFileEngine {
 	const INFO_SUFFIX = '.inf';
@@ -38,31 +42,40 @@ class TmpFileEngine {
 	const INFO_SESSION_ID_KEY = 'sessionId';
 
 	private $fsPath;
+	private $dirPerm;
 	private $filePerm;
+	private $fileManagerName;
 
-	public function __construct(FsPath $fsPath, $filePerm) {
+	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm, string $fileManagerName) {
 		$this->fsPath = $fsPath;
+		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
+		$this->fileManagerName = $fileManagerName;
 	}
 
 	private function createThreadTmpFileSource() {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		return new TmpFileSource($fileFsPath->getName(), $fileFsPath);
+		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		return $tfs;
 	}
 
 	private function createSessionTmpFileSource($sessionId, $originalName) {
 		$fileFsPath = new FsPath(tempnam($this->fsPath, self::SESS_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
-		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-		$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $originalName,
-			self::INFO_SESSION_ID_KEY => $sessionId));
+// 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+// 		$fileInfoDingsler->write();
 
-		return new TmpFileSource($fileFsPath->getName(), $fileFsPath, $fileInfoDingsler->getInfoFsPath(), $sessionId);
+		$tfs = new TmpFileSource($fileFsPath->getName(), $this->fileManagerName, $fileFsPath, $sessionId);
+		$fileInfo = new FileInfo($originalName);
+		$fileInfo->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]);
+		$tfs->writeFileInfo($fileInfo);
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		return $tfs;
 	}
-
 
 	private function createTmpFileSource($sessionId, $originalName) {
 		if ($sessionId === null) {
@@ -72,7 +85,7 @@ class TmpFileEngine {
 		return $this->createSessionTmpFileSource($sessionId, $originalName);
 	}
 
-	public function createFile($sessionId = null, $originalName = null) {
+	public function createFile(string $sessionId = null, string $originalName = null) {
 		$tmpFileSource = $this->createTmpFileSource($sessionId, $originalName);
 
 		if ($originalName === null) {
@@ -113,7 +126,7 @@ class TmpFileEngine {
 
 	public function containsSessionFile(File $file, $sessionId) {
 		return $file->getFileSource() instanceof TmpFileSource
-			&& $file->getFileSource()->getSessionId() === $sessionId;
+				&& $file->getFileSource()->getSessionId() === $sessionId;
 	}
 
 	public function getSessionFile($qualifiedName, $sessionId) {
@@ -125,15 +138,17 @@ class TmpFileEngine {
 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 		$infoFsPath = $fileInfoDingsler->getInfoFsPath();
 
+		$infoFile = null;
 		$infoData = null;
 		try {
-			$infoData = $fileInfoDingsler->read();
+			$infoFile = $fileInfoDingsler->read();
+			$infoData = $infoFile->getCustomInfo(TmpFileEngine::class);
 		} catch (FileManagingException $e) { }
 
-		if ($infoData === null || !array_key_exists(self::INFO_SESSION_ID_KEY, $infoData)
-			|| !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
+		if ($infoFile === null || $infoFile->getOriginalName() === null 
+				|| $infoData === null || !array_key_exists(self::INFO_SESSION_ID_KEY, $infoData)) {
 			$fileFsPath->delete();
-			$infoFsPath->delete();
+			$fileInfoDingsler->delete();
 			return null;
 		}
 
@@ -144,18 +159,18 @@ class TmpFileEngine {
 		$fileFsPath->touch();
 		$infoFsPath->touch();
 
-		$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
-		if ($originalName === null) {
-			$originalName = $fileFsPath->getName();
-		}
+// 		$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
+// 		if ($originalName === null) {
+// 			$originalName = $fileFsPath->getName();
+// 		}
 
 		try {
-			return new CommonFile(new TmpFileSource($qualifiedName, $fileFsPath, $infoFsPath, $sessionId),
-				$originalName);
+			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $sessionId);
+			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
 			return null;
 		}
-
 	}
 
 	public function deleteOldSessionFiles($gcMaxLifetime) {

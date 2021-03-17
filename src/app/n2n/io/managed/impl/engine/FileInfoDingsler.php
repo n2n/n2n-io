@@ -28,9 +28,11 @@ use n2n\util\JsonDecodeFailedException;
 use n2n\util\StringUtils;
 use n2n\io\IoUtils;
 use n2n\io\managed\FileManagingException;
+use n2n\io\managed\FileInfo;
 
 class FileInfoDingsler {
-	const INFO_SUFFIX = '.inf';
+	const INFO_EXTENSION = 'inf';
+	const INFO_SUFFIX = '.' . self::INFO_EXTENSION;
 
 	private $infoFsPath;
 
@@ -46,9 +48,9 @@ class FileInfoDingsler {
 		return $this->infoFsPath->exists();
 	}
 
-	public function write(array $data) {
+	public function write(FileInfo $fileInfo) {
 		try {
-			IoUtils::putContents($this->infoFsPath, StringUtils::jsonEncode($data));
+			IoUtils::putContents($this->infoFsPath, StringUtils::jsonEncode($fileInfo));
 		} catch (JsonEncodeFailedException $e) {
 			throw $this->createWriteException($e);
 		} catch (IoException $e) {
@@ -56,14 +58,25 @@ class FileInfoDingsler {
 		}
 	}
 
+	/**
+	 * @return FileInfo
+	 */
 	public function read() {
-		try{
-			return StringUtils::jsonDecode(IoUtils::getContents($this->infoFsPath), true);
+		try {
+			if (!$this->infoFsPath->exists()) {
+				return new FileInfo();
+			}
+			
+			return FileInfo::fromArray(StringUtils::jsonDecode(IoUtils::getContents($this->infoFsPath), true));
 		} catch (JsonDecodeFailedException $e) {
 			throw $this->createReadException($e);
 		} catch (IoException $e) {
 			throw $this->createReadException($e);
 		}
+	}
+	
+	function delete() {
+		return $this->infoFsPath->delete();
 	}
 
 	private function createWriteException($e) {

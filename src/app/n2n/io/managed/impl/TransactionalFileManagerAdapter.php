@@ -32,9 +32,13 @@ use n2n\core\container\TransactionalResource;
 use n2n\io\managed\FileManager;
 use n2n\core\container\CommitListener;
 use n2n\core\container\CommitFailedException;
+use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
 
 abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource, CommitListener {
 	protected $tm;
+	/**
+	 * @var TransactionalFileEngine
+	 */
 	protected $fileEngine;
 	
 	private function _init(TransactionManager $tm) {
@@ -46,7 +50,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	
 	/**
 	 * @throws IllegalStateException
-	 * @return \n2n\io\managed\impl\engine\TransactionFileEngine
+	 * @return \n2n\io\managed\impl\engine\transactional\TransactionalFileEngine
 	 */
 	private function getFileEngine() {
 		if ($this->fileEngine === null) {
@@ -157,5 +161,13 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	
 	public function postCommit(Transaction $transaction) {
 		$this->fileEngine->flush();
+	}
+	
+	function hasThumbSupport(): bool {
+		return true;
+	}
+	
+	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null): array {
+		return $this->fileEngine->getPossibleImageDimensions($file, $fileLocator);
 	}
 }

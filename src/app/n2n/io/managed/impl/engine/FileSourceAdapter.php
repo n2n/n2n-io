@@ -30,26 +30,40 @@ use n2n\io\img\impl\ImageSourceFactory;
 use n2n\io\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
+use n2n\io\managed\AffiliationEngine;
 use n2n\io\OutputStream;
+use n2n\io\managed\FileInfo;
 
 abstract class FileSourceAdapter implements FileSource {
 	protected $qualifiedName;
+	protected $fileManagerName;
 	protected $fileFsPath;
-	protected $infoFsPath;
+	protected $originalFileSource;
 	
 	protected $valid = true;
 	protected $url;
+	protected $affiliationEngine;
 	
-	public function __construct($qualifiedName, FsPath $fileFsPath, FsPath $infoFsPath = null) {
+	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
+			FileSource $originalFileSource = null) {
 		$this->qualifiedName = $qualifiedName;
+		$this->fileManagerName = $fileManagerName;
 		$this->fileFsPath = $fileFsPath;
-		$this->infoFsPath = $infoFsPath;
+		$this->originalFileSource = $originalFileSource;
 	}
 	/**
 	 * @return string
 	 */
-	public function getQualifiedName() {
+	function getQualifiedName(): ?string {
 		return $this->qualifiedName;
+	}
+	
+	function getFileManagerName(): ?string {
+		return $this->fileManagerName;	
+	}
+	
+	function getOriginalFileSource(): ?FileSource {
+		return $this->originalFileSource;
 	}
 	
 	/**
@@ -74,19 +88,12 @@ abstract class FileSourceAdapter implements FileSource {
 	public function getFileFsPath(): FsPath {
 		return $this->fileFsPath;
 	}
-	
-	/**
-	 * @return FsPath
-	 */
-	public function getInfoFsPath() {
-		return $this->infoFsPath;
-	}
 
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\FileSource::getLastModified()
 	 */
-	public function getLastModified() {
+	public function getLastModified(): ?\DateTime {
 		$this->ensureValid();
 		return $this->fileFsPath->getLastMod();
 	}
@@ -147,6 +154,11 @@ abstract class FileSourceAdapter implements FileSource {
 		return $this->fileFsPath->getSize();
 	}
 	
+	public function getMimeType(): string {
+		$this->ensureValid();
+		return mime_content_type((string) $this->fileFsPath);
+	}
+	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::move()
 	*/
@@ -155,9 +167,8 @@ abstract class FileSourceAdapter implements FileSource {
 	
 		$this->valid = false;
 		$this->fileFsPath->moveFile($fsPath, $filePerm, $overwrite);
-		if ($this->infoFsPath !== null) {
-			$this->infoFsPath->delete();
-		}
+		
+		(new FileInfoDingsler($this->fileFsPath))->delete();
 	}
 	
 	/* (non-PHPdoc)
@@ -177,9 +188,13 @@ abstract class FileSourceAdapter implements FileSource {
 		$this->ensureValid();
 	
 		$this->valid = false;
+		
 		$this->fileFsPath->delete();
-		if ($this->infoFsPath !== null) {
-			$this->infoFsPath->delete();
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		$fileInfoDingsler->delete();
+		
+		if ($this->affiliationEngine !== null) {
+			$this->affiliationEngine->clear();
 		}
 	}
 	
@@ -203,7 +218,43 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	public function createImageSource(): ImageSource {
 		$this->ensureValid();
+		
 		return ImageSourceFactory::createFromFileName($this->fileFsPath,
-				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath));
+				ImageSourceFactory::getMimeTypeOfFile($this->fileFsPath, true));
 	}
+	
+	/**
+	 * Hack for older rocket versions.
+	 * @return \n2n\io\managed\ThumbManager
+	 */
+	function getThumbManager() {
+		return $this->getAffiliationEngine()->getThumbManager();
+	}
+	
+	public function getAffiliationEngine(): AffiliationEngine {
+		$this->ensureValid();
+		
+		IllegalStateException::assertTrue($this->affiliationEngine !== null);
+		
+		return $this->affiliationEngine;
+	}
+	
+	public function setAffiliationEngine(AffiliationEngine $affiliationEngine) {
+		$this->affiliationEngine = $affiliationEngine;
+	}
+	
+	function writeFileInfo(FileInfo $fileInfo) {
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		$fileInfoDingsler->write($fileInfo);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * @see \n2n\io\managed\FileSource::readFileInfo()
+	 */
+	function readFileInfo(): FileInfo {
+		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
+		return $fileInfoDingsler->read();
+	}
+	
 }

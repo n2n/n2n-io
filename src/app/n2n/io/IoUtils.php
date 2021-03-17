@@ -619,6 +619,11 @@ class IoUtils {
 // 						array('file' => $file->getPath(), 'file_name' => $file->getOriginalName())));
 // 	}
 	
+	/**
+	 * @param string $filename
+	 * @throws IoException
+	 * @return string
+	 */
 	public static function getimagesize($filename) {
 		$imagesize = @getimagesize($filename);
 		if (false === $imagesize) {
@@ -638,7 +643,7 @@ class IoUtils {
 		if ($maxSize < 0) {
 			// Start with post_max_size.
 			$maxSize = self::parsePhpIniSize(ini_get('post_max_size'));
-	
+			
 			// If upload_max_size is less, then reduce. Except if upload_max_size is
 			// zero, which indicates no limit.
 			$upload_max = self::parsePhpIniSize(ini_get('upload_max_filesize'));
@@ -646,8 +651,31 @@ class IoUtils {
 				$maxSize = $upload_max;
 			}
 		}
+		
 		return $maxSize;
 	}
+	
+	const DEFAULT_MEMORY_LIMIT = 33554432;
+	
+	/**
+	 * @return int
+	 */
+	static function determinMemoryLimit() {
+		static $memoryLimit = null;
+		
+		if ($memoryLimit !== null) {
+			return $memoryLimit;
+		}
+		
+		$memoryLimit = self::parsePhpIniSize(ini_get('memory_limit'));
+		
+		if (empty($memoryLimit)) {
+			$memoryLimit = self::DEFAULT_MEMORY_LIMIT;
+		}
+		
+		return $memoryLimit;
+	}
+	
 	
 	public static function curlExec($ch) {
 		$response = @curl_exec($ch);
@@ -658,7 +686,7 @@ class IoUtils {
 		return $response;
 	}
 	
-	public static function parsePhpIniSize($size) {
+	public static function parsePhpIniSize(string $size) {
 		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
 		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
 		if ($unit) {

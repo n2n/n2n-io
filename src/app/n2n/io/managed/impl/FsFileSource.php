@@ -30,17 +30,17 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\img\ImageSource;
 use n2n\io\InputStream;
-use n2n\io\managed\VariationEngine;
+use n2n\io\managed\AffiliationEngine;
 use n2n\io\managed\VariationManager;
 use n2n\io\CouldNotAchieveFlockException;
 use n2n\io\fs\FileResourceStream;
 use n2n\io\OutputStream;
 
-class FsFileSource extends FileSourceAdapter implements FileSource, VariationEngine {
+class FsFileSource extends FileSourceAdapter implements FileSource, AffiliationEngine {
 	protected $fsPath;
 	
 	public function __construct(FsPath $fsPath) {
-		parent::__construct(null, $fsPath);
+		parent::__construct(null, null, $fsPath);
 		$this->fsPath = $fsPath;
 	}
 	
@@ -86,7 +86,7 @@ class FsFileSource extends FileSourceAdapter implements FileSource, VariationEng
 			   ImageSourceFactory::getMimeTypeOfFile($this->fsPath));
 	}
 	
-	public function getVariationEngine(): VariationEngine {
+	public function getAffiliationEngine(): AffiliationEngine {
 		return $this;
 	}
 	

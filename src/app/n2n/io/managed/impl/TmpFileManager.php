@@ -26,7 +26,7 @@ use n2n\core\VarStore;
 use n2n\context\RequestScoped;
 use n2n\web\http\Session;
 use n2n\core\config\IoConfig;
-use n2n\io\managed\impl\engine\TmpFileEngine;
+use n2n\io\managed\impl\engine\tmp\TmpFileEngine;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\File;
 use n2n\reflection\ObjectAdapter;
@@ -40,14 +40,15 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	private function _init(VarStore $varStore, IoConfig $ioConfig) {
 		$tmpDirFsPath = $varStore->requestDirFsPath(VarStore::CATEGORY_TMP, N2N::NS, self::TMP_DIR);
 
-		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateFilePermission());
+		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateDirPermission(), 
+				$ioConfig->getPrivateFilePermission(), self::class);
 
 		$this->cleanUp();
 	}
 
 	/**
 	 * @throws IllegalStateException
-	 * @return \n2n\io\managed\impl\engine\TmpFileEngine
+	 * @return \n2n\io\managed\impl\engine\tmp\TmpFileEngine
 	 */
 	private function getTmpFileEngine() {
 		if ($this->tmpFileEngine !== null) {
@@ -127,6 +128,7 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	public function containsSessionFile(File $file, Session $session) {
 		return $this->getTmpFileEngine()->containsSessionFile($file, $session->getId());
 	}
+	
 	/**
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */

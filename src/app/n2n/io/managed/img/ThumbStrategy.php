@@ -30,5 +30,5 @@ interface ThumbStrategy {
 	
 	public function matches(ImageSource $imageSource): bool;
 	
-	public function resize(ImageResource $imageResource);
+	public function resize(ImageResource $imageResource): ThumbCut;
 }

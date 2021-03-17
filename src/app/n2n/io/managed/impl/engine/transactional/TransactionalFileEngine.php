@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\io\managed\impl\engine;
+namespace n2n\io\managed\impl\engine\transactional;
 
 use n2n\util\HashUtils;
 use n2n\util\type\ArgUtils;
@@ -34,8 +34,15 @@ use n2n\io\managed\impl\CommonFile;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\managed\FileManagingException;
+use n2n\io\managed\impl\engine\UncommittedManagedFileSource;
+use n2n\io\managed\impl\engine\FileInfoDingsler;
+use n2n\io\managed\impl\engine\QualifiedNameBuilder;
+use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
+use n2n\io\managed\impl\engine\QualifiedNameFormatException;
+use n2n\io\managed\impl\engine\variation\FsThumbManager;
+use n2n\io\managed\FileInfo;
 
-class TransactionFileEngine {
+class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
 	
 	const FILE_SUFFIX = '.managed';
@@ -148,21 +155,23 @@ class TransactionFileEngine {
 			$fileFsPath = $dirFsPath->ext($usedFileName);
 		}
 		
-		$infoFsPath = null;
-		if (!$this->customFileNamesAllowed) {
-			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
-			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
-		}
+// // 		$infoFsPath = null;
+// // 		if (!$this->customFileNamesAllowed) {
+// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+// 			$fileInfoDingsler->write(array(self::INFO_ORIGINAL_NAME_KEY => $file->getOriginalName()));
+// 			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
+// // 		}
 		
 		$qualifiedName = $qnb->__toString();
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, $this->dirPerm, $this->filePerm);
+		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
+		$managedFileSource->writeFileInfo($file->getFileSource()->readFileInfo());
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
+		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm));
 		
 		$file->setFileSource(new UncommittedManagedFileSource($file->getFileSource(), $managedFileSource));
-		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock);
+		$this->filePersistJobs[$qualifiedName] = new FilePersistJob($file, $managedFileSource, $lock, $this->filePerm);
 		return $qualifiedName;
 	}
 	
@@ -184,6 +193,7 @@ class TransactionFileEngine {
 	/**
 	 * @param string $qualifiedName
 	 * @return File
+	 * @throws FileManagingException
 	 */
 	public function getByQualifiedName(string $qualifiedName) {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
@@ -198,35 +208,46 @@ class TransactionFileEngine {
 			return null;
 		}
 		
-		$infoFsPath = null;
 		$originalName = null;
+		
+// 		if ($this->customFileNamesAllowed) {
+// 			$originalName = $fileFsPath->getName();
+// 		} else {
+// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
+			
+// 			$infoData = null;
+// 			try {
+// 				$infoData = $fileInfoDingsler->read();
+// 			} catch (FileManagingException $e) { }
+			
+// 			if ($infoData === null || null === $infoData->getOriginalName()) {
+// 				$fileFsPath->delete();
+// 				$fileInfoDingsler->delete();
+// 				return null;
+// 			}
+			
+// 			$originalName = $infoData->getOriginalName();;
+// 		}
+		
+		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
 		
 		if ($this->customFileNamesAllowed) {
 			$originalName = $fileFsPath->getName();
 		} else {
-			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-			$infoFsPath = $fileInfoDingsler->getInfoFsPath();
+			$fileInfo = $managedFileSource->readFileInfo();
+			$originalName = $fileInfo->getOriginalName();
 			
-			$infoData = null;
-			try {
-				$infoData = $fileInfoDingsler->read();
-			} catch (FileManagingException $e) { }
-			
-			if ($infoData === null || !array_key_exists(self::INFO_ORIGINAL_NAME_KEY, $infoData)) {
-				$fileFsPath->delete();
-				$infoFsPath->delete();
-				return null;
+			if ($originalName === null) {
+				$managedFileSource->delete();
 			}
-			
-			$originalName = $infoData[self::INFO_ORIGINAL_NAME_KEY];
 		}
-		
-		$managedFileSource = new ManagedFileSource($fileFsPath, $infoFsPath, $this->fileManagerName, $qualifiedName, 
-				$this->dirPerm, $this->filePerm);
 		
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnBuilder->toArray()));
 		}
+		
+		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, 
+				$this->filePerm));
 		
 		return new CommonFile($managedFileSource, $originalName);
 	}
@@ -313,5 +334,18 @@ class TransactionFileEngine {
 		$this->persistedFiles = array();
 		$this->filePersistJobs = array();
 		$this->fileRemoveJobs = array();
+	}
+	
+	/**
+	 * @param File $file
+	 * @param FileLocator $fileLocator
+	 * @return \n2n\io\managed\img\ImageDimension[]
+	 */
+	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null) {
+		$dirFsPath = $this->baseDirFsPath;
+		if ($fileLocator !== null) {
+			$dirFsPath = $this->baseDirFsPath->ext($fileLocator->buildDirLevelNames($file));
+		}
+		return FsThumbManager::determinePossibleImageDimensions($dirFsPath);
 	}
 }
