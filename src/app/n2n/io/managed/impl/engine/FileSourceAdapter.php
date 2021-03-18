@@ -67,6 +67,13 @@ abstract class FileSourceAdapter implements FileSource {
 	}
 	
 	/**
+	 * @param FileSource $originalFileSource
+	 */
+	function setOriginalFileSource(?FileSource $originalFileSource) {
+		$this->originalFileSource = $originalFileSource;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\FileSource::hasFsPath()
 	 */
