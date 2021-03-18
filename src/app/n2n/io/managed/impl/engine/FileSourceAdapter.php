@@ -231,6 +231,14 @@ abstract class FileSourceAdapter implements FileSource {
 		return $this->getAffiliationEngine()->getThumbManager();
 	}
 	
+	/**
+	 * @deprecated
+	 * @return \n2n\io\managed\AffiliationEngine
+	 */
+	function getVariationEngine() {
+		return $this->getAffiliationEngine();
+	}
+	
 	public function getAffiliationEngine(): AffiliationEngine {
 		$this->ensureValid();
 		
