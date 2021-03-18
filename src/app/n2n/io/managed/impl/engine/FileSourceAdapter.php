@@ -67,6 +67,13 @@ abstract class FileSourceAdapter implements FileSource {
 	}
 	
 	/**
+	 * @param FileSource $originalFileSource
+	 */
+	function setOriginalFileSource(?FileSource $originalFileSource) {
+		$this->originalFileSource = $originalFileSource;
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\FileSource::hasFsPath()
 	 */
@@ -229,6 +236,14 @@ abstract class FileSourceAdapter implements FileSource {
 	 */
 	function getThumbManager() {
 		return $this->getAffiliationEngine()->getThumbManager();
+	}
+	
+	/**
+	 * @deprecated
+	 * @return \n2n\io\managed\AffiliationEngine
+	 */
+	function getVariationEngine() {
+		return $this->getAffiliationEngine();
 	}
 	
 	public function getAffiliationEngine(): AffiliationEngine {
