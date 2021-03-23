@@ -177,7 +177,7 @@ class FsThumbManager implements ThumbManager {
 		foreach ($this->findThumbFsPaths() as $thumbFsPath) {
 			try {
 				$thumb = $this->createThumbFileSource($thumbFsPath, self::dirNameToDimension($thumbFsPath->getParent()->getName()));
-				$thumb->clear();
+				$thumb->getAffiliationEngine()->clear();
 			} catch (\InvalidArgumentException $e) {
 				continue;
 			}
