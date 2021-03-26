@@ -22,6 +22,7 @@
 namespace n2n\io\managed;
 
 use n2n\util\type\attrs\DataMap;
+use n2n\util\type\attrs\AttributesException;
 
 class FileInfo implements \JsonSerializable {
 	private $originalName;
@@ -91,7 +92,7 @@ class FileInfo implements \JsonSerializable {
 			$fileInfo = new FileInfo($dm->optString('originalName'));
 			$fileInfo->customInfos = $dm->reqArray('customInfos', 'array');
 			return $fileInfo;
-		} catch (\n2n\util\type\attrs\InvalidAttributeException $e) {
+		} catch (AttributesException $e) {
 			throw new \InvalidArgumentException(null, 0, $e);
 		}
 	}
