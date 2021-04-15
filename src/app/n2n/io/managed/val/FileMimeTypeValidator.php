@@ -24,7 +24,9 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	 */
 	protected function testSingle(Validatable $validatable, MagicContext $magicContext): bool {
 		$file = $this->readSafeValue($validatable);
-		CastUtils::assertTrue($file instanceof File);
+		if (null !== $file) {
+			CastUtils::assertTrue($file instanceof File);
+		}
 		
 		return $file === null || ArrayUtils::inArrayLike($file->getFileSource()->getMimeType(), 
 				$this->allowedMimeTypes);
@@ -37,6 +39,7 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 		if (!$this->testSingle($validatable, $magicContext)) {
 			$file = $this->readSafeValue($validatable);
 			CastUtils::assertTrue($file instanceof File);
+			
 			$validatable->addError(ValidationMessages::fileType($file, $this->allowedMimeTypes, 
 					$this->readLabel($validatable)));
 		}

@@ -24,7 +24,9 @@ class ExtensionValidator extends SimpleValidatorAdapter {
 	 */
 	protected function testSingle(Validatable $validatable, MagicContext $magicContext): bool {
 		$file = $this->readSafeValue($validatable);
-		CastUtils::assertTrue($file instanceof File);
+		if ($file !== null) {
+			CastUtils::assertTrue($file instanceof File);
+		}
 		
 		return $file === null || ArrayUtils::inArrayLike($file->getOriginalExtension(), 
 				$this->allowedExtensions);
