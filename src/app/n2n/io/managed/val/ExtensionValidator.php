@@ -5,7 +5,6 @@ use n2n\validation\plan\impl\SimpleValidatorAdapter;
 use n2n\l10n\Message;
 use n2n\validation\plan\Validatable;
 use n2n\util\magic\MagicContext;
-use n2n\util\col\ArrayUtils;
 use n2n\validation\lang\ValidationMessages;
 use n2n\util\type\TypeConstraint;
 use n2n\io\managed\File;
@@ -28,8 +27,7 @@ class ExtensionValidator extends SimpleValidatorAdapter {
 			CastUtils::assertTrue($file instanceof File);
 		}
 		
-		return $file === null || ArrayUtils::inArrayLike($file->getOriginalExtension(), 
-				$this->allowedExtensions);
+		return $file === null || FileValidationUtils::extensionAllowed($file, $this->allowedExtensions);
 	}
 	
 	/**
