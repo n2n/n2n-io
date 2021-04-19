@@ -26,8 +26,8 @@ use n2n\io\fs\FsPath;
 use n2n\io\managed\FileManagingConstraintException;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 
-class FsAffiliationFileSource extends FileSourceAdapter implements FileSource {
-
+class FsAffiliationFileSource extends FileSourceAdapter {
+	
 	/**
 	 * @param FsPath $fsPath
 	 */

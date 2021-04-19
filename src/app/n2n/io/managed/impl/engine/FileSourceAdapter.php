@@ -51,6 +51,12 @@ abstract class FileSourceAdapter implements FileSource {
 		$this->fileFsPath = $fileFsPath;
 		$this->originalFileSource = $originalFileSource;
 	}
+	
+	
+	function equals($obj): bool {
+		return $obj instanceof FileSourceAdapter && $this->fileFsPath === $obj->fileFsPath;
+	}
+	
 	/**
 	 * @return string
 	 */

@@ -36,7 +36,7 @@ use n2n\io\CouldNotAchieveFlockException;
 use n2n\io\fs\FileResourceStream;
 use n2n\io\OutputStream;
 
-class FsFileSource extends FileSourceAdapter implements FileSource, AffiliationEngine {
+class FsFileSource extends FileSourceAdapter implements AffiliationEngine {
 	protected $fsPath;
 	
 	public function __construct(FsPath $fsPath) {
