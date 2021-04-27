@@ -82,15 +82,15 @@ class UncommittedManagedFileSource implements FileSource {
 	}
 	
 	public function isHttpaccessible(): bool {
-		return $this->srcFileSource->isHttpaccessible();
+		return $this->newManagedFileSource->isHttpaccessible();
 	}
 	
 	public function setUrl(Url $url) {
-		return $this->srcFileSource->setUrl($url);
+		return $this->newManagedFileSource->setUrl($url);
 	}
 	
 	public function getUrl(): Url {
-		return $this->srcFileSource->getUrl();
+		return $this->newManagedFileSource->getUrl();
 	}
 	
 	public function hasFsPath(): bool {
