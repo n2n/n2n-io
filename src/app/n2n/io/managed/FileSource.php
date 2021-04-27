@@ -39,7 +39,7 @@ interface FileSource {
 	 * @return string|null
 	 */
 	function getQualifiedName(): ?string;
-	
+		
 	/**
 	 * @return FileSource|NULL
 	 */
@@ -175,6 +175,8 @@ interface FileSource {
 	 * @param FileInfo $fileInfo
 	 */
 	function writeFileInfo(FileInfo $fileInfo);
+	
+	function equals($obj): bool;
 	
 	/**
 	 * @return string

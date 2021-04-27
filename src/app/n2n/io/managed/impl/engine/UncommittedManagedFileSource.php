@@ -33,12 +33,18 @@ use n2n\util\ex\NotYetImplementedException;
 use n2n\util\ex\UnsupportedOperationException;
 
 class UncommittedManagedFileSource implements FileSource {
-	private $srcFileSource;
-	private $newManagedFileSource;
+	protected $srcFileSource;
+	protected $newManagedFileSource;
 	
 	public function __construct(FileSource $srcFileSource, FileSource $newManagedFileSource) {
 		$this->srcFileSource = $srcFileSource;
 		$this->newManagedFileSource = $newManagedFileSource;
+	}
+	
+	function equals($obj): bool {
+		return $obj instanceof UncommittedManagedFileSource
+				&& $this->srcFileSource->equals($obj->srcFileSource)
+				&& $this->newManagedFileSource->equals($obj->newManagedFileSource);
 	}
 	
 	public function getFileManagerName(): ?string {

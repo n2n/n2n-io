@@ -54,6 +54,11 @@ class UnknownFile implements File, FileSource {
 		return $this->qualifiedName;
 	}
 	
+	function equals($obj): bool {
+		return $obj instanceof UnknownFile && $this->qualifiedName === $obj->getQualifiedName()
+				&& $this->fileManagerName === $obj->getFileManagerName();
+	}
+	
 	private function throwException() {
 		throw new IllegalStateException('Unknown qualified name for FileManager \'' 
 				. $this->fileManagerName . '\': ' . $this->qualifiedName);
@@ -115,13 +120,6 @@ class UnknownFile implements File, FileSource {
 	 * @see \n2n\io\managed\File::copy()
 	 */
 	public function copy($fsPath, string $filePerm, bool $overwrite = true): File {
-		$this->throwException();
-	}
-
-	/* (non-PHPdoc)
-	 * @see \n2n\io\managed\File::equals()
-	 */
-	public function equals($o): bool {
 		$this->throwException();
 	}
 

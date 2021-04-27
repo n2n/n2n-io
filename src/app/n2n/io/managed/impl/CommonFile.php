@@ -33,13 +33,16 @@ use n2n\util\uri\Url;
 use n2n\util\uri\UnavailableUrlException;
 
 class CommonFile implements \Serializable, File {
+	/**
+	 * @var FileSource
+	 */
 	private $fileSource;
 	private $originalName;
 	private $originalExtension;
 	private $fileListeners = array();
 	
 	/**
-	 * @param string $path
+	 * @param FileSource $fileSource
 	 * @param string $originalName
 	 * @throws \InvalidArgumentException if $originalName is empty
 	 */
