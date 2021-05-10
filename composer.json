@@ -34,5 +34,8 @@
 		"psr-4" : {
 			"n2n\\io\\" : "src/test/n2n/io"
 		}
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "^9.5"
 	}
 }
