@@ -15,6 +15,11 @@
 			"homepage" : "https://www.von-burg.net/"
 		}
 	],
+	"minimum-stability" : "dev",
+	"prefer-stable": true,
+	"config" : {
+		"vendor-dir" : "src/vendor"
+	},
 	"require" : {
 		"php" : ">=7.0",
 		"n2n/n2n-reflection" : "^7.2.33",
@@ -23,6 +28,11 @@
 	"autoload" : {
 		"psr-4" : {
 			"n2n\\io\\" : "src/app/n2n/io"
+		}
+	},
+	"autoload-dev" : {
+		"psr-4" : {
+			"n2n\\io\\" : "src/test/n2n/io"
 		}
 	}
 }
