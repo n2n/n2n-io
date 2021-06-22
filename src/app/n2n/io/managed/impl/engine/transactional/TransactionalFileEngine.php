@@ -164,7 +164,9 @@ class TransactionalFileEngine {
 		
 		$qualifiedName = $qnb->__toString();
 		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
-		$managedFileSource->writeFileInfo($file->getFileSource()->readFileInfo());
+		$fileInfo = $file->getFileSource()->readFileInfo();
+		$fileInfo->setOriginalName($file->getOriginalName());
+		$managedFileSource->writeFileInfo($fileInfo);
 		if ($this->baseUrl !== null) {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
