@@ -270,10 +270,15 @@ class IoUtils {
 		}
 
 		try {
-			chmod($path, $filePermission);
+			$result = chmod($path, $filePermission);
 		} catch (\Throwable $e) {
 			throw new FileOperationException('Chmod of \'' . $path . '\' (permission: ' . $filePermission . ') 
 					failed. Reason: ' . $e->getMessage());
+		}
+
+		if ($result === false) {
+			throw new FileOperationException('Chmod of \'' . $path . '\' (permission: ' . $filePermission . ') 
+					failed.');
 		}
 	}
 
@@ -493,7 +498,7 @@ class IoUtils {
 	
 	public static function imagePng($resource, $filePath = null, $quality = null, $filters = null) {
 		try {
-			return imagepng($resource, $filePath, $quality, $filters)
+			return imagepng($resource, $filePath, $quality, $filters);
 		} catch (\Throwable $e) {
 			throw new IoException('Imagepng of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
 		}
