@@ -94,12 +94,14 @@ class IoUtils {
 	 * @param string $oldPath
 	 * @param string $newPath
 	 * @throws IoException
+	 * @return bool
 	 */
 	public static function rename($oldPath, $newPath) {
 		try {
-			rename($oldPath, $newPath);
+			return rename($oldPath, $newPath);
 		} catch(\Throwable $e) {
-			throw new FileOperationException('Rename of \'' . $oldPath . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Rename of \'' . $oldPath . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	
@@ -107,24 +109,31 @@ class IoUtils {
 	 * @param string $path
 	 * @param string $permission
 	 * @throws IoException
+	 * @return bool
 	 */
 	public static function mkdirs($path, $permission) {
 		try {
-			mkdir($path, octdec($permission), true);
+			return mkdir($path, octdec($permission), true);
 		} catch(\Throwable $e) {
-			throw new FileOperationException('Mkdir of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Mkdir of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $path
+	 * @throws FileOperationException
+	 * @return bool
+	 */
 	public static function rmdir($path) {
 		try {
-			rmdir($path);
+			return rmdir($path);
 		} catch(\Throwable $e) {
-			throw new FileOperationException('Rmdir of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Rmdir of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					 null, $e);
 		}
 	}
 	/**
-	 * 
 	 * @param string $path
 	 * @throws IoException
 	 */
@@ -132,19 +141,19 @@ class IoUtils {
 		if (is_dir($path)) {
 			try {
 				$handle = opendir($path);
+				while (false !== ($fileName = readdir($handle))) {
+					if ($fileName == '.' || $fileName == '..') continue;
+
+					self::rmdirs($path . DIRECTORY_SEPARATOR . $fileName);
+				}
+
+				closedir($handle);
 			} catch(\Throwable $e) {
-				throw new IoException('Opendir of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+				throw new IoException('Opendir of \'' . $path . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 			}
-			
-			while (false !== ($fileName = readdir($handle))) {
-				if ($fileName == '.' || $fileName == '..') continue;
-				
-				self::rmdirs($path . DIRECTORY_SEPARATOR . $fileName);
-			}
-		
-			closedir($handle);
+
 			// @todo check requirements
-			clearstatcache();		
+			clearstatcache();
 			IoUtils::rmdir($path);
 		} else if (is_file($path)) {
 			IoUtils::chmod($path, '0777');
@@ -159,15 +168,14 @@ class IoUtils {
 	 * @return boolean
 	 */
 	public static function opendir(string $path, $context = null) {
-		$h = null;
 		try {
 			if ($context === null) {
-				$h = opendir($path);
+				return opendir($path);
 			} else {
-				$h = opendir($path, $context);
+				return opendir($path, $context);
 			}
 		} catch(\Throwable $e) {
-			throw new IoException('Opendir of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Opendir of \'' . $path . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
 	
@@ -207,25 +215,28 @@ class IoUtils {
 	 * @param int $flags
 	 * @param resource $context
 	 * @throws IoException
+	 * @return int|false
 	 */
 	public static function putContents(string $path, $contents, $flags = null, $context = null) {
 		try {
-			file_put_contents((string) $path, $contents, $flags, $context);
+			return file_put_contents((string) $path, $contents, $flags, $context);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('PutContents of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('PutContents of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
 	 * 
 	 * @param string $path
-	 * @return string
+	 * @return string|false
 	 * @throws IoException
 	 */
 	public static function getContents(string $path) {
 		try {
 			return file_get_contents($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('GetContents of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('GetContents of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -238,7 +249,8 @@ class IoUtils {
 		try {
 			return file($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('File of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('File of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -246,16 +258,18 @@ class IoUtils {
 	 * @param string $path
 	 * @param string $targetPath
 	 * @throws IoException
+	 * @return bool
 	 */
 	public static function copy($path, $targetPath, $context = null) {
 		try {
 			if ($context === null) {
-				if (copy($path, $targetPath)) return;
+				return copy($path, $targetPath);
 			} else {
-				if (copy($path, $targetPath, $context)) return;
+				return copy($path, $targetPath, $context);
 			}
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Copy of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Copy of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -263,6 +277,7 @@ class IoUtils {
 	 * @param string $path
 	 * @param string $filePermission octal string
 	 * @throws IoException
+	 * @return bool
 	 */
 	public static function chmod($path, $filePermission) {
 		if (is_string($filePermission)) {
@@ -270,26 +285,23 @@ class IoUtils {
 		}
 
 		try {
-			$result = chmod($path, $filePermission);
+			return chmod($path, $filePermission);
 		} catch (\Throwable $e) {
 			throw new FileOperationException('Chmod of \'' . $path . '\' (permission: ' . $filePermission . ') 
-					failed. Reason: ' . $e->getMessage());
-		}
-
-		if ($result === false) {
-			throw new FileOperationException('Chmod of \'' . $path . '\' (permission: ' . $filePermission . ') 
-					failed.');
+					failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
 
 	/**
+	 * @return bool
 	 * @todo add param time and atime  
 	 */
 	public static function touch($filename) {
 		try {
-			touch($filename);
+			return touch($filename);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Touch of \'' . $filename . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Touch of \'' . $filename . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -303,34 +315,58 @@ class IoUtils {
 		try {
 			return fopen($path, $mode);
 		} catch (\Throwable $e) {
-			throw new IoException('Fopen of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Fopen of \'' . $path . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param string $path
+	 * @return array|false
+	 * @throws FileOperationException
+	 */
 	public static function stat(string $path) {
 		try {
 			return stat($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Stat of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Stat of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param string $path
+	 * @return false|int
+	 * @throws FileOperationException
+	 */
 	public static function filesize(string $path) {
 		try {
 			return filesize($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Filesize of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Filesize of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param string $path
+	 * @return false|int
+	 * @throws FileOperationException
+	 */
 	public static function readfile(string $path) {
 		try {
 			return readfile($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Readfile of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Readfile of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param $string
+	 * @return int
+	 * @throws IoResourceException
+	 */
 	public static function fwrite($handle, $string) {
 		$num = fwrite($handle, $string);
 		if (false === $num) {
@@ -339,7 +375,13 @@ class IoUtils {
 		
 		return $num;
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param int|null $length
+	 * @return string
+	 * @throws IoResourceException
+	 */
 	public static function fread($handle, int $length = null) {
 		$str = fread($handle, $length);
 		if (false === $str) {
@@ -348,7 +390,13 @@ class IoUtils {
 		
 		return $str;
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param int|null $length
+	 * @return string
+	 * @throws IoResourceException
+	 */
 	public static function fgets($handle, int $length = null) {
 		$str = fgets($handle, $length);
 		if (false === $str) {
@@ -357,15 +405,27 @@ class IoUtils {
 	
 		return $str;
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param int $maxlength
+	 * @param int $offset
+	 * @return false|string
+	 * @throws IoResourceException
+	 */
 	public static function streamGetContents($handle, int $maxlength = -1, int $offset = -1) {
 		try {
 			return stream_get_contents($handle, $maxlength, $offset);
 		} catch (\Throwable $e) {
-			throw new IoResourceException('Streamgetcontents failed. Reason: ' . $e->getMessage());
+			throw new IoResourceException('Streamgetcontents failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param string $filePath
+	 * @return FileResourceStream
+	 * @throws CouldNotAchieveFlockException
+	 */
 	public static function createSafeFileStream(string $filePath) {
 		return new FileResourceStream($filePath, 'c+', LOCK_EX);
 	}
@@ -417,7 +477,8 @@ class IoUtils {
 		try {
 			return filemtime($path);;
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Filemtime of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Filemtime of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -427,9 +488,10 @@ class IoUtils {
 	 */
 	public static function unlink($path) {
 		try {
-			unlink($path);
+			return unlink($path);
 		} catch (\Throwable $e) {
-			throw new FileOperationException('Unlink of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new FileOperationException('Unlink of \'' . $path . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}	
 	/**
@@ -444,7 +506,8 @@ class IoUtils {
 		try {
 			return parse_ini_string($iniString, $processSections, $scannerMode);
 		} catch (\Throwable $e) {
-			throw new IoException('ParseIniString of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('ParseIniString of \'' . $iniString . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -459,72 +522,123 @@ class IoUtils {
 		try {
 			return parse_ini_file($path, $processSections, $scannerMode);
 		} catch (\Throwable $e) {
-			throw new IoException('ParseIniFile of \'' . $path . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('ParseIniFile of \'' . $path . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $filePath
+	 * @return false|\GdImage|resource
+	 * @throws IoException
+	 */
 	public static function imageCreateFromPng($filePath) {
 		try {
 			return imagecreatefrompng($filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagecreatefrompng of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagecreatefrompng of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $filePath
+	 * @return false|\GdImage|resource
+	 * @throws IoException
+	 */
 	public static function imageCreateFromGif($filePath) {
 		try {
 			return imagecreatefromgif($filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagecreatefromgif of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagecreatefromgif of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $filePath
+	 * @return false|\GdImage|resource
+	 * @throws IoException
+	 */
 	public static function imageCreateFromJpeg($filePath) {
 		try {
 			return imagecreatefromjpeg($filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagecreatefromjpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagecreatefromjpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(),
+				null, $e);
 		}
 	}
-		
-		
+
+	/**
+	 * @param $filePath
+	 * @return false|\GdImage|resource
+	 * @throws IoException
+	 */
 	public static function imageCreateFromWebp($filePath) {
 		try {
 			return imagecreatefromwebp($filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagecreatefromwebp of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagecreatefromwebp of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $resource
+	 * @param null $filePath
+	 * @param null $quality
+	 * @param null $filters
+	 * @return bool
+	 * @throws IoException
+	 */
 	public static function imagePng($resource, $filePath = null, $quality = null, $filters = null) {
 		try {
 			return imagepng($resource, $filePath, $quality, $filters);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagepng of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagepng of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $resource
+	 * @param null $filePath
+	 * @return bool
+	 * @throws IoException
+	 */
 	public static function imageGif($resource, $filePath = null) {
 		try {
 			return imagegif($resource, $filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagegif of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagegif of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $resource
+	 * @param null $filePath
+	 * @param null $quality
+	 * @return bool
+	 * @throws IoException
+	 */
 	public static function imageJpeg($resource, $filePath = null, $quality = null) {
 		try {
 			return imagejpeg($resource, $filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagejpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagejpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
-	
+
+	/**
+	 * @param $resource
+	 * @param null $filePath
+	 * @param null $quality
+	 * @return bool
+	 * @throws IoException
+	 */
 	public static function imageWebp($resource, $filePath = null, $quality = null) {
 		try {
 			return imagewebp($resource, $filePath);
 		} catch (\Throwable $e) {
-			throw new IoException('Imagejpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Imagejpeg of \'' . $filePath . '\' failed. Reason: ' . $e->getMessage(), null, $e);
 		}
 	}
 	
@@ -564,26 +678,51 @@ class IoUtils {
 		
 		return $path;
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param $operation
+	 * @param null $wouldblock
+	 * @return bool
+	 * @throws CouldNotAchieveFlockException
+	 */
 	public static function flock($handle, $operation, &$wouldblock = null) {
 		if (!flock($handle, $operation, $wouldblock)) {
 			throw new CouldNotAchieveFlockException('Could not achieve flock: ' . $operation);
 		}
 		return true;
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param $size
+	 * @throws IoResourceException
+	 */
 	public static function ftruncate($handle, $size) {
 		if (!ftruncate($handle, $size)) {
 			throw new IoResourceException('Could not truncate.');
 		}
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param $offset
+	 * @param int $whence
+	 * @throws IoResourceException
+	 */
 	public static function fseek($handle, $offset, $whence = SEEK_SET) {
 		if (false === fseek($handle, $offset, $whence)) {
 			throw new IoResourceException('Could not seek. Offset: ' . $offset);
 		}
 	}
-	
+
+	/**
+	 * @param $handle
+	 * @param $offset
+	 * @param int $whence
+	 * @return int
+	 * @throws IoResourceException
+	 */
 	public static function ftell($handle, $offset, $whence = SEEK_SET) {
 		$offset = ftell($handle);
 		if (false === $offset) {
@@ -608,7 +747,8 @@ class IoUtils {
 		try {
 			return getimagesize($filename);
 		} catch (\Throwable $e) {
-			throw new IoException('Getimagesize of \'' . $filename . '\' failed. Reason: ' . $e->getMessage());
+			throw new IoException('Getimagesize of \'' . $filename . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 	}
 	/**
@@ -654,18 +794,28 @@ class IoUtils {
 		
 		return $memoryLimit;
 	}
-	
-	
+
+	/**
+	 * @param $ch
+	 * @return bool|string
+	 * @throws CurlOperationException
+	 */
 	public static function curlExec($ch) {
 		try {
-			curl_exec($ch);
+			$result = curl_exec($ch);
 		} catch (\Throwable $e) {
-			throw new CurlOperationException('Curlexec of \'' . $ch . '\' failed. Reason: ' . $e->getMessage());
+			throw new CurlOperationException('Curlexec of \'' . $ch . '\' failed. Reason: ' . $e->getMessage(),
+					null, $e);
 		}
 
 		curl_close($ch);
+		return $result;
 	}
-	
+
+	/**
+	 * @param string $size
+	 * @return float
+	 */
 	public static function parsePhpIniSize(string $size) {
 		$unit = preg_replace('/[^bkmgtpezy]/i', '', $size); // Remove the non-unit characters from the size.
 		$size = preg_replace('/[^0-9\.]/', '', $size); // Remove the non-numeric characters from the size.
