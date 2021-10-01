@@ -44,21 +44,21 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 	
 	public function serialize() {
 		return serialize(array('qualifiedName' => $this->qualifiedName, 'fileFsPath' => $this->fileFsPath,
-				'infoFsPath' => $this->infoFsPath, 'url' => $this->url, 'sessionId' => $this->sessionId));
+				'fileManagerName' => $this->fileManagerName, 'url' => $this->url, 'sessionId' => $this->sessionId));
 	}
 	
 	public function unserialize($serialized) {
 		$data = StringUtils::unserialize($serialized);
 		
-		UnserializationFailedException::assertTrue(isset($data['qualifiedName']) && is_scalar($data['qualifiedName'])
+		UnserializationFailedException::assertTrue(isset($data['qualifiedName']) && ($data['qualifiedName'] === null || is_string($data['qualifiedName']))
 				&& isset($data['fileFsPath']) && $data['fileFsPath'] instanceof FsPath
-				&& array_key_exists('infoFsPath', $data) && ($data['infoFsPath'] === null || $data['infoFsPath'] instanceof FsPath)
+				&& array_key_exists('fileManagerName', $data) && is_string($data['fileManagerName'])
 				&& array_key_exists('url', $data) && ($data['url'] === null || $data['url'] instanceof Url)
 				&& array_key_exists('sessionId', $data) && ($data['sessionId'] === null || is_scalar($data['sessionId'])));
 		
 		$this->qualifiedName = $data['qualifiedName'];
 		$this->fileFsPath = $data['fileFsPath'];
-		$this->infoFsPath = $data['infoFsPath'];
+		$this->fileManagerName = $data['fileManagerName'];
 		$this->url = $data['url'];
 		$this->sessionId = $data['sessionId'];
 		
@@ -68,9 +68,6 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 		}
 			
 		$this->fileFsPath->touch();
-		if ($this->infoFsPath !== null) {
-			$this->infoFsPath->touch();
-		}
 	}
 
 	/* (non-PHPdoc)
