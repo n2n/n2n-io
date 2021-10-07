@@ -741,15 +741,22 @@ class IoUtils {
 	/**
 	 * @param string $filename
 	 * @throws IoException
-	 * @return string
+	 * @return array
 	 */
 	public static function getimagesize($filename) {
+		$size = null;
 		try {
-			return getimagesize($filename);
+			$size = getimagesize($filename);
 		} catch (\Throwable $e) {
 			throw new IoException('Getimagesize of \'' . $filename . '\' failed. Reason: ' . $e->getMessage(),
 					null, $e);
 		}
+
+		if ($size === false) {
+			throw new IoException('Getimagesize of \'' . $filename . '\' failed.');
+		}
+
+		return $size;
 	}
 	/**
 	 * Returns a file size limit in bytes based on the PHP upload_max_filesize

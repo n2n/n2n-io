@@ -10,6 +10,7 @@ class IoUtilsTest extends TestCase {
 	const TEST_FILE_DATA = 'testdata';
 	const TEST_IMAGE_DIR = __DIR__ . '/testImages/';
 	const TEST_PNG = self::TEST_IMAGE_DIR . '/img.png';
+	const TEST_PDF = self::TEST_IMAGE_DIR . '/doc.pdf';
 	const TEST_JPEG = self::TEST_IMAGE_DIR . '/img.jpg';
 	const TEST_WEBP = self::TEST_IMAGE_DIR . '/img.webp';
 	const TEST_GIF = self::TEST_IMAGE_DIR . '/img.gif';
@@ -273,6 +274,11 @@ class IoUtilsTest extends TestCase {
 	public function testGetImageSize() {
 		$sizeArr = IoUtils::getimagesize(self::TEST_PNG);
 		$this->assertIsArray($sizeArr);
+	}
+
+	public function testGetImageSizePdf() {
+		$this->expectException(IoException::class);
+		IoUtils::getimagesize(self::TEST_PDF);
 	}
 
 	private function recursiveRmDir($dir) {
