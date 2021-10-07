@@ -211,7 +211,7 @@ class CommonFile implements \Serializable, File {
 		try {
 			return $this->getFileSource()->getUrl();
 		} catch (InaccessibleFileSourceException $e) {
-			throw new UnavailableUrlException(false, 0, $e);		
+			throw new UnavailableUrlException(false, $e->getMessage(), 0, $e);		
 		}
 	}
 	
