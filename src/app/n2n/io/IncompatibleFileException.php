@@ -21,5 +21,7 @@
  */
 namespace n2n\io;
 
+use n2n\util\io\IoException;
+
 class IncompatibleFileException extends IoException {
 }

@@ -22,9 +22,9 @@
 namespace n2n\io\img\impl;
 
 use n2n\util\ex\NotYetImplementedException;
-use n2n\io\IoUtils;
+use n2n\util\io\IoUtils;
 use n2n\io\img\UnsupportedImageTypeException;
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 use n2n\io\img\ImageSource;
 
 class ImageSourceFactory {

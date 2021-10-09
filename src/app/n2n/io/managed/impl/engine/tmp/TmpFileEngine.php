@@ -21,8 +21,8 @@
  */
 namespace n2n\io\managed\impl\engine\tmp;
 
-use n2n\io\fs\FsPath;
-use n2n\io\IoUtils;
+use n2n\util\io\fs\FsPath;
+use n2n\util\io\IoUtils;
 use n2n\util\StringUtils;
 use n2n\io\managed\File;
 use n2n\io\managed\FileManagingException;

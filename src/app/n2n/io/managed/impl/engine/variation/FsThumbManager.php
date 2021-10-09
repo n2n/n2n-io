@@ -24,7 +24,7 @@ namespace n2n\io\managed\impl\engine\variation;
 use n2n\io\managed\img\ImageDimension;
 use n2n\io\img\ImageResource;
 use n2n\io\img\impl\ImageSourceFactory;
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\io\managed\ThumbManager;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileSource;

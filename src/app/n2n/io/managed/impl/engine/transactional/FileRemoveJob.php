@@ -22,7 +22,7 @@
 namespace n2n\io\managed\impl\engine\transactional;
 
 use n2n\util\ex\IllegalStateException;
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 use n2n\io\managed\FileManagingException;
 
 class FileRemoveJob {

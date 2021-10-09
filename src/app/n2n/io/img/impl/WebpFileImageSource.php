@@ -22,7 +22,7 @@
 namespace n2n\io\img\impl;
 
 use n2n\io\img\ImageResource;
-use n2n\io\IoUtils;
+use n2n\util\io\IoUtils;
 use n2n\io\img\ImageSource;
 
 class WebpFileImageSource extends FsImageSourceAdapter implements ImageSource {	

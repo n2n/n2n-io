@@ -22,12 +22,12 @@
 // namespace n2n\io\managed\impl\engine;
 
 // use n2n\io\managed\FileSource;
-// use n2n\io\fs\FsPath;
-// use n2n\io\IoUtils;
+// use n2n\util\io\fs\FsPath;
+// use n2n\util\io\IoUtils;
 // use n2n\io\managed\FileManagingConstraintException;
 // use n2n\io\managed\img\ImageDimension;
 // use n2n\io\img\impl\ImageSourceFactory;
-// use n2n\io\InputStream;
+// use n2n\util\io\stream\InputStream;
 // use n2n\io\img\ImageSource;
 // use n2n\io\managed\ThumbManager;
 // use n2n\io\managed\AffiliationEngine;

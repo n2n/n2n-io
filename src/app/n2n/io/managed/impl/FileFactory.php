@@ -22,13 +22,13 @@
 namespace n2n\io\managed\impl;
 
 use n2n\web\http\UploadDefinition;
-use n2n\io\IoUtils;
-use n2n\io\fs\FsPath;
+use n2n\util\io\IoUtils;
+use n2n\util\io\fs\FsPath;
 use n2n\io\IoErrorException;
 use n2n\io\UploadedFileExceedsMaxSizeException;
 use n2n\io\IncompleteFileUploadException;
 use n2n\io\managed\File;
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 
 class FileFactory {
 	/**

@@ -21,9 +21,7 @@
  */
 namespace n2n\io\orm;
 
-use n2n\io\InputStream;
-use n2n\io\OutputStream;
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\File;
 use n2n\io\managed\FileInfo;
@@ -32,6 +30,8 @@ use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\FileSource;
 use n2n\util\uri\UnavailableUrlException;
 use n2n\util\uri\Url;
+use n2n\util\io\stream\InputStream;
+use n2n\util\io\stream\OutputStream;
 
 class UnknownFile implements File, FileSource {
 	private $qualifiedName;
@@ -205,4 +205,9 @@ class UnknownFile implements File, FileSource {
 	public function readFileInfo(): FileInfo {
 		$this->throwException();
 	}
+	
+	public function getName(): string {
+		$this->throwException();
+	}
+
 }

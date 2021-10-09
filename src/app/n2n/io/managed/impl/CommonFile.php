@@ -26,7 +26,7 @@ use n2n\util\UnserializationFailedException;
 use n2n\util\type\ArgUtils;
 use n2n\io\managed\File;
 use n2n\io\managed\FileSource;
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\io\managed\FileListener;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\util\uri\Url;
@@ -214,6 +214,26 @@ class CommonFile implements \Serializable, File {
 			throw new UnavailableUrlException(false, $e->getMessage(), 0, $e);		
 		}
 	}
+	public function getName(): string {
+		return $this->originalName;
+	}
+
+	public function getLastModified(): ?\DateTime {
+		return $this->fileSource->getLastModified();
+	}
+
+	public function getMimeType(): string {
+		return $this->fileSource->getMimeType();
+	}
+
+	public function buildHash(): string {
+		return $this->fileSource->buildHash();
+	}
+
+	public function getSize(): int {
+		return $this->fileSource->getSize();
+	}
+
 	
 // 	public static function createFromAssignation(ManagerAssignation $fileAssignation, $originalName = null) {
 // 		$file = new File($fileAssignation->getFilePath(), $originalName);

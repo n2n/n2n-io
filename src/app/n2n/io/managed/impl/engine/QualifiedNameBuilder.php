@@ -22,7 +22,7 @@
 namespace n2n\io\managed\impl\engine;
 
 use n2n\util\StringUtils;
-use n2n\io\IoUtils;
+use n2n\util\io\IoUtils;
 
 class QualifiedNameBuilder {
 	const LEVEL_SEPARATOR = '/';

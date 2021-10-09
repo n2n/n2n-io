@@ -21,7 +21,7 @@
  */
 namespace n2n\io\managed\impl\engine\transactional;
 
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\io\managed\FileManagingConstraintException;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 

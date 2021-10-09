@@ -21,7 +21,7 @@
  */
 namespace n2n\io\managed\impl\engine\tmp;
 
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\util\uri\Url;
 use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;

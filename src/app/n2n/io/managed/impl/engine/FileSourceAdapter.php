@@ -23,15 +23,15 @@ namespace n2n\io\managed\impl\engine;
 
 use n2n\util\uri\Url;
 use n2n\io\managed\FileSource;
-use n2n\io\fs\FsPath;
-use n2n\io\IoUtils;
+use n2n\util\io\fs\FsPath;
+use n2n\util\io\IoUtils;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\img\impl\ImageSourceFactory;
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\AffiliationEngine;
-use n2n\io\OutputStream;
+use n2n\util\io\stream\OutputStream;
 use n2n\io\managed\FileInfo;
 
 abstract class FileSourceAdapter implements FileSource {

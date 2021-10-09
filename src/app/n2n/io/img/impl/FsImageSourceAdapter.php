@@ -22,7 +22,7 @@
 namespace n2n\io\img\impl;
 
 use n2n\io\img\ImageSource;
-use n2n\io\IoUtils;
+use n2n\util\io\IoUtils;
 
 abstract class FsImageSourceAdapter implements ImageSource {
 	protected $filePath;	

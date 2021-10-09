@@ -22,8 +22,9 @@
 namespace n2n\io\managed;
 
 use n2n\util\uri\Linkable;
+use n2n\util\io\Downloadable;
 
-interface File extends Linkable {
+interface File extends Linkable, Downloadable {
 	
 	/**
 	 * @return bool 

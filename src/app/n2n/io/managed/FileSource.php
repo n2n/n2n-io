@@ -22,11 +22,11 @@
 namespace n2n\io\managed;
 
 use n2n\util\uri\Url;
-use n2n\io\fs\FsPath;
-use n2n\io\InputStream;
+use n2n\util\io\fs\FsPath;
+use n2n\util\io\stream\InputStream;
 use n2n\io\img\ImageSource;
 use n2n\util\ex\IllegalStateException;
-use n2n\io\OutputStream;
+use n2n\util\io\stream\OutputStream;
 
 interface FileSource {
 	
@@ -143,7 +143,7 @@ interface FileSource {
 	 * @param string $filePerm
 	 * @param bool $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
-	 * @throws \n2n\io\IoException
+	 * @throws \n2n\util\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
 	public function move(FsPath $fsPath, string $filePerm, bool $overwrite = false);
@@ -153,14 +153,14 @@ interface FileSource {
 	 * @param string $filePerm
 	 * @param bool $overwrite
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
-	 * @throws \n2n\io\IoException
+	 * @throws \n2n\util\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
 	public function copy(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
-	 * @throws \n2n\io\IoException
+	 * @throws \n2n\util\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be deleted.
 	 */
 	public function delete();

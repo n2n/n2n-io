@@ -21,14 +21,14 @@
  */
 namespace n2n\io\managed\impl\engine;
 
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\io\managed\FileInfo;
 use n2n\io\managed\FileSource;
-use n2n\io\InputStream;
+use n2n\util\io\stream\InputStream;
 use n2n\util\uri\Url;
 use n2n\io\img\ImageSource;
 use n2n\io\managed\AffiliationEngine;
-use n2n\io\OutputStream;
+use n2n\util\io\stream\OutputStream;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\util\ex\UnsupportedOperationException;
 

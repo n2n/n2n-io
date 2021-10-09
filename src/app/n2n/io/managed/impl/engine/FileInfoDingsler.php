@@ -21,12 +21,12 @@
  */
 namespace n2n\io\managed\impl\engine;
 
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\util\JsonEncodeFailedException;
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 use n2n\util\JsonDecodeFailedException;
 use n2n\util\StringUtils;
-use n2n\io\IoUtils;
+use n2n\util\io\IoUtils;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\FileInfo;
 

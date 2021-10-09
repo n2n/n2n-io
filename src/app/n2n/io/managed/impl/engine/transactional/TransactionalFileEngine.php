@@ -23,9 +23,9 @@ namespace n2n\io\managed\impl\engine\transactional;
 
 use n2n\util\HashUtils;
 use n2n\util\type\ArgUtils;
-use n2n\io\fs\FsPath;
+use n2n\util\io\fs\FsPath;
 use n2n\core\Sync;
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 use n2n\util\uri\Url;
 use n2n\io\managed\File;
 use n2n\io\managed\FileLocator;

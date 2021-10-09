@@ -21,7 +21,7 @@
  */
 namespace n2n\io\ini;
 
-use n2n\io\IoException;
+use n2n\util\io\IoException;
 
 class UnknownIniPropertyException extends IoException {
 	
