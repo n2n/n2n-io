@@ -234,6 +234,9 @@ class CommonFile implements \Serializable, File {
 		return $this->fileSource->getSize();
 	}
 
+	function out(): void {
+		$this->fileSource->out();
+	}
 	
 // 	public static function createFromAssignation(ManagerAssignation $fileAssignation, $originalName = null) {
 // 		$file = new File($fileAssignation->getFilePath(), $originalName);

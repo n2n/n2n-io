@@ -134,7 +134,7 @@ class UnknownFile implements File, FileSource {
 		$this->throwException();
 	}
 
-	public function out() {
+	public function out(): void {
 		$this->throwException();
 	}
 
