@@ -35,7 +35,7 @@ use n2n\core\container\CommitFailedException;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
 
 abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource, CommitListener {
-	protected $tm;
+	protected TransactionManager $tm;
 	/**
 	 * @var TransactionalFileEngine
 	 */
@@ -46,6 +46,11 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		
 		$tm->registerResource($this);
 		$tm->registerCommitListener($this);
+	}
+
+	private function _terminate() {
+		$this->tm->unregisterResource($this);
+		$this->tm->unregisterCommitListener($this);
 	}
 	
 	/**
