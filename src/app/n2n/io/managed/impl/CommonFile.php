@@ -32,7 +32,7 @@ use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\util\uri\Url;
 use n2n\util\uri\UnavailableUrlException;
 
-class CommonFile implements \Serializable, File {
+class CommonFile implements File {
 	/**
 	 * @var FileSource
 	 */
