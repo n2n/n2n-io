@@ -135,28 +135,20 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		
 		return $this->getFileEngine()->getByQualifiedName($qualifiedName);
 	}
-	/* (non-PHPdoc)
-	 * @see \n2n\core\container\TransactionalResource::beginTransaction()
-	 */
-	public function beginTransaction(Transaction $transaction) {}
-	/* (non-PHPdoc)
-	 * @see \n2n\core\container\TransactionalResource::prepareCommit()
-	 */
+
+	public function beginTransaction(Transaction $transaction): void {}
+
 	public function prepareCommit(Transaction $transaction): bool {
 		return true;
 	}
-	/* (non-PHPdoc)
-	 * @see \n2n\core\container\TransactionalResource::commit()
-	 */
-	public function commit(Transaction $transaction) {}
-	/* (non-PHPdoc)
-	 * @see \n2n\core\container\TransactionalResource::rollBack()
-	 */
-	public function rollBack(Transaction $transaction) {
+
+	public function commit(Transaction $transaction): void {}
+
+	public function rollBack(Transaction $transaction): void {
 		$this->fileEngine->clearBuffer();
 	}
 	
-	public function preCommit(Transaction $transaction) {
+	public function preCommit(Transaction $transaction): void {
 		$this->fileEngine->flush(true);
 	}
 
@@ -164,10 +156,13 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		$this->fileEngine->abortFlush();
 	}
 	
-	public function postCommit(Transaction $transaction) {
+	public function postCommit(Transaction $transaction): void {
 		$this->fileEngine->flush();
 	}
-	
+
+	function release(): void {
+	}
+
 	function hasThumbSupport(): bool {
 		return true;
 	}
