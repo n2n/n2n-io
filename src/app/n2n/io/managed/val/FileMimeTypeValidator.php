@@ -8,6 +8,7 @@ use n2n\util\magic\MagicContext;
 use n2n\util\type\TypeConstraint;
 use n2n\io\managed\File;
 use n2n\util\type\CastUtils;
+use n2n\validation\lang\ValidationMessages;
 
 class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	private $allowedMimeTypes;
