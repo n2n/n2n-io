@@ -14,15 +14,16 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	private $allowedMimeTypes;
 	
 	function __construct(array $allowedMimeTypes, Message $errorMessage = null) {
+		parent::__construct($errorMessage);
+
 		$this->allowedMimeTypes = $allowedMimeTypes;
-		parent::__construct(TypeConstraint::createSimple(File::class), $errorMessage);
 	}
 	
 	/**
 	 * {@inheritdoc}
 	 */
 	protected function testSingle(Validatable $validatable, MagicContext $magicContext): bool {
-		$file = $this->readSafeValue($validatable);
+		$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 		if (null !== $file) {
 			CastUtils::assertTrue($file instanceof File);
 		}
@@ -35,7 +36,7 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	 */
 	protected function validateSingle(Validatable $validatable, MagicContext $magicContext) {
 		if (!$this->testSingle($validatable, $magicContext)) {
-			$file = $this->readSafeValue($validatable);
+			$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 			CastUtils::assertTrue($file instanceof File);
 			
 			$validatable->addError(ValidationMessages::fileType($file, $this->allowedMimeTypes, 
