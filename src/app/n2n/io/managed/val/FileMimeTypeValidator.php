@@ -33,7 +33,7 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function validateSingle(Validatable $validatable, MagicContext $magicContext) {
+	protected function validateSingle(Validatable $validatable, MagicContext $magicContext): void {
 		if (!$this->testSingle($validatable, $magicContext)) {
 			$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 			CastUtils::assertTrue($file instanceof File);
