@@ -77,7 +77,7 @@ class ThumbCut implements \JsonSerializable {
 	 * {@inheritDoc}
 	 * @see \JsonSerializable::jsonSerialize()
 	 */
-	function jsonSerialize() {
+	function jsonSerialize(): mixed {
 		return [
 			'x' => $this->x,
 			'y' => $this->y,
