@@ -78,7 +78,7 @@ class FileInfo implements \JsonSerializable {
 	 * {@inheritDoc}
 	 * @see \JsonSerializable::jsonSerialize()
 	 */
-	function jsonSerialize() {
+	function jsonSerialize(): mixed {
 		return [
 			'originalName' => $this->originalName,
 			'customInfos' => $this->customInfos
