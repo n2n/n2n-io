@@ -24,6 +24,6 @@ namespace n2n\io\fs;
 /**
  * @deprecated
  */
-class FileResourceStream extends  \n2n\util\io\stream\impl\FileResourceStream {
+class FileResourceStream extends \n2n\util\io\stream\impl\FileResourceStream {
 
 }
