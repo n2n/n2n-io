@@ -40,6 +40,8 @@ use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
 use n2n\persistence\orm\store\ValueHash;
 use n2n\persistence\orm\store\CommonValueHash;
 use n2n\util\type\CastUtils;
+use n2n\util\type\TypeConstraints;
+use n2n\l10n\N2nLocale;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -47,9 +49,10 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	private $cascadeDelete;
 
 	public function __construct(AccessProxy $accessProxy, $columnName, $fileManagerClassName, bool $cascadeDelete) {
-		$accessProxy->setConstraint(TypeConstraint::createSimple('n2n\io\managed\File', true));
+		parent::__construct(
+				$accessProxy->createRestricted(TypeConstraints::namedType(File::class, true)),
+				$columnName);
 
-		parent::__construct($accessProxy, $columnName);
 		$this->fileManagerClassName = $fileManagerClassName;
 		$this->cascadeDelete = $cascadeDelete;
 	}
