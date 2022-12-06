@@ -27,12 +27,11 @@ use n2n\util\StringUtils;
 use n2n\util\UnserializationFailedException;
 use n2n\io\managed\impl\engine\FileSourceAdapter;
 
-class TmpFileSource extends FileSourceAdapter implements \Serializable {
-	private $sessionId;
+class TmpFileSource extends FileSourceAdapter {
 	
-	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath, string $sessionId = null) {
+	public function __construct(?string $qualifiedName, string $fileManagerName, FsPath $fileFsPath,
+			private ?string $sessionId = null) {
 		parent::__construct($qualifiedName, $fileManagerName, $fileFsPath);
-		$this->sessionId = $sessionId;
 	}
 		
 	/**
@@ -42,14 +41,12 @@ class TmpFileSource extends FileSourceAdapter implements \Serializable {
 		return $this->sessionId;
 	}
 	
-	public function serialize() {
-		return serialize(array('qualifiedName' => $this->qualifiedName, 'fileFsPath' => $this->fileFsPath,
-				'fileManagerName' => $this->fileManagerName, 'url' => $this->url, 'sessionId' => $this->sessionId));
+	public function __serialize(): array {
+		return array('qualifiedName' => $this->qualifiedName, 'fileFsPath' => $this->fileFsPath,
+				'fileManagerName' => $this->fileManagerName, 'url' => $this->url, 'sessionId' => $this->sessionId);
 	}
 	
-	public function unserialize($serialized) {
-		$data = StringUtils::unserialize($serialized);
-		
+	public function __unserialize(array $data): void {
 		UnserializationFailedException::assertTrue(isset($data['qualifiedName']) && ($data['qualifiedName'] === null || is_string($data['qualifiedName']))
 				&& isset($data['fileFsPath']) && $data['fileFsPath'] instanceof FsPath
 				&& array_key_exists('fileManagerName', $data) && is_string($data['fileManagerName'])
