@@ -90,7 +90,7 @@ class FileInfo implements \JsonSerializable {
 		
 		try {
 			$fileInfo = new FileInfo($dm->optString('originalName'));
-			$fileInfo->customInfos = $dm->reqArray('customInfos', 'array');
+			$fileInfo->customInfos = $dm->optArray('customInfos', 'array');
 			return $fileInfo;
 		} catch (AttributesException $e) {
 			throw new \InvalidArgumentException(null, 0, $e);

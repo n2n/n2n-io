@@ -68,15 +68,13 @@ class FileInfoDingsler {
 			}
 			
 			return FileInfo::fromArray(StringUtils::jsonDecode(IoUtils::getContents($this->infoFsPath), true));
-		} catch (JsonDecodeFailedException $e) {
-			throw $this->createReadException($e);
-		} catch (IoException $e) {
+		} catch (JsonDecodeFailedException|IoException|\InvalidArgumentException $e) {
 			throw $this->createReadException($e);
 		}
 	}
 	
 	function delete() {
-		return $this->infoFsPath->delete();
+		$this->infoFsPath->delete();
 	}
 
 	private function createWriteException($e) {
