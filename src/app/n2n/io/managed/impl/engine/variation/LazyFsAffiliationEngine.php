@@ -29,7 +29,7 @@ use n2n\io\managed\FileSource;
 use n2n\io\img\impl\ImageSourceFactory;
 
 class LazyFsAffiliationEngine implements AffiliationEngine {
-	
+
 	private $origFileSource;
 	private $mimeType;
 	private $dirPerm;
@@ -43,7 +43,7 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	 * @var VariationManager|null
 	 */
 	private $variationManager;
-	
+
 	/**
 	 * @param ThumbManager|null $thumbManager
 	 * @param VariationManager|null $variationManager
@@ -53,15 +53,15 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
 	}
-	
+
 	private function getMimeType() {
 		if ($this->mimeType === null) {
 			$this->mimeType = ImageSourceFactory::getMimeTypeOfFile($this->origFileSource->getFileFsPath());
 		}
-		
+
 		return $this->mimeType;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\AffiliationEngine::hasThumbSupport()
@@ -69,7 +69,7 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	function hasThumbSupport(): bool {
 		return !$this->thumbDisabled && ($this->thumbManager !== null || $this->origFileSource->isImage());
 	}
-	
+
 	/**
 	 * @param ThumbManager|null $thumbManager
 	 */
@@ -85,14 +85,14 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 		if (!$this->hasThumbSupport()) {
 			throw new IllegalStateException('No thumb support avaialble.');
 		}
-		
+
 		if ($this->thumbManager !== null) {
 			return $this->thumbManager;
 		}
-		
-		return $this->thumbManager = new FsThumbManager($this->origFileSource, $this->getMimeType(), 
+
+		return $this->thumbManager = new FsThumbManager($this->origFileSource, $this->getMimeType(),
 				$this->dirPerm, $this->filePerm);
-		
+
 	}
 
 	/**
@@ -111,26 +111,26 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 		if (!$this->hasVariationSupport()) {
 			throw new IllegalStateException('No variation support available.');
 		}
-		
+
 		if ($this->variationManager !== null) {
 			return $this->variationManager;
 		}
-		
+
 		return $this->variationManager = new FsVariationManager($this->origFileSource, /*$this->getMimeType(),*/
 				$this->dirPerm, $this->filePerm);
 	}
-	
-	/**	
+
+	/**
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\AffiliationEngine::clear()
 	 */
 	public function clear() {
-		if ($this->variationManager !== null) {
-			$this->variationManager->clear();
+		if ($this->hasVariationSupport()) {
+			$this->getVariationManager()->clear();
 		}
-		
-		if ($this->thumbManager !== null) {
-			$this->thumbManager->clear();
+
+		if ($this->hasThumbSupport()) {
+			$this->getThumbManager()->clear();
 		}
 	}
 }
