@@ -42,7 +42,7 @@ abstract class FileSourceAdapter implements FileSource {
 	
 	protected $valid = true;
 	protected $url;
-	protected $affiliationEngine;
+	protected ?AffiliationEngine $affiliationEngine = null;
 	
 	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
 			FileSource $originalFileSource = null) {
@@ -205,10 +205,8 @@ abstract class FileSourceAdapter implements FileSource {
 		$this->fileFsPath->delete();
 		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
 		$fileInfoDingsler->delete();
-		
-		if ($this->affiliationEngine !== null) {
-			$this->affiliationEngine->clear();
-		}
+
+		$this->affiliationEngine?->clear();
 	}
 	
 	public function getUrl(): Url {

@@ -77,10 +77,6 @@ class TmpFileSource extends FileSourceAdapter {
 	public function __destruct() {
 		if ($this->sessionId === null && $this->isValid()) {
 			$this->delete();
-			
-			if ($this->affiliationEngine !== null) {
-				$this->affiliationEngine->clear();
-			}
 		}
 	}
 }

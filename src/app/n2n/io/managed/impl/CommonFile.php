@@ -183,7 +183,7 @@ class CommonFile implements File {
 	 * @see \n2n\io\managed\File::delete()
 	 */
 	public function delete() {
-		$this->triggerOnDelete();
+//		$this->triggerOnDelete();
 		
 		$this->fileSource->delete();
 	}
