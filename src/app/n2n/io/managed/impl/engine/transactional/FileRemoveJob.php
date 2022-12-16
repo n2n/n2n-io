@@ -37,13 +37,12 @@ class FileRemoveJob {
 		IllegalStateException::assertTrue(!$this->executed);
 		$this->executed = true;
 
-		$this->managedFileSource->getAffiliationEngine()->clear();
-		
-		$fsPath = $this->managedFileSource->getFileFsPath();
-		if (!$fsPath->exists()) return;
+		if (!$this->managedFileSource->isValid()) {
+			return;
+		}
 			
 		try {
-			$fsPath->delete();
+			$this->managedFileSource->delete();
 		} catch (IoException $e) {
 			throw new FileManagingException($this->managedFileSource->getFileManagerName() 
 					. ' could not remove file source: ' . $this->managedFileSource, 0, $e);

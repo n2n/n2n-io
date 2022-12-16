@@ -42,17 +42,17 @@ class ManagedFileSource extends FileSourceAdapter {
 	
 	public function move(FsPath $fsPath, $filePerm, $overwrite = false) {
 		$this->ensureValid();
-		
-		throw new FileManagingConstraintException('File is managed by ' . $this->fileManagerName 
+
+		throw new FileManagingConstraintException('File is managed by ' . $this->fileManagerName
 				. ' and can not be relocated: ' . $this->fileFsPath);
 	}
-	
-	public function delete() {
-		$this->ensureValid();
-		
-		throw new FileManagingConstraintException('File is managed by ' . $this->fileManagerName 
-				. ' and can not be deleted: ' . $this->fileFsPath);
-	}
+//
+//	public function delete() {
+//		$this->ensureValid();
+//
+//		throw new FileManagingConstraintException('File is managed by ' . $this->fileManagerName
+//				. ' and can not be deleted: ' . $this->fileFsPath);
+//	}
 	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::__toString()
