@@ -68,7 +68,9 @@ class FileInfoDingsler {
 			}
 			
 			return FileInfo::fromArray(StringUtils::jsonDecode(IoUtils::getContents($this->infoFsPath), true));
-		} catch (JsonDecodeFailedException|IoException|\InvalidArgumentException $e) {
+		} catch (JsonDecodeFailedException|\InvalidArgumentException $e) {
+			return new FileInfo();
+		} catch (IoException $e) {
 			throw $this->createReadException($e);
 		}
 	}
