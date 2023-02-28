@@ -138,8 +138,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 
 	public function beginTransaction(Transaction $transaction): void {}
 
-	public function prepareCommit(Transaction $transaction): bool {
-		return true;
+	public function prepareCommit(Transaction $transaction): void {
 	}
 
 	public function commit(Transaction $transaction): void {}
