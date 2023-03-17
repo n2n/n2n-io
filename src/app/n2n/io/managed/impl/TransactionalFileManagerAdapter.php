@@ -151,10 +151,17 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		$this->fileEngine->flush(true);
 	}
 
-	public function commitFailed(Transaction $transaction, CommitFailedException $e) {
+	public function commitFailed(Transaction $transaction, CommitFailedException $e): void {
 		$this->fileEngine->abortFlush();
 	}
-	
+
+
+	public function preRollback(Transaction $transaction): void {
+	}
+
+	public function postRollback(Transaction $transaction): void {
+	}
+
 	public function postCommit(Transaction $transaction): void {
 		$this->fileEngine->flush();
 	}
