@@ -39,8 +39,9 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 
 	private function _init(VarStore $varStore, IoConfig $ioConfig) {
 		$tmpDirFsPath = $varStore->requestDirFsPath(VarStore::CATEGORY_TMP, N2N::NS, self::TMP_DIR);
+		$sessionDirFsPath = $varStore->requestDirFsPath(VarStore::CATEGORY_TMP, N2N::NS, self::TMP_DIR, shared: true);
 
-		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $ioConfig->getPrivateDirPermission(), 
+		$this->tmpFileEngine = new TmpFileEngine($tmpDirFsPath, $sessionDirFsPath, $ioConfig->getPrivateDirPermission(),
 				$ioConfig->getPrivateFilePermission(), self::class);
 
 		$this->cleanUp();
@@ -60,7 +61,6 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 
 	/**
 	 * @param string $originalName
-	 * @param Session $session
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 * @return File
 	 */

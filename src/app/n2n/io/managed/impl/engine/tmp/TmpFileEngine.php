@@ -46,7 +46,8 @@ class TmpFileEngine {
 	private $filePerm;
 	private $fileManagerName;
 
-	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm, string $fileManagerName) {
+	public function __construct(FsPath $fsPath, private FsPath $sessionDirFsPath, string $dirPerm, string $filePerm,
+			string $fileManagerName) {
 		$this->fsPath = $fsPath;
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
@@ -63,7 +64,7 @@ class TmpFileEngine {
 	}
 
 	private function createSessionTmpFileSource($sessionId, $originalName) {
-		$fileFsPath = new FsPath(tempnam($this->fsPath, self::SESS_PREFIX));
+		$fileFsPath = new FsPath(tempnam($this->sessionDirFsPath, self::SESS_PREFIX));
 		$fileFsPath->chmod($this->filePerm);
 
 // 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
@@ -132,7 +133,7 @@ class TmpFileEngine {
 	public function getSessionFile($qualifiedName, $sessionId) {
 		QualifiedNameBuilder::validateLevel($qualifiedName);
 
-		$fileFsPath = $this->fsPath->ext($qualifiedName);
+		$fileFsPath = $this->sessionDirFsPath->ext($qualifiedName);
 		if (!$fileFsPath->exists() || !StringUtils::startsWith(self::SESS_PREFIX, $fileFsPath->getName())) return null;
 
 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
@@ -174,7 +175,7 @@ class TmpFileEngine {
 	}
 
 	public function deleteOldSessionFiles($gcMaxLifetime) {
-		foreach ($this->fsPath->getChildren(self::SESS_PREFIX . '*') as $fsPath) {
+		foreach ($this->sessionDirFsPath->getChildren(self::SESS_PREFIX . '*') as $fsPath) {
 			if ($gcMaxLifetime < (time() - $fsPath->getMTime())) {
 				$fsPath->delete();
 			}
