@@ -16,7 +16,7 @@ class TmpFileEngineTest extends TestCase {
 		$id = uniqid();
 		$dirPath = new FsPath(__DIR__ . DIRECTORY_SEPARATOR . 'dump' . DIRECTORY_SEPARATOR . $id);
 		$dirPath->mkdirs();
-		$this->tmpFileEngine = new TmpFileEngine($dirPath, '0777', '0777', 'tmp' . $id);
+		$this->tmpFileEngine = new TmpFileEngine($dirPath, $dirPath, '0777', '0777', 'tmp' . $id);
 	}
 
 	function testAffiliation() {
