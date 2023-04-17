@@ -48,4 +48,7 @@ class PublicFileManager extends TransactionalFileManagerAdapter implements Reque
 	
 	function prePrepare(Transaction $transaction): void {
 	}
+	
+	function postPrepare(Transaction $transaction): void {
+	}
 }
