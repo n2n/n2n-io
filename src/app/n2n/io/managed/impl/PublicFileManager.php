@@ -27,6 +27,7 @@ use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
 use n2n\context\RequestScoped;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
+use n2n\core\container\Transaction;
 
 class PublicFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	
@@ -45,5 +46,6 @@ class PublicFileManager extends TransactionalFileManagerAdapter implements Reque
 		}
 	}
 	
-	
+	function prePrepare(Transaction $transaction): void {
+	}
 }
