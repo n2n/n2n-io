@@ -146,6 +146,12 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	public function rollBack(Transaction $transaction): void {
 		$this->fileEngine->clearBuffer();
 	}
+
+	function prePrepare(Transaction $transaction): void {
+	}
+
+	function postPrepare(Transaction $transaction): void {
+	}
 	
 	public function preCommit(Transaction $transaction): void {
 		$this->fileEngine->flush(true);

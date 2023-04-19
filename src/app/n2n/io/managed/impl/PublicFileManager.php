@@ -45,10 +45,4 @@ class PublicFileManager extends TransactionalFileManagerAdapter implements Reque
 			$this->fileEngine->setBaseUrl($url);
 		}
 	}
-	
-	function prePrepare(Transaction $transaction): void {
-	}
-	
-	function postPrepare(Transaction $transaction): void {
-	}
 }
