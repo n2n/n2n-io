@@ -27,6 +27,7 @@ use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
 use n2n\context\RequestScoped;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
+use n2n\core\container\Transaction;
 
 class AssetFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	
@@ -43,5 +44,11 @@ class AssetFileManager extends TransactionalFileManagerAdapter implements Reques
 			
 			$this->fileEngine->setBaseUrl($url);
 		}
-	}	
+	}
+	
+	function prePrepare(Transaction $transaction): void {
+	}
+	
+	function postPrepare(Transaction $transaction): void {
+	}
 }
