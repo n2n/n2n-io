@@ -45,10 +45,4 @@ class AssetFileManager extends TransactionalFileManagerAdapter implements Reques
 			$this->fileEngine->setBaseUrl($url);
 		}
 	}
-	
-	function prePrepare(Transaction $transaction): void {
-	}
-	
-	function postPrepare(Transaction $transaction): void {
-	}
 }
