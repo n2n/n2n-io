@@ -35,14 +35,12 @@ class PublicFileManager extends TransactionalFileManagerAdapter implements Reque
 		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PUBLIC, $filesConfig->getManagerPublicDir(), 
 				$ioConfig->getPublicDirPermission(), $ioConfig->getPublicFilePermission());
 		$this->fileEngine->setCustomFileNamesAllowed(true);
-		
-		if ($request !== null) {
-			$url = $filesConfig->getManagerPublicUrl();
-			if ($url->isRelative() && !$url->getPath()->hasLeadingDelimiter()) {
-				$url = $request->getContextPath()->ext($url->getPath())->toUrl();
-			}
-			
+
+		$url = $filesConfig->getManagerPublicUrl();
+		if (!$url->isRelative() || $url->getPath()->hasLeadingDelimiter()) {
 			$this->fileEngine->setBaseUrl($url);
+		} else if ($request !== null) {
+			$this->fileEngine->setBaseUrl($request->getContextPath()->ext($url->getPath())->toUrl());
 		}
 	}
 }
