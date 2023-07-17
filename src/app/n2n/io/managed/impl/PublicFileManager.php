@@ -41,6 +41,8 @@ class PublicFileManager extends TransactionalFileManagerAdapter implements Reque
 			$this->fileEngine->setBaseUrl($url);
 		} else if ($request !== null) {
 			$this->fileEngine->setBaseUrl($request->getContextPath()->ext($url->getPath())->toUrl());
+		} else {
+			$this->fileEngine->setBaseUrl($url);
 		}
 	}
 }
