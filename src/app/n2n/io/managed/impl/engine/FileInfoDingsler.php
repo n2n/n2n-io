@@ -61,7 +61,7 @@ class FileInfoDingsler {
 	/**
 	 * @return FileInfo
 	 */
-	public function read() {
+	public function read(): FileInfo {
 		try {
 			if (!$this->infoFsPath->exists()) {
 				return new FileInfo();

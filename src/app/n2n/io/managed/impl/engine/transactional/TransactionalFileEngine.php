@@ -67,7 +67,7 @@ class TransactionalFileEngine {
 		$this->filePerm = $filePerm;
 	}
 
-	public function setCustomFileNamesAllowed($customFileNamesAllowed) {
+	public function setCustomFileNamesAllowed(bool $customFileNamesAllowed) {
 		$this->customFileNamesAllowed = $customFileNamesAllowed;
 	}
 
@@ -90,7 +90,7 @@ class TransactionalFileEngine {
 	 * @return string
 	 * @throws FileManagingConstraintException
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null) {
+	public function persist(File $file, FileLocator $fileLocator = null): ?string {
 		if (null !== ($qn = $this->checkFile($file))) {
 			return $qn;
 		}
@@ -201,7 +201,7 @@ class TransactionalFileEngine {
 	 * @return File
 	 * @throws FileManagingException
 	 */
-	public function getByQualifiedName(string $qualifiedName) {
+	public function getByQualifiedName(string $qualifiedName, bool $ifExistsChecked = true): ?File {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
 			return $this->filePersistJobs[$qualifiedName]->getFile();
 		}
@@ -210,42 +210,27 @@ class TransactionalFileEngine {
 
 		$fileFsPath = $this->baseDirFsPath->ext($qnBuilder->toArray());
 
-		if (!$fileFsPath->isFile()) {
+		if ($ifExistsChecked && !$fileFsPath->isFile()) {
 			return null;
 		}
-
-		$originalName = null;
-
-// 		if ($this->customFileNamesAllowed) {
-// 			$originalName = $fileFsPath->getName();
-// 		} else {
-// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-
-// 			$infoData = null;
-// 			try {
-// 				$infoData = $fileInfoDingsler->read();
-// 			} catch (FileManagingException $e) { }
-
-// 			if ($infoData === null || null === $infoData->getOriginalName()) {
-// 				$fileFsPath->delete();
-// 				$fileInfoDingsler->delete();
-// 				return null;
-// 			}
-
-// 			$originalName = $infoData->getOriginalName();;
-// 		}
 
 		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
 
 		if ($this->customFileNamesAllowed) {
 			$originalName = $fileFsPath->getName();
 		} else {
-			$fileInfo = $managedFileSource->readFileInfo();
-			$originalName = $fileInfo->getOriginalName();
+			$originalName = function () use ($managedFileSource) {
+				$fileInfo = $managedFileSource->readFileInfo();
+				$originalName = $fileInfo->getOriginalName();
 
-			if ($originalName === null) {
+				if ($originalName !== null) {
+					return $originalName;
+				}
+
 				$managedFileSource->delete();
-			}
+				throw new FileManagingException('FileInfo with existing original name could not be obtained for:'
+						. $managedFileSource);
+			};
 		}
 
 		if ($this->baseUrl !== null) {
@@ -262,7 +247,7 @@ class TransactionalFileEngine {
 		return null !== $this->checkFile($file);
 	}
 
-	public function checkFile(File $file) {
+	public function checkFile(File $file): ?string {
 		$fileSource = $file->getFileSource();
 
 		if (!$fileSource->isValid()) return null;
@@ -279,7 +264,7 @@ class TransactionalFileEngine {
 	}
 
 	public function remove(File $file) {
-		if (!$this->containsFile($file)) return;
+		if (!$this->containsFile($file)) return null;
 
 		$managedFileSource = $file->getFileSource();
 		IllegalStateException::assertTrue($managedFileSource instanceof ManagedFileSource);
@@ -292,7 +277,7 @@ class TransactionalFileEngine {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
 			$this->filePersistJobs[$qualifiedName]->dispose();
 			unset($this->filePersistJobs[$qualifiedName]);
-			return;
+			return null;
 		}
 
 		$this->ensureWritable($managedFileSource->getFileFsPath());

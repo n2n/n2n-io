@@ -45,7 +45,7 @@ class FsAffiliationFileSource extends FileSourceAdapter {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::delete()
 	 */
-	public function delete() {
+	public function delete(): void {
 		$this->getAffiliationEngine()->clear();
 		$this->fileFsPath->delete();
 		

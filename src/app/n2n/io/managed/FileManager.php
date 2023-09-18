@@ -49,7 +49,7 @@ interface FileManager {
 	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException 
 	 */
-	function getByQualifiedName(string $qualifiedName = null);
+	function getByQualifiedName(?string $qualifiedName, bool $ifExistsChecked = false): ?File;
 	
 	/**
 	 * @param string $qualifiedName

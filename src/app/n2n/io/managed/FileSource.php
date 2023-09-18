@@ -47,13 +47,13 @@ interface FileSource {
 	
 	/**
 	 * @return InputStream
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
+	 * @throws IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
 	function createInputStream(): InputStream;
 	
 	/**
 	 * @return OutputStream
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
+	 * @throws IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 * @throws FileManagingException if it is not possible to create an output stream for this file.
 	 */
 	public function createOutputStream(): OutputStream;
@@ -65,7 +65,7 @@ interface FileSource {
 	
 	/**
 	 * @return int
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
+	 * @throws IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 */
 	function getSize(): int;
 	
@@ -91,13 +91,13 @@ interface FileSource {
 	
 	/**
 	 * @return boolean
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	function isHttpaccessible(): bool;
 	
 	/**
 	 * @param Url $url
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	public function setUrl(Url $url);
 	
@@ -121,20 +121,20 @@ interface FileSource {
 	
 	/**
 	 * @return boolean
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	public function isImage(): bool;
 		
 	/**
 	 * @return \n2n\io\img\ImageSource
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 * @throws \n2n\io\img\UnsupportedImageTypeException if {@link self::isImage()} returns false.
 	 */
 	public function createImageSource(): ImageSource;
 	
 	/**
 	 * @return AffiliationEngine
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 */
 	public function getAffiliationEngine(): AffiliationEngine;
 	
@@ -142,7 +142,7 @@ interface FileSource {
 	 * @param FsPath $fsPath
 	 * @param string $filePerm
 	 * @param bool $overwrite
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
+	 * @throws IllegalStateException if {@link FileSource} is disposed {@link FileSource::isValid()}.
 	 * @throws \n2n\util\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
@@ -152,15 +152,14 @@ interface FileSource {
 	 * @param FsPath $fsPath
 	 * @param string $filePerm
 	 * @param bool $overwrite
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link FileSource::isValid()}).
 	 * @throws \n2n\util\io\IoException
 	 * @throws FileManagingConstraintException if file is not allowed to be copied.
 	 */
 	public function copy(FsPath $fsPath, string $filePerm, bool $overwrite = false);
 	
 	/**
-	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
-	 * @throws \n2n\util\io\IoException
+	 * @throws IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 * @throws FileManagingConstraintException if file is not allowed to be deleted.
 	 */
 	public function delete();

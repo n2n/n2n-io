@@ -37,7 +37,6 @@ class CommonFile implements File {
 	 * @var FileSource
 	 */
 	private $fileSource;
-	private $originalName;
 	private $originalExtension;
 	private $fileListeners = array();
 	
@@ -46,9 +45,8 @@ class CommonFile implements File {
 	 * @param string $originalName
 	 * @throws \InvalidArgumentException if $originalName is empty
 	 */
-	public function __construct(FileSource $fileSource, string $originalName) {
+	public function __construct(FileSource $fileSource, private string|\Closure $originalName) {
 		$this->fileSource = $fileSource;
-		$this->setOriginalName($originalName);
 	}
 	
 	public function isValid(): bool {
@@ -59,19 +57,22 @@ class CommonFile implements File {
 	 * @return string
 	 */
 	public function getOriginalName(): string {
-		return $this->originalName;
+		if (is_string($this->originalName)) {
+			return $this->originalName;
+		}
+
+		$originalName = ($this->originalName)();
+		ArgUtils::valTypeReturn($originalName, 'string', null, $this->originalName);
+		return $this->originalName = $originalName;
 	}
 	
 	/**
 	 * @param string $originalName
 	 */
-	public function setOriginalName(string $originalName) {
+	public function setOriginalName(string $originalName): void {
 		ArgUtils::assertTrue(!StringUtils::isEmpty($originalName), '$originalName can not be empty.');
 		
 		$this->originalName = $originalName;
-		if ($originalName === null) {
-			$this->originalExtension = null;
-		}
 		$info = pathinfo($originalName);
 		$this->originalExtension = isset($info['extension']) ? $info['extension'] : null;
 	}
