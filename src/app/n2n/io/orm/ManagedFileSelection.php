@@ -56,21 +56,14 @@ class ManagedFileSelection implements Selection {
 		if ($this->qualifiedName === null) {
 			return new EagerValueBuilder(null);
 		}
-		
-		$file = null;
+
 		try {
-			$file = $this->fileManager->getByQualifiedName($this->qualifiedName);
+			return new EagerValueBuilder($this->fileManager->getByQualifiedName($this->qualifiedName, false));
 		} catch (QualifiedNameFormatException $e) {
 			throw new CorruptedDataException('Failed to lookup value for ' . $this->entityProperty, 0, 
 					new CorruptedDataException('Field \'' . $this->entityProperty->getColumnName()
 							. '\' of table \'' . $this->entityProperty->getEntityModel()->getTableName() 
 							. '\' contains an invalid value: ' . $this->qualifiedName, 0, $e));	
 		}
-		
-		if ($file !== null) {
-			return new EagerValueBuilder($file);
-		}
-		
-		return new EagerValueBuilder(new UnknownFile($this->qualifiedName, get_class($this->fileManager)));
 	}
 }
