@@ -24,6 +24,7 @@ class TransactionalFileEngineTest extends TestCase {
 	function testFileNotExists(): void {
 
 		$this->assertNull($this->transactionalFileEngine->getByQualifiedName('huii.txt', true));
+		$this->assertNull($this->transactionalFileEngine->getByQualifiedName('huii.txt'));
 
 		$file = $this->transactionalFileEngine->getByQualifiedName('huii.txt', false);
 		$this->assertNotNull($file);
