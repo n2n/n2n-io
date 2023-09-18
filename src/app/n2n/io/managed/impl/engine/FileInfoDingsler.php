@@ -84,6 +84,6 @@ class FileInfoDingsler {
 	}
 
 	private function createReadException($e) {
-		throw new FileManagingException('Could no read from info file: ' . $this->infoFsPath, 0, $e);
+		return new FileManagingException('Could no read from info file: ' . $this->infoFsPath, 0, $e);
 	}
 }
