@@ -130,7 +130,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::getByQualifiedName()
 	 */
-	public function getByQualifiedName(?string $qualifiedName, bool $ifExistsChecked = false): ?File {
+	public function getByQualifiedName(?string $qualifiedName, bool $ifExistsChecked = true): ?File {
 		if ($qualifiedName === null) return null;
 		
 		return $this->getFileEngine()->getByQualifiedName($qualifiedName, $ifExistsChecked);
