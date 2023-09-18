@@ -34,18 +34,26 @@ class TransactionalFileEngineTest extends TestCase {
 
 	function testCustomFileNamesExists(): void {
 		$this->transactionalFileEngine->setCustomFileNamesAllowed(true);
-		$this->dirPath->ext('huii.txt')->touch();
+		$fileFsPath = $this->dirPath->ext('huii.txt');
+		$fileFsPath->touch();
 
 		$file = $this->transactionalFileEngine->getByQualifiedName('huii.txt', true);
 		$this->assertNotNull($file);
 		$this->assertTrue($file->isValid());
 		$this->assertEquals('huii.txt', $file->getOriginalName());
 
+		$fileFsPath->delete();
+		$this->assertFalse($fileFsPath->exists());
+
 		$file2 = $this->transactionalFileEngine->getByQualifiedName('huii.txt', false);
 		$this->assertTrue($file !== $file2);
 		$this->assertNotNull($file2);
+		$fileFsPath->touch();
 		$this->assertTrue($file2->isValid());
 		$this->assertEquals('huii.txt', $file2->getOriginalName());
+
+		$fileFsPath->delete();
+		$this->assertTrue($file2->isValid());
 	}
 
 
