@@ -46,10 +46,10 @@ class TmpFileEngineTest extends TestCase {
 		$file = $this->tmpFileEngine->createFile();
 		$fsPath = $file->getFileSource()->getFsPath();
 
-		$varFsPath = $fsPath->getParent()->ext('res-var-superduper')->ext($fsPath->getFileName());
+		$varFsPath = $fsPath->getParent()->ext('res-var-superduper')->ext($fsPath->getName());
 		$varFsPath->mkdirsAndCreateFile('0777', '0666');
 
-		$thumbFsPath = $fsPath->getParent()->ext('res-1x1xs')->ext($fsPath->getFileName());
+		$thumbFsPath = $fsPath->getParent()->ext('res-1x1xs')->ext($fsPath->getName());
 		$thumbFsPath->mkdirsAndCreateFile('0777', '0666');
 
 
