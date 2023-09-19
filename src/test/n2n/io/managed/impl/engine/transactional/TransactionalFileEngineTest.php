@@ -41,6 +41,7 @@ class TransactionalFileEngineTest extends TestCase {
 		$this->assertNotNull($file);
 		$this->assertTrue($file->isValid());
 		$this->assertEquals('huii.txt', $file->getOriginalName());
+		$this->assertEquals('txt', $file->getOriginalExtension());
 
 		$fileFsPath->delete();
 		$this->assertFalse($fileFsPath->exists());
@@ -51,6 +52,7 @@ class TransactionalFileEngineTest extends TestCase {
 		$fileFsPath->touch();
 		$this->assertTrue($file2->isValid());
 		$this->assertEquals('huii.txt', $file2->getOriginalName());
+		$this->assertEquals('txt', $file->getOriginalExtension());
 
 		$fileFsPath->delete();
 		$this->assertTrue($file2->isValid());
@@ -67,6 +69,7 @@ class TransactionalFileEngineTest extends TestCase {
 		$this->assertNotNull($file);
 		$this->assertTrue($file->isValid());
 		$this->assertEquals('holeradio.txt', $file->getOriginalName());
+		$this->assertEquals('txt', $file->getOriginalExtension());
 
 		$infoFsPath->delete();
 

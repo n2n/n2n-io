@@ -47,6 +47,9 @@ class CommonFile implements File {
 	 */
 	public function __construct(FileSource $fileSource, private string|\Closure $originalName) {
 		$this->fileSource = $fileSource;
+		if (is_string($this->originalName)) {
+			$this->setOriginalName($originalName);
+		}
 	}
 	
 	public function isValid(): bool {
@@ -63,7 +66,8 @@ class CommonFile implements File {
 
 		$originalName = ($this->originalName)();
 		ArgUtils::valTypeReturn($originalName, 'string', null, $this->originalName);
-		return $this->originalName = $originalName;
+		$this->setOriginalName($originalName);
+		return $originalName;
 	}
 	
 	/**
@@ -74,7 +78,7 @@ class CommonFile implements File {
 		
 		$this->originalName = $originalName;
 		$info = pathinfo($originalName);
-		$this->originalExtension = isset($info['extension']) ? $info['extension'] : null;
+		$this->originalExtension = $info['extension'] ?? null;
 	}
 	
 	/**
