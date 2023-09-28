@@ -220,7 +220,7 @@ class CommonFile implements File {
 		}
 	}
 	public function getName(): string {
-		return $this->originalName;
+		return $this->getOriginalName();
 	}
 
 	public function getLastModified(): ?\DateTime {
