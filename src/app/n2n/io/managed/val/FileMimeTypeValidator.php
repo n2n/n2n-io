@@ -9,6 +9,7 @@ use n2n\util\type\TypeConstraint;
 use n2n\io\managed\File;
 use n2n\util\type\CastUtils;
 use n2n\validation\lang\ValidationMessages;
+use n2n\validation\plan\ValidationContext;
 
 class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	private $allowedMimeTypes;
@@ -22,7 +23,7 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function testSingle(Validatable $validatable, MagicContext $magicContext): bool {
+	protected function testSingle(Validatable $validatable, ValidationContext $validationContext, MagicContext $magicContext): bool {
 		$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 		if (null !== $file) {
 			CastUtils::assertTrue($file instanceof File);
