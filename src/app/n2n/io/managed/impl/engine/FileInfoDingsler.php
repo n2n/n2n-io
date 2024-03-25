@@ -40,20 +40,18 @@ class FileInfoDingsler {
 		$this->infoFsPath = new FsPath($fsPath->__toString() . self::INFO_SUFFIX);
 	}
 
-	public function getInfoFsPath() {
+	public function getInfoFsPath(): FsPath {
 		return $this->infoFsPath;
 	}
 
-	public function exists() {
+	public function exists(): bool {
 		return $this->infoFsPath->exists();
 	}
 
-	public function write(FileInfo $fileInfo) {
+	public function write(FileInfo $fileInfo): void {
 		try {
 			IoUtils::putContents($this->infoFsPath, StringUtils::jsonEncode($fileInfo));
-		} catch (JsonEncodeFailedException $e) {
-			throw $this->createWriteException($e);
-		} catch (IoException $e) {
+		} catch (JsonEncodeFailedException|IoException $e) {
 			throw $this->createWriteException($e);
 		}
 	}
@@ -75,7 +73,7 @@ class FileInfoDingsler {
 		}
 	}
 
-	function delete() {
+	function delete(): void {
 		$this->infoFsPath->delete();
 	}
 
@@ -87,7 +85,7 @@ class FileInfoDingsler {
 		return new FileManagingException('Could no read from info file: ' . $this->infoFsPath, 0, $e);
 	}
 
-	private function readLegacyOriginalName() {
+	private function readLegacyOriginalName(): ?string {
 		try {
 			return IoUtils::getContents($this->fsPath . '.privinf');
 		} catch (IoException $ex) {
