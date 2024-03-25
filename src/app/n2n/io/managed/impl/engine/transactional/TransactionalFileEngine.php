@@ -245,6 +245,7 @@ class TransactionalFileEngine {
 
 			if ($originalName === null) {
 				$managedFileSource->delete();
+				return null;
 			}
 		}
 
