@@ -227,7 +227,7 @@ class TransactionalFileEngine {
 					return $originalName;
 				}
 
-				$managedFileSource->delete();
+//				$managedFileSource->delete();
 				throw new FileManagingException('FileInfo with existing original name could not be obtained for:'
 						. $managedFileSource);
 			};
