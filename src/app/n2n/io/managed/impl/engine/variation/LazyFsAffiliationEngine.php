@@ -32,8 +32,6 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 
 	private $origFileSource;
 	private $mimeType;
-	private $dirPerm;
-	private $filePerm;
 	private $thumbDisabled = false;
 	/**
 	 * @var ThumbManager|null
@@ -48,10 +46,8 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	 * @param ThumbManager|null $thumbManager
 	 * @param VariationManager|null $variationManager
 	 */
-	function __construct(FileSource $origFileSource, string $dirPerm, string $filePerm) {
+	function __construct(FileSource $origFileSource, private int|string|null $dirPerm, private int|string|null $filePerm) {
 		$this->origFileSource = $origFileSource;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
 	}
 
 	private function getMimeType() {

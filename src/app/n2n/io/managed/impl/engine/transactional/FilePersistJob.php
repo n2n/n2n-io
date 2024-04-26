@@ -31,14 +31,13 @@ class FilePersistJob {
 	private $file;
 	private $managedFileSource;
 	private $lock;
-	private $filePerm;
 	private $executed = false;
 
-	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock, string $filePerm) {
+	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock,
+			private int|string|null $filePerm) {
 		$this->file = $file;
 		$this->managedFileSource = $managedFileSource;
 		$this->lock = $lock;
-		$this->filePerm = $filePerm;
 	}
 	
 	public function getFile() {

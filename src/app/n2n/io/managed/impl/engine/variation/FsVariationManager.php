@@ -33,14 +33,8 @@ use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 class FsVariationManager implements VariationManager {
 	const KEY_PREFIX = 'var-';
 
-	private $fileSource;
-	private $dirPerm;
-	private $filePerm;
-	
-	public function __construct(FileSourceAdapter $fileSource, string $dirPerm, string $filePerm) {
-		$this->fileSource = $fileSource;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
+	public function __construct(private FileSourceAdapter $fileSource, private int|string|null $dirPerm,
+			private int|string|null $filePerm) {
 	}
 	
 	public static function keyToDirName(string $key) {

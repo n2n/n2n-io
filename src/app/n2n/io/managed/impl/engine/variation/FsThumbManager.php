@@ -35,14 +35,11 @@ class FsThumbManager implements ThumbManager {
 
 	private $fileSource;
 	private $mimeType;
-	private $dirPerm;
-	private $filePerm;
 	
-	public function __construct(FileSource $fileSource, string $mimeType, string $dirPerm, string $filePerm) {
+	public function __construct(FileSource $fileSource, string $mimeType,
+			private int|string|null $dirPerm, private int|string|null $filePerm) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
 	}
 	
 	public static function dimensionToDirName(ImageDimension $dimension) {
