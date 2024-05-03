@@ -21,7 +21,7 @@
  */
 namespace n2n\io\orm;
 
-use n2n\persistence\meta\data\QueryItem;
+use n2n\spec\dbo\meta\data\QueryItem;
 use n2n\persistence\PdoStatement;
 use n2n\io\managed\FileManager;
 use n2n\persistence\orm\query\select\Selection;

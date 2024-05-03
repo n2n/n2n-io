@@ -51,8 +51,6 @@ class TransactionalFileEngine {
 
 	private $fileManagerName;
 	private $baseDirFsPath;
-	private $dirPerm;
-	private $filePerm;
 
 	private $baseUrl;
 	private $customFileNamesAllowed = false;
@@ -60,11 +58,10 @@ class TransactionalFileEngine {
 	private $filePersistJobs = array();
 	private $fileRemoveJobs = array();
 
-	public function __construct($fileManagerName, FsPath $baseDirFsPath, $dirPerm, $filePerm) {
+	public function __construct($fileManagerName, FsPath $baseDirFsPath,
+			private string|int|null $dirPerm, private string|int|null $filePerm) {
 		$this->fileManagerName = $fileManagerName;
 		$this->baseDirFsPath = $baseDirFsPath;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
 	}
 
 	public function setCustomFileNamesAllowed(bool $customFileNamesAllowed) {
