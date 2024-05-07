@@ -46,7 +46,7 @@ class TmpFileEngine {
 	private $filePerm;
 	private $fileManagerName;
 
-	public function __construct(FsPath $fsPath, private FsPath $sessionDirFsPath, string $dirPerm, string $filePerm,
+	public function __construct(FsPath $fsPath, private FsPath $sessionDirFsPath, ?string $dirPerm, ?string $filePerm,
 			string $fileManagerName) {
 		$this->fsPath = $fsPath;
 		$this->dirPerm = $dirPerm;
@@ -56,7 +56,9 @@ class TmpFileEngine {
 
 	private function createThreadTmpFileSource() {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
-		$fileFsPath->chmod($this->filePerm);
+		if ($this->filePerm !== null) {
+			$fileFsPath->chmod($this->filePerm);
+		}
 
 		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
 		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
@@ -65,7 +67,9 @@ class TmpFileEngine {
 
 	private function createSessionTmpFileSource($sessionId, $originalName) {
 		$fileFsPath = new FsPath(tempnam($this->sessionDirFsPath, self::SESS_PREFIX));
-		$fileFsPath->chmod($this->filePerm);
+		if ($this->filePerm !== null) {
+			$fileFsPath->chmod($this->filePerm);
+		}
 
 // 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 // 		$fileInfoDingsler->write();
