@@ -40,6 +40,8 @@ use n2n\persistence\orm\store\ValueHash;
 use n2n\persistence\orm\store\CommonValueHash;
 use n2n\util\type\CastUtils;
 use n2n\util\type\TypeConstraints;
+use n2n\persistence\orm\query\select\Selection;
+use n2n\persistence\orm\criteria\compare\ColumnComparable;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -90,14 +92,14 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createSelection()
 	 */
-	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState) {
+	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState): Selection {
 		return new ManagedFileSelection($this->createQueryColumn($metaTreePoint->getMeta()),
 				$this->lookupFileManager($queryState->getEntityManager()), $this);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\ColumnComparableEntityProperty::createComparisonStrategy()
 	 */
-	public function createColumnComparable(MetaTreePoint $metaTreePoint, QueryState $queryState) {
+	public function createColumnComparable(MetaTreePoint $metaTreePoint, QueryState $queryState): ColumnComparable {
 		return new ManagedFileColumnComparable($this->createQueryColumn($metaTreePoint->getMeta()), $queryState,
 				$this->lookupFileManager($queryState->getEntityManager()));
 	}
@@ -110,7 +112,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
+	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash): void {
 		$fileManager = $this->lookupFileManager($persistAction->getActionQueue()->getEntityManager());
 
 		$oldValue = null;

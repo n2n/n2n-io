@@ -33,6 +33,7 @@ use n2n\persistence\orm\store\action\RemoveAction;
 use n2n\impl\persistence\orm\property\EntityPropertyAdapter;
 use n2n\persistence\orm\EntityManager;
 use n2n\persistence\orm\store\ValueHash;
+use n2n\persistence\orm\query\select\Selection;
 
 class FileEntityProperty extends EntityPropertyAdapter {
 	private $columnName;
@@ -49,8 +50,9 @@ class FileEntityProperty extends EntityPropertyAdapter {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createSelection()
 	 */
-	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState) {
-		return new FileSelection($this->createQueryColumn($metaTreePoint->getMeta()));
+	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState): Selection {
+		throw new NotYetImplementedException();
+//		return new FileSelection($this->createQueryColumn($metaTreePoint->getMeta()));
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::mergeValue()
@@ -61,7 +63,7 @@ class FileEntityProperty extends EntityPropertyAdapter {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
+	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash): void {
 		
 	}
 	/* (non-PHPdoc)
