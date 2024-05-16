@@ -22,7 +22,6 @@
 namespace n2n\io\orm;
 
 use n2n\reflection\property\AccessProxy;
-use n2n\util\type\TypeConstraint;
 use n2n\persistence\orm\query\from\MetaTreePoint;
 use n2n\persistence\orm\query\QueryState;
 use n2n\io\managed\FileLocator;
@@ -36,12 +35,11 @@ use n2n\persistence\orm\store\action\RemoveAction;
 use n2n\util\type\ArgUtils;
 use n2n\io\managed\File;
 use n2n\persistence\orm\property\ColumnComparableEntityProperty;
-use n2n\persistence\orm\criteria\compare\ManagedFileColumnComparable;
+use n2n\impl\persistence\orm\property\compare\ManagedFileColumnComparable;
 use n2n\persistence\orm\store\ValueHash;
 use n2n\persistence\orm\store\CommonValueHash;
 use n2n\util\type\CastUtils;
 use n2n\util\type\TypeConstraints;
-use n2n\l10n\N2nLocale;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -112,8 +110,8 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
-		$fileManager = $this->lookupFileManager($persistingJob->getActionQueue()->getEntityManager());
+	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
+		$fileManager = $this->lookupFileManager($persistAction->getActionQueue()->getEntityManager());
 
 		$oldValue = null;
 		if ($oldValueHash !== null) {
@@ -131,7 +129,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 				$fileManager->removeByQualifiedName($oldQualifiedName);
 			}
 
-			$persistingJob->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, null);
+			$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, null);
 			return;
 		}
 
@@ -143,7 +141,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 			$fileManager->removeByQualifiedName($oldQualifiedName);
 		}
 
-		$persistingJob->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, $qualifiedName);
+		$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, $qualifiedName);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyRemoveAction()
