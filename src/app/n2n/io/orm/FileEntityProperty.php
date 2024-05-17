@@ -25,7 +25,7 @@ use n2n\reflection\property\AccessProxy;
 use n2n\util\type\TypeConstraint;
 use n2n\persistence\orm\query\from\MetaTreePoint;
 use n2n\persistence\orm\query\QueryState;
-use n2n\persistence\orm\query\select\FileSelection;
+use n2n\impl\persistence\orm\property\select\FileSelection;
 use n2n\persistence\orm\store\operation\MergeOperation;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\persistence\orm\store\action\PersistAction;
@@ -33,6 +33,7 @@ use n2n\persistence\orm\store\action\RemoveAction;
 use n2n\impl\persistence\orm\property\EntityPropertyAdapter;
 use n2n\persistence\orm\EntityManager;
 use n2n\persistence\orm\store\ValueHash;
+use n2n\persistence\orm\query\select\Selection;
 
 class FileEntityProperty extends EntityPropertyAdapter {
 	private $columnName;
@@ -43,25 +44,26 @@ class FileEntityProperty extends EntityPropertyAdapter {
 	
 		parent::__construct($accessProxy);
 		throw new NotYetImplementedException('Use AnnoManagedFile for ' . $accessProxy->getPropertyName());
-		$this->columnName = $columnName;
-		$this->originalFileNameColumnName = $originalFileNameColumnName;
+//		$this->columnName = $columnName;
+//		$this->originalFileNameColumnName = $originalFileNameColumnName;
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createSelection()
 	 */
-	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState) {
-		return new FileSelection($this->createQueryColumn($metaTreePoint->getMeta()));
+	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState): Selection {
+		throw new NotYetImplementedException();
+//		return new FileSelection($this->createQueryColumn($metaTreePoint->getMeta()));
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::mergeValue()
 	 */
-	public function mergeValue($value, $sameEntity, MergeOperation $mergeOperation) {
+	public function mergeValue(mixed $value, bool $sameEntity, MergeOperation $mergeOperation): mixed {
 		throw new NotYetImplementedException();
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
-	public function supplyPersistAction(PersistAction $persistingJob, $value, ValueHash $valueHash, ?ValueHash $oldValueHash) {
+	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash): void {
 		
 	}
 	/* (non-PHPdoc)
@@ -73,8 +75,8 @@ class FileEntityProperty extends EntityPropertyAdapter {
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createValueHash()
 	 */
-	public function createValueHash($value, EntityManager $em): ValueHash {
-		
+	public function createValueHash(mixed $value, EntityManager $em): ValueHash {
+		throw new NotYetImplementedException();
 	}
 
 	

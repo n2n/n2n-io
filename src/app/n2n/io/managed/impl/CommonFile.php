@@ -51,6 +51,13 @@ class CommonFile implements File {
 			$this->setOriginalName($originalName);
 		}
 	}
+
+	/**
+	 * @deprecated Method exists to support legacy code
+	 */
+	function getQualifiedName(): ?string {
+		return $this->fileSource->getQualifiedName();
+	}
 	
 	public function isValid(): bool {
 		return $this->fileSource->isValid();
