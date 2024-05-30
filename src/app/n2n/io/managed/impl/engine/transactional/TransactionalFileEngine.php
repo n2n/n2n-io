@@ -24,7 +24,6 @@ namespace n2n\io\managed\impl\engine\transactional;
 use n2n\util\HashUtils;
 use n2n\util\type\ArgUtils;
 use n2n\util\io\fs\FsPath;
-use n2n\core\Sync;
 use n2n\util\io\IoException;
 use n2n\util\uri\Url;
 use n2n\io\managed\File;
@@ -35,12 +34,12 @@ use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\engine\UncommittedManagedFileSource;
-use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\io\managed\impl\engine\variation\FsThumbManager;
-use n2n\io\managed\FileInfo;
+use n2n\concurrency\sync\Lock;
+use n2n\concurrency\sync\impl\Sync;
 
 class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
@@ -48,6 +47,7 @@ class TransactionalFileEngine {
 	const FILE_SUFFIX = '.managed';
 	const FILEINFO_SUFFIX = '.inf';
 	const INFO_ORIGINAL_NAME_KEY = 'originalName';
+	const LOCK_FILE_EXT = '.lock';
 
 	private $fileManagerName;
 	private $baseDirFsPath;
@@ -128,6 +128,17 @@ class TransactionalFileEngine {
 		return HashUtils::base36Md5Hash(uniqid(), self::GENERATED_LEVEL_LENGTH);
 	}
 
+
+	private function acquireLock(FsPath $fileFsPath): ?Lock {
+		$lock = Sync::byFileLock($fileFsPath->ext(self::LOCK_FILE_EXT));
+
+		if ($lock->acquireNb()) {
+			return $lock;
+		}
+
+		return null;
+	}
+
 	private function createFilePersistJob($dirLevelNames, $fileName, File $file) {
 		if (!$file->getFileSource()->isValid()) {
 			throw new InaccessibleFileSourceException('FileSource of File no longer valid: ' . $file);
@@ -144,7 +155,7 @@ class TransactionalFileEngine {
 		$usedFileName = $fileName;
 		$lock = null;
 
-		while ($fileFsPath->exists() || null === ($lock = Sync::exNb($this, (string) $fileFsPath))) {
+		while ($fileFsPath->exists() || null === ($lock = $this->acquireLock($fileFsPath))) {
 			$fileNameParts = explode('.', $fileName);
 			$fileNameParts[0] .= $ext++;
 			$usedFileName = implode('.', $fileNameParts);
