@@ -26,6 +26,7 @@
 	"require" : {
 		"n2n/n2n-reflection" : "~7.4",
 		"n2n/n2n-util" : "~7.4",
+		"n2n/n2n-concurrency" : "~7.4",
         "ext-fileinfo": "*"
     },
 	"autoload" : {

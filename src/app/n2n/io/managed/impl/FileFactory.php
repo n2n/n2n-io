@@ -24,7 +24,7 @@ namespace n2n\io\managed\impl;
 use n2n\web\http\UploadDefinition;
 use n2n\util\io\IoUtils;
 use n2n\util\io\fs\FsPath;
-use n2n\io\IoErrorException;
+use n2n\io\IoError;
 use n2n\io\UploadedFileExceedsMaxSizeException;
 use n2n\io\IncompleteFileUploadException;
 use n2n\io\managed\File;
@@ -45,10 +45,10 @@ class FileFactory {
 	}
 	/**
 	 * @param UploadDefinition $uploadDefinition
-	 * @throws UploadedFileExceedsMaxSizeException
-	 * @throws IncompleteFileUploadException
-	 * @throws IoErrorException
 	 * @return \n2n\io\managed\File
+	 *@throws IncompleteFileUploadException
+	 * @throws IoError
+	 * @throws UploadedFileExceedsMaxSizeException
 	 */
 	public static function createFromUploadDefinition(UploadDefinition $uploadDefinition) {
 		if (UPLOAD_ERR_OK == $uploadDefinition->getErrorNo()) {
@@ -68,13 +68,13 @@ class FileFactory {
 			case UPLOAD_ERR_NO_FILE:
 				return null;
 			case UPLOAD_ERR_NO_TMP_DIR:
-				throw new IoErrorException('Configuration error: UPLOAD_ERR_NO_TMP_DIR');
+				throw new IoError('Configuration error: UPLOAD_ERR_NO_TMP_DIR');
 			case UPLOAD_ERR_CANT_WRITE:
-				throw new IoErrorException('Configuration error: UPLOAD_ERR_CANT_WRITE');
+				throw new IoError('Configuration error: UPLOAD_ERR_CANT_WRITE');
 			case UPLOAD_ERR_EXTENSION:
-				throw new IoErrorException('Configuration error: UPLOAD_ERR_EXTENSION');
+				throw new IoError('Configuration error: UPLOAD_ERR_EXTENSION');
 			default:
-				throw new IoErrorException('Unknown configuration error');
+				throw new IoError('Unknown configuration error');
 		}
 	}
 	
