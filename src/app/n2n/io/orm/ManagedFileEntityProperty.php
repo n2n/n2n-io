@@ -131,7 +131,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 				$fileManager->removeByQualifiedName($oldQualifiedName);
 			}
 
-			$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, null);
+			$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, null, null, $this);
 			return;
 		}
 
@@ -143,7 +143,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 			$fileManager->removeByQualifiedName($oldQualifiedName);
 		}
 
-		$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, $qualifiedName);
+		$persistAction->getMeta()->setRawValue($this->getEntityModel(), $this->columnName, $qualifiedName, null, $this);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyRemoveAction()
