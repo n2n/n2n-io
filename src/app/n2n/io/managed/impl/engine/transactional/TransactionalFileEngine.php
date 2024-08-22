@@ -130,7 +130,7 @@ class TransactionalFileEngine {
 
 
 	private function acquireLock(FsPath $fileFsPath): ?Lock {
-		$lock = Sync::byFileLock($fileFsPath->ext(self::LOCK_FILE_EXT));
+		$lock = Sync::byFileLock(new FsPath($fileFsPath . self::LOCK_FILE_EXT));
 
 		if ($lock->acquireNb()) {
 			return $lock;
