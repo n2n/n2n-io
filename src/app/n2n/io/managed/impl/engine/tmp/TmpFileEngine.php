@@ -32,6 +32,8 @@ use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\FileInfo;
+use n2n\util\io\fs\FileOperationException;
+use n2n\util\ex\IllegalStateException;
 
 class TmpFileEngine {
 	const INFO_SUFFIX = '.inf';
@@ -178,9 +180,22 @@ class TmpFileEngine {
 		}
 	}
 
-	public function deleteOldSessionFiles($gcMaxLifetime) {
+	public function deleteOldSessionFiles($gcMaxLifetime): void {
 		foreach ($this->sessionDirFsPath->getChildren(self::SESS_PREFIX . '*') as $fsPath) {
-			if ($gcMaxLifetime < (time() - $fsPath->getMTime())) {
+			try {
+				$fileMtime = $fsPath->getMTime();
+			} catch (\Throwable $e) {
+				// this will fix a concurrency problem where getMTime() fails because an other php process has deleted
+				// that file in the meantime.
+
+				if ($fsPath->exists()) {
+					throw new IllegalStateException(previous: $e);
+				}
+
+				continue;
+			}
+
+			if ($gcMaxLifetime < (time() - $fileMtime)) {
 				$fsPath->delete();
 			}
 		}
