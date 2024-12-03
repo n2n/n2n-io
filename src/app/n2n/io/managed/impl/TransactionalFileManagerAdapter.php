@@ -73,7 +73,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::persist()
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null): string {
+	public function persist(File $file, ?FileLocator $fileLocator = null): string {
 		$this->ensureNotReadOnly('persist');
 	
 		$fileEngine = $this->getFileEngine();
@@ -185,7 +185,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		return true;
 	}
 	
-	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null): array {
+	function getPossibleImageDimensions(File $file, ?FileLocator $fileLocator = null): array {
 		return $this->fileEngine->getPossibleImageDimensions($file, $fileLocator);
 	}
 }

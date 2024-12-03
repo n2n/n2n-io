@@ -218,7 +218,7 @@ class CommonFile implements File {
 		return $o instanceof File && $this->fileSource->equals($o->getFileSource());
 	}
 	
-	public function toUrl(string &$suggestedLabel = null): Url {
+	public function toUrl(?string &$suggestedLabel = null): Url {
 		$suggestedLabel = $this->getOriginalName();
 		try {
 			return $this->getFileSource()->getUrl();

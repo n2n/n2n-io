@@ -71,7 +71,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/**
 	 * @param FileLocator $fileLocator
 	 */
-	public function setFileLocator(FileLocator $fileLocator = null) {
+	public function setFileLocator(?FileLocator $fileLocator = null) {
 		$this->fileLocator = $fileLocator;
 	}
 	/**

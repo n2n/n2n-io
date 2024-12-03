@@ -34,8 +34,8 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	private $imageDimension;
 	
 
-	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true, 
-			string $idExt = null) {
+	public function __construct(int $width, int $height, ?string $autoCropMode = null, bool $scaleUpAllowed = true,
+			?string $idExt = null) {
 		ArgUtils::valEnum($autoCropMode, ImageResource::getAutoCropModes(), null, true);
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;

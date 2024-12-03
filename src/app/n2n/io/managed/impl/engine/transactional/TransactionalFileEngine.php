@@ -87,7 +87,7 @@ class TransactionalFileEngine {
 	 * @return string
 	 * @throws FileManagingConstraintException
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null): ?string {
+	public function persist(File $file, ?FileLocator $fileLocator = null): ?string {
 		if (null !== ($qn = $this->checkFile($file))) {
 			return $qn;
 		}
@@ -106,7 +106,7 @@ class TransactionalFileEngine {
 		}
 	}
 
-	private function determineFileName(File $file, FileLocator $fileLocator = null) {
+	private function determineFileName(File $file, ?FileLocator $fileLocator = null) {
 		if (!$this->customFileNamesAllowed) {
 			return $this->generateFileName() . self::FILE_SUFFIX;
 		}
@@ -340,7 +340,7 @@ class TransactionalFileEngine {
 	 * @param FileLocator $fileLocator
 	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
-	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null) {
+	function getPossibleImageDimensions(File $file, ?FileLocator $fileLocator = null) {
 		$dirFsPath = $this->baseDirFsPath;
 		if ($fileLocator !== null) {
 			$dirFsPath = $this->baseDirFsPath->ext($fileLocator->buildDirLevelNames($file));
