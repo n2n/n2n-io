@@ -45,7 +45,7 @@ abstract class FileSourceAdapter implements FileSource {
 	protected ?AffiliationEngine $affiliationEngine = null;
 	
 	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath,
-			FileSource $originalFileSource = null) {
+			?FileSource $originalFileSource = null) {
 		$this->qualifiedName = $qualifiedName;
 		$this->fileManagerName = $fileManagerName;
 		$this->fileFsPath = $fileFsPath;

@@ -31,7 +31,7 @@ class FileInfo implements \JsonSerializable {
 	/**
 	 * @param string $originalName
 	 */
-	function __construct(string $originalName = null) {
+	function __construct(?string $originalName = null) {
 		$this->originalName = $originalName;
 	}
 	

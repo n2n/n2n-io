@@ -42,7 +42,7 @@ class ImageDimension {
 	 * @param bool $scaledUp
 	 * @param string $idExt
 	 */
-	public function __construct(int $width, int $height, bool $cropped, bool $scaledUp, string $idExt = null) {
+	public function __construct(int $width, int $height, bool $cropped, bool $scaledUp, ?string $idExt = null) {
 		$this->width = $width;
 		$this->height = $height;
 		$this->cropped = $cropped;

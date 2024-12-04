@@ -14,7 +14,7 @@ use n2n\validation\plan\ValidationContext;
 class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	private $allowedMimeTypes;
 	
-	function __construct(array $allowedMimeTypes, Message $errorMessage = null) {
+	function __construct(array $allowedMimeTypes, ?Message $errorMessage = null) {
 		parent::__construct($errorMessage);
 
 		$this->allowedMimeTypes = $allowedMimeTypes;

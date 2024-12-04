@@ -92,7 +92,7 @@ class TmpFileEngine {
 		return $this->createSessionTmpFileSource($sessionId, $originalName);
 	}
 
-	public function createFile(string $sessionId = null, string $originalName = null) {
+	public function createFile(?string $sessionId = null, ?string $originalName = null) {
 		$tmpFileSource = $this->createTmpFileSource($sessionId, $originalName);
 
 		if ($originalName === null) {

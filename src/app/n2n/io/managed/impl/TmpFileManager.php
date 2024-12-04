@@ -31,6 +31,7 @@ use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\File;
 use n2n\reflection\ObjectAdapter;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
+use n2n\context\config\LookupSession;
 
 class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	const TMP_DIR = 'files';
@@ -83,7 +84,7 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * @throws \n2n\io\managed\FileManagingConstraintException if creating a temp file from passed File violates any
 	 * constraints.
 	 */
-	public function createCopyFromFile(File $file, Session $session = null) {
+	public function createCopyFromFile(File $file, ?Session $session = null) {
 		$sessionId = null;
 		if ($session !== null) {
 			$sessionId = $session->getId();
@@ -100,7 +101,7 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * constraints.
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
-	public function add(File $file, Session $session = null) {
+	public function add(File $file, ?Session $session = null) {
 		$sessionId = null;
 		if ($session !== null) {
 			$sessionId = $session->getId();
@@ -111,11 +112,11 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	}
 	/**
 	 * @param string $fileName
-	 * @return File or null if File not found or is not accessible by this session.
+	 * @return File|null null if File not found or is not accessible by this session.
 	 * @throws QualifiedNameFormatException
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
-	public function getSessionFile(string $qualifiedName, Session $session) {
+	public function getSessionFile(string $qualifiedName, LookupSession $session): ?File {
 		return $this->getTmpFileEngine()->getSessionFile($qualifiedName, $session->getId());
 	}
 
@@ -125,7 +126,7 @@ class TmpFileManager extends ObjectAdapter implements RequestScoped {
 	 * @return boolean
 	 * @throws \n2n\io\managed\FileManagingException on internal FileManager error
 	 */
-	public function containsSessionFile(File $file, Session $session) {
+	public function containsSessionFile(File $file, Session $session): bool {
 		return $this->getTmpFileEngine()->containsSessionFile($file, $session->getId());
 	}
 	

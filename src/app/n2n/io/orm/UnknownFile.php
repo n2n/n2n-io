@@ -72,7 +72,7 @@ class UnknownFile implements File, FileSource {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\File::setOriginalName()
 	 */
-	public function setOriginalName(string $originalName = null) {
+	public function setOriginalName(?string $originalName = null) {
 		$this->throwException();
 	}
 
@@ -123,7 +123,7 @@ class UnknownFile implements File, FileSource {
 		$this->throwException();
 	}
 
-	public function toUrl(string &$suggestedLabel = null): Url {
+	public function toUrl(?string &$suggestedLabel = null): Url {
 		try {
 			$this->throwException();
 		} catch (IllegalStateException $e) {

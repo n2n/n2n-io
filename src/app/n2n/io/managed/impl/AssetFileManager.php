@@ -31,7 +31,7 @@ use n2n\core\container\Transaction;
 
 class AssetFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	
-	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, Request $request = null) {
+	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, ?Request $request = null) {
 		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PUBLIC, $filesConfig->getAssetsDir(),
 				$ioConfig->getPublicDirPermission(), $ioConfig->getPublicFilePermission());
 		$this->fileEngine->setCustomFileNamesAllowed(true);

@@ -31,7 +31,7 @@ class FsAffiliationFileSource extends FileSourceAdapter {
 	/**
 	 * @param FsPath $fsPath
 	 */
-	public function __construct(FsPath $fsPath, FileSource $originalFileSource = null) {
+	public function __construct(FsPath $fsPath, ?FileSource $originalFileSource = null) {
 		parent::__construct(null, null, $fsPath, $originalFileSource);
 	}
 	
