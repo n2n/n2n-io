@@ -40,7 +40,15 @@ class JpegFileImageSource extends FsImageSourceAdapter implements ImageSource {
 	 * @see n2n\io\img.ImageFileWrapper::createResource()
 	 */
 	public function createImageResource($keepHandleAlive = false): ImageResource {
-		return new ImageResource(IoUtils::imageCreateFromJpeg($this->filePath), $keepHandleAlive);
+		$image = IoUtils::imageCreateFromJpeg($this->filePath);
+
+		$exif = @exif_read_data($this->filePath);
+		$validOrientations = [3 => 180, 6 => -90, 8 => 90];
+		if (isset($exif['Orientation']) && isset($validOrientations[$exif['Orientation']])) {
+			$image = IoUtils::imageRotate($image, $validOrientations[$exif['Orientation']]);
+		}
+
+		return new ImageResource($image, $keepHandleAlive);
 	}
 	
 	/**
