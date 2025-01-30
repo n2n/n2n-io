@@ -32,6 +32,7 @@ use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 
 class FsThumbManager implements ThumbManager {
 	const THUMB_FOLDER_ATTRIBUTE_SEPARATOR = '-';
+	const THUMB_EXTENSION = 'webp';
 
 	private $fileSource;
 	private $mimeType;
@@ -58,7 +59,7 @@ class FsThumbManager implements ThumbManager {
 		return QualifiedNameBuilder::isResDirName($dirName);
 	}
 	
-	public static function dirNameToDimension(string $dirName): ImageDimension {
+	public static function dirNameToDimension(string $dirName): ?ImageDimension {
 		if (null !== ($resName = QualifiedNameBuilder::parseResName($dirName))) {
 			return ImageDimension::createFromString($resName);
 		}
@@ -79,7 +80,8 @@ class FsThumbManager implements ThumbManager {
 	
 	private function createThumbFilePath(ImageDimension $imageDimension) {
 		$fsPath = $this->fileSource->getFileFsPath();
-		return $fsPath->getParent()->ext(self::dimensionToDirName($imageDimension))->ext($fsPath->getName());
+		return $fsPath->getParent()->ext(self::dimensionToDirName($imageDimension))->ext($fsPath->getFileName()
+				. '.' . self::THUMB_EXTENSION);
 	}
 	
 	private function createThumbFileSource(FsPath $fileFsPath, ImageDimension $imageDimension) {
@@ -110,7 +112,7 @@ class FsThumbManager implements ThumbManager {
 		$fileFsPath = $this->createThumbFilePath($imageDimension);
 		$fileFsPath->mkdirsAndCreateFile($this->dirPerm, $this->filePerm);	
 		
-		ImageSourceFactory::createFromFileName($fileFsPath, $this->mimeType)
+		ImageSourceFactory::createFromFileName($fileFsPath, ImageSourceFactory::MIME_TYPE_WEBP)
 				->saveImageResource($imageResource);
 				
 		return $this->createThumbFileSource($fileFsPath, $imageDimension);
