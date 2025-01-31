@@ -42,6 +42,7 @@ use n2n\util\type\CastUtils;
 use n2n\util\type\TypeConstraints;
 use n2n\persistence\orm\query\select\Selection;
 use n2n\persistence\orm\criteria\compare\ColumnComparable;
+use n2n\util\magic\MagicContext;
 
 class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnComparableEntityProperty {
 	private $fileManagerClassName;
@@ -79,14 +80,10 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	 * @throws IllegalStateException
 	 * @return FileManager
 	 */
-	private function lookupFileManager(EntityManager $em) {
-		if (null !== ($magicContext = $em->getMagicContext())) {
-			$fileManager = $magicContext->lookup($this->fileManagerClassName);
-			IllegalStateException::assertTrue($fileManager instanceof FileManager);
-			return $fileManager;
-		}
-
-		throw new IllegalStateException('File property can not be used outside of a MagicContext.');
+	private function lookupFileManager(MagicContext $magicContext) {
+		$fileManager = $magicContext->lookup($this->fileManagerClassName);
+		IllegalStateException::assertTrue($fileManager instanceof FileManager);
+		return $fileManager;
 	}
 
 	/* (non-PHPdoc)
@@ -162,7 +159,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::createValueHash()
 	 */
-	public function createValueHash(mixed $value, EntityManager $em): ValueHash {
+	public function createValueHash(mixed $value, MagicContext $magicContext): ValueHash {
 		if ($value === null) return new CommonValueHash(null);
 		ArgUtils::assertTrue($value instanceof File);
 
@@ -170,7 +167,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 		if ($value instanceof UnknownFile) {
 			$qualifiedName = $value->getQualifiedName();
 		} else {
-			$qualifiedName = $this->lookupFileManager($em)->checkFile($value);
+			$qualifiedName = $this->lookupFileManager($magicContext)->checkFile($value);
 		}
 
 		return new CommonValueHash($this->createHash($qualifiedName));
