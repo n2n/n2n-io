@@ -91,14 +91,14 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	 */
 	public function createSelection(MetaTreePoint $metaTreePoint, QueryState $queryState): Selection {
 		return new ManagedFileSelection($this->createQueryColumn($metaTreePoint->getMeta()),
-				$this->lookupFileManager($queryState->getEntityManager()), $this);
+				$this->lookupFileManager($queryState->getEntityManager()->getMagicContext()), $this);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\ColumnComparableEntityProperty::createComparisonStrategy()
 	 */
 	public function createColumnComparable(MetaTreePoint $metaTreePoint, QueryState $queryState): ColumnComparable {
 		return new ManagedFileColumnComparable($this->createQueryColumn($metaTreePoint->getMeta()), $queryState,
-				$this->lookupFileManager($queryState->getEntityManager()));
+				$this->lookupFileManager($queryState->getEntityManager()->getMagicContext()));
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\property\EntityProperty::mergeValue()
@@ -110,7 +110,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 	 * @see \n2n\persistence\orm\property\EntityProperty::supplyPersistAction()
 	 */
 	public function supplyPersistAction(PersistAction $persistAction, $value, ValueHash $valueHash, ?ValueHash $oldValueHash): void {
-		$fileManager = $this->lookupFileManager($persistAction->getActionQueue()->getEntityManager());
+		$fileManager = $this->lookupFileManager($persistAction->getActionQueue()->getMagicContext());
 
 		$oldValue = null;
 		if ($oldValueHash !== null) {
@@ -150,7 +150,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 		ArgUtils::assertTrue($value instanceof File);
 
 		if ($this->cascadeDelete && $value->isValid()) {
-			$this->lookupFileManager($removeAction->getActionQueue()->getEntityManager())->remove($value);
+			$this->lookupFileManager($removeAction->getActionQueue()->getMagicContext())->remove($value);
 		}
 	}
 
