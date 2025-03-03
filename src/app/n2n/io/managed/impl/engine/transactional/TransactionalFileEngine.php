@@ -217,8 +217,9 @@ class TransactionalFileEngine {
 		$qnBuilder = QualifiedNameBuilder::createFromString($qualifiedName);
 
 		$fileFsPath = $this->baseDirFsPath->ext($qnBuilder->toArray());
+		$fileExists = $fileFsPath->isFile();
 
-		if ($ifExistsChecked && !$fileFsPath->isFile()) {
+		if ($ifExistsChecked && !$fileExists) {
 			return null;
 		}
 
@@ -226,6 +227,8 @@ class TransactionalFileEngine {
 
 		if ($this->customFileNamesAllowed) {
 			$originalName = $fileFsPath->getName();
+		} else if (!$fileExists) {
+			$originalName = 'unknown-file-name';
 		} else {
 			$originalName = function () use ($managedFileSource) {
 				$fileInfo = $managedFileSource->readFileInfo();
