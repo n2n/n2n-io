@@ -155,7 +155,10 @@ class TransactionalFileEngine {
 		$usedFileName = $fileName;
 		$lock = null;
 
-		while ($fileFsPath->exists() || null === ($lock = $this->acquireLock($fileFsPath))) {
+		// lock could succeed because of orphan lock removal
+		while (isset($this->filePersistJobs[$qnb->__toString()])
+				|| $fileFsPath->exists()
+				|| null === ($lock = $this->acquireLock($fileFsPath))) {
 			$fileNameParts = explode('.', $fileName);
 			$fileNameParts[0] .= $ext++;
 			$usedFileName = implode('.', $fileNameParts);
