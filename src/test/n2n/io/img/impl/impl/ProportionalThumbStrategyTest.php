@@ -11,13 +11,26 @@ use n2n\io\test\IoTestEnv;
 
 class ProportionalThumbStrategyTest extends TestCase {
 
-	function testMimeType() {
-		$jpeg4x2Source = IoTestEnv::createImageSource('4x2.jpg', ImageMimeType::WEBP);
+	function testMatchesMimeType() {
+		$jpeg4x2Source = IoTestEnv::createImageSource('12x12.png', ImageMimeType::PNG);
 
-		$this->assertFalse(ThSt::prop(4, 2, imageMimeType: ImageMimeType::JPEG)
+		$this->assertTrue(ThSt::prop(12, 12, imageMimeType: ImageMimeType::PNG)
 				->matches($jpeg4x2Source));
 
-		$this->assertTrue(ThSt::prop(4, 2, imageMimeType: ImageMimeType::WEBP)
+		$this->assertFalse(ThSt::prop(12, 12, imageMimeType: ImageMimeType::WEBP)
+				->matches($jpeg4x2Source));
+	}
+
+	function testMatches() {
+		$jpeg4x2Source = IoTestEnv::createImageSource('12x12.png', ImageMimeType::PNG);
+
+		$this->assertTrue(ThSt::prop(12, 12)
+				->matches($jpeg4x2Source));
+
+		$this->assertFalse(ThSt::prop(12, 11)
+				->matches($jpeg4x2Source));
+
+		$this->assertFalse(ThSt::prop(12, 12, imageMimeType: ImageMimeType::WEBP)
 				->matches($jpeg4x2Source));
 	}
 
