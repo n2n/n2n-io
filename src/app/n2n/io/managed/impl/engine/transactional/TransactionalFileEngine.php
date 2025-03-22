@@ -182,7 +182,8 @@ class TransactionalFileEngine {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
 
-		$affiliationEngine = new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm);
+		$affiliationEngine = new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm,
+				$this->customFileNamesAllowed);
 		// delete orphaned file
 		$affiliationEngine->clear();
 		$managedFileSource->setAffiliationEngine($affiliationEngine);
@@ -252,7 +253,7 @@ class TransactionalFileEngine {
 		}
 
 		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm,
-				$this->filePerm));
+				$this->filePerm, $this->customFileNamesAllowed));
 
 		return new CommonFile($managedFileSource, $originalName);
 	}

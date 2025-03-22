@@ -37,12 +37,13 @@ class FsThumbManager implements ThumbManager {
 	private $mimeType;
 	
 	public function __construct(FileSource $fileSource, string $mimeType,
-			private int|string|null $dirPerm, private int|string|null $filePerm) {
+			private int|string|null $dirPerm, private int|string|null $filePerm,
+			private bool $adjustExtensionsEnabled) {
 		$this->fileSource = $fileSource;
 		$this->mimeType = $mimeType;
 	}
 	
-	public static function dimensionToDirName(ImageDimension $dimension) {
+	public static function dimensionToDirName(ImageDimension $dimension): string {
 		try {
 			return QualifiedNameBuilder::buildResFolderName((string) $dimension);
 		} catch (\InvalidArgumentException $e) {
@@ -58,7 +59,7 @@ class FsThumbManager implements ThumbManager {
 		return QualifiedNameBuilder::isResDirName($dirName);
 	}
 	
-	public static function dirNameToDimension(string $dirName): ImageDimension {
+	public static function dirNameToDimension(string $dirName): ?ImageDimension {
 		if (null !== ($resName = QualifiedNameBuilder::parseResName($dirName))) {
 			return ImageDimension::createFromString($resName);
 		}
@@ -78,10 +79,24 @@ class FsThumbManager implements ThumbManager {
 // 	}
 	
 	private function createThumbFilePath(ImageDimension $imageDimension) {
-		$fsPath = $this->fileSource->getFileFsPath();
-		return $fsPath->getParent()->ext(self::dimensionToDirName($imageDimension))->ext($fsPath->getName());
+		$fileFsPath = $this->fileSource->getFileFsPath();
+		assert($fileFsPath instanceof FsPath);
+
+		$dirPath = $fileFsPath->getParent()->ext(self::dimensionToDirName($imageDimension));
+
+		$mimeType = $imageDimension->getMimeType();
+		if (!$this->adjustExtensionsEnabled || null === $mimeType) {
+			return $dirPath->ext($fileFsPath->getName());
+		}
+
+		$requiredExtension = $imageDimension->getMimeType()->getExtension();
+		if ($requiredExtension === $fileFsPath->getExtension()) {
+			return $dirPath->ext($fileFsPath->getName());
+		}
+
+		return $dirPath->ext($fileFsPath->getName() . '.' . $requiredExtension);
 	}
-	
+
 	private function createThumbFileSource(FsPath $fileFsPath, ImageDimension $imageDimension) {
 		$thumbFileSource = new FsAffiliationFileSource($fileFsPath, $this->fileSource);
 		
@@ -91,14 +106,15 @@ class FsThumbManager implements ThumbManager {
 			$thumbFileSource->setUrl($thumbUrl);
 		}
 		
-		$affiliationEngine = new LazyFsAffiliationEngine($thumbFileSource, $this->dirPerm, $this->filePerm);
+		$affiliationEngine = new LazyFsAffiliationEngine($thumbFileSource, $this->dirPerm, $this->filePerm,
+				$this->adjustExtensionsEnabled);
 		$affiliationEngine->setThumbDisabled(true);
 		$thumbFileSource->setAffiliationEngine($affiliationEngine);
 		
 		return $thumbFileSource;
 	}
 	
-	public function getByDimension(ImageDimension $imageDimension) {
+	public function getByDimension(ImageDimension $imageDimension): ?FileSource {
 		$fileFsPath = $this->createThumbFilePath($imageDimension);
 		if ($fileFsPath->exists()) {
 			return $this->createThumbFileSource($fileFsPath, $imageDimension);
@@ -110,13 +126,13 @@ class FsThumbManager implements ThumbManager {
 		$fileFsPath = $this->createThumbFilePath($imageDimension);
 		$fileFsPath->mkdirsAndCreateFile($this->dirPerm, $this->filePerm);	
 		
-		ImageSourceFactory::createFromFileName($fileFsPath, $this->mimeType)
+		ImageSourceFactory::createFromFileName($fileFsPath, $imageDimension->getMimeType()?->value ?? $this->mimeType)
 				->saveImageResource($imageResource);
 				
 		return $this->createThumbFileSource($fileFsPath, $imageDimension);
 	}
 	
-	function remove(ImageDimension $imageDimension) {
+	function remove(ImageDimension $imageDimension): void {
 		$fileFsPath = $this->createThumbFilePath($imageDimension);
 		
 		if (!$fileFsPath->exists()) {

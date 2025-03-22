@@ -63,7 +63,7 @@ class TmpFileEngine {
 		}
 
 		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
-		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 		return $tfs;
 	}
 
@@ -80,7 +80,7 @@ class TmpFileEngine {
 		$fileInfo = new FileInfo($originalName);
 		$fileInfo->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]);
 		$tfs->writeFileInfo($fileInfo);
-		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 		return $tfs;
 	}
 
@@ -173,7 +173,7 @@ class TmpFileEngine {
 
 		try {
 			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $sessionId);
-			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
 			return null;

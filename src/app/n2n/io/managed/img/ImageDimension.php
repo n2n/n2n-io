@@ -25,29 +25,12 @@ use n2n\util\StringUtils;
 
 class ImageDimension {
 	const STR_ATTR_SEPARATOR = 'x';
-	
+
 	const CROP_ID_KEY = 'ccenter';
 	const SCALE_UP_ID_KEY = 's';
-	
-	private $width;
-	private $height;
-	private $cropped;
-	private $scaledUp;
-	private $idExt;
-	
-	/**
-	 * @param int $width
-	 * @param int $height
-	 * @param bool $cropped
-	 * @param bool $scaledUp
-	 * @param string $idExt
-	 */
-	public function __construct(int $width, int $height, bool $cropped, bool $scaledUp, ?string $idExt = null) {
-		$this->width = $width;
-		$this->height = $height;
-		$this->cropped = $cropped;
-		$this->scaledUp = $scaledUp;
-		$this->idExt = $idExt;
+
+	public function __construct(private int $width, private int $height, private bool $cropped, private bool $scaledUp,
+			private ?string $idExt = null, private ?ImageMimeType $mimeType = null) {
 	}
 	
 	/**
@@ -84,16 +67,21 @@ class ImageDimension {
 	public function getIdExt() {
 		return $this->idExt;
 	}
+
+	public function getMimeType(): ?ImageMimeType {
+		return $this->mimeType;
+	}
 	
 	public function __toString(): string {
 		$id =  $this->width . self::STR_ATTR_SEPARATOR . $this->height;
 		
-		if (!$this->cropped && !$this->scaledUp && $this->idExt === null) {
+		if (!$this->cropped && !$this->scaledUp && $this->idExt === null && $this->mimeType === null) {
 			return $id;
 		}
 		
 		$id .= self::STR_ATTR_SEPARATOR . ($this->cropped ? self::CROP_ID_KEY : '') 
-				. ($this->scaledUp ? self::SCALE_UP_ID_KEY : '');
+				. ($this->scaledUp ? self::SCALE_UP_ID_KEY : '')
+				. $this->mimeType?->toCode();
 		
 		if ($this->idExt === null) {
 			return $id;
@@ -119,16 +107,30 @@ class ImageDimension {
 		
 		$cropped = false;
 		$scaledUp = false;
+		$mimeType = null;
 		if (isset($partParts[2])) {
 			$part = $partParts[2];
 			if (StringUtils::startsWith(self::CROP_ID_KEY, $part)) {
 				$cropped = true;
 				$part = mb_substr($part, mb_strlen(self::CROP_ID_KEY));
 			}
+
+			if (StringUtils::startsWith(self::SCALE_UP_ID_KEY, $part)) {
+				$scaledUp = true;
+				$part = mb_substr($part, mb_strlen(self::SCALE_UP_ID_KEY));
+			}
+
+			if (is_numeric($part)) {
+				try {
+					$mimeType = ImageMimeType::fromCode($part);
+					$part = '';
+				} catch (\InvalidArgumentException $e) {
+					throw new \InvalidArgumentException('Dimension is invalid: ' . $string,
+							previous: $e);
+				}
+			}
 			
-			$scaledUp = $part === self::SCALE_UP_ID_KEY;
-			
-			if ($part !== '' && $part !== self::SCALE_UP_ID_KEY) {
+			if ($part !== '') {
 				throw new \InvalidArgumentException('Dimension is invalid: ' . $string);
 			}
 		}
@@ -138,7 +140,7 @@ class ImageDimension {
 			$idExt = $partParts[3];
 		}
 			
-		return new ImageDimension($width, $height, $cropped, $scaledUp, $idExt);
+		return new ImageDimension($width, $height, $cropped, $scaledUp, $idExt, $mimeType);
 	}
 	
 }
