@@ -22,36 +22,24 @@
 namespace n2n\io\managed\img\impl;
 
 use n2n\io\img\ImageResource;
+use n2n\io\managed\img\ImageMimeType;
 
 class ThSt {
-	
-	/**
-	 * @param int $width
-	 * @param int $height
-	 * @param bool $scaleUpAllowed
-	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
-	 */
-	public static function prop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null) {
-		return new ProportionalThumbStrategy($width, $height, null, $scaleUpAllowed, $idExt);	
+
+	public static function prop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null,
+			?ImageMimeType $imageMimeType = null): ProportionalThumbStrategy {
+		return new ProportionalThumbStrategy($width, $height, null, $scaleUpAllowed, $idExt, $imageMimeType);
 	}
-	
-	/**
-	 * @param int $width
-	 * @param int $height
-	 * @param bool $scaleUpAllowed
-	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
-	 */
-	public static function crop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null) {
-		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_CENTER, $scaleUpAllowed, $idExt);
+
+	public static function crop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null,
+			?ImageMimeType $imageMimeType = null): ProportionalThumbStrategy {
+		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_CENTER,
+				$scaleUpAllowed, $idExt, $imageMimeType);
 	}
-	
-	/**
-	 * @param int $width
-	 * @param int $height
-	 * @param bool $scaleUpAllowed
-	 * @return \n2n\io\managed\img\impl\ProportionalThumbStrategy
-	 */
-	public static function cropTop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null) {
-		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_TOP, $scaleUpAllowed, $idExt);
+
+	public static function cropTop(int $width, int $height, bool $scaleUpAllowed = true, ?string $idExt = null,
+			?ImageMimeType $imageMimeType = null): ProportionalThumbStrategy {
+		return new ProportionalThumbStrategy($width, $height, ImageResource::AUTO_CROP_MODE_TOP,
+				$scaleUpAllowed, $idExt, $imageMimeType);
 	}
 }
