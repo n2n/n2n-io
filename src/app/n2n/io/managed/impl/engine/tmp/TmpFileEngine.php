@@ -196,7 +196,15 @@ class TmpFileEngine {
 			}
 
 			if ($gcMaxLifetime < (time() - $fileMtime)) {
-				$fsPath->delete();
+				try {
+					$fsPath->delete();
+				} catch (FileOperationException $e) {
+					// concurrency problem: if file does not exist anymore another thread
+					// must have already deleted this file.
+					if ($fsPath->exists()) {
+						throw $e;
+					}
+				}
 			}
 		}
 	}
