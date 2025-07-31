@@ -86,8 +86,14 @@ class FileInfoDingsler {
 	}
 
 	private function readLegacyOriginalName(): ?string {
+		$privinfPath = $this->fsPath . '.privinf';
+
+		if (!file_exists($privinfPath)) {
+			return null;
+		}
+
 		try {
-			return IoUtils::getContents($this->fsPath . '.privinf');
+			return IoUtils::getContents($privinfPath);
 		} catch (IoException $ex) {
 			return null;
 		}
