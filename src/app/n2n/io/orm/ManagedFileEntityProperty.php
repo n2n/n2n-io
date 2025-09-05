@@ -164,7 +164,7 @@ class ManagedFileEntityProperty extends ColumnPropertyAdapter implements ColumnC
 		ArgUtils::assertTrue($value instanceof File);
 
 		$qualifiedName = null;
-		if ($value instanceof UnknownFile) {
+		if (!$value->isValid()) {
 			$qualifiedName = $value->getQualifiedName();
 		} else {
 			$qualifiedName = $this->lookupFileManager($magicContext)->checkFile($value);
