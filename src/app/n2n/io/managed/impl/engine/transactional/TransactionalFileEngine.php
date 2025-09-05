@@ -310,7 +310,7 @@ class TransactionalFileEngine {
 
 	private $persistedFiles = array();
 
-	public function flush(bool $persistOnly = false) {
+	public function flush(bool $persistOnly = false): void {
 		while (null !== ($filePersistJob = array_pop($this->filePersistJobs))) {
 			$filePersistJob->execute();
 			$this->persistedFiles[] = $filePersistJob->getFile();
