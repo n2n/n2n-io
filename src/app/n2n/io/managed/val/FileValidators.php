@@ -11,4 +11,8 @@ class FileValidators {
 	static function extension(array $allowedExtensions, $errorMessage = null) {
 		return new ExtensionValidator($allowedExtensions, Message::build($errorMessage));
 	}
+	
+	static function maxSize(int $maxSize, $errorMessage = null) {
+		return new FileSizeValidator($maxSize, Message::build($errorMessage));
+	}
 }

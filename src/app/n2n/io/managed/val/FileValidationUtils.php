@@ -14,4 +14,7 @@ class FileValidationUtils {
 		return ArrayUtils::inArrayLike($file->getOriginalExtension(),
 				$allowedExtensions);
 	}
+	static function sizeAllowed(File $file, int $maxSize): bool {
+		return $file->getFileSource()->getSize() <= $maxSize;
+	}
 }
