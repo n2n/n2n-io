@@ -26,6 +26,7 @@ use n2n\util\io\IoUtils;
 use n2n\io\img\UnsupportedImageTypeException;
 use n2n\util\io\IoException;
 use n2n\io\img\ImageSource;
+use n2n\util\io\fs\FsPath;
 
 class ImageSourceFactory {
 	const MIME_TYPE_JPEG = 'image/jpeg';
@@ -122,7 +123,7 @@ class ImageSourceFactory {
 	 * @return ImageSource
 	 * @throws UnsupportedImageTypeException
 	 */
-	public static function createFromFileName($fileName, $mineType) {
+	public static function createFromFileName(FsPath|string $fileName, string $mineType): ImageSource {
 		switch ($mineType) {
 			case self::MIME_TYPE_PNG:
 				return new PngFileImageSource($fileName);

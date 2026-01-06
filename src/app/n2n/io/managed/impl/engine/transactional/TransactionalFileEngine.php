@@ -24,7 +24,6 @@ namespace n2n\io\managed\impl\engine\transactional;
 use n2n\util\HashUtils;
 use n2n\util\type\ArgUtils;
 use n2n\util\io\fs\FsPath;
-use n2n\core\Sync;
 use n2n\util\io\IoException;
 use n2n\util\uri\Url;
 use n2n\io\managed\File;
@@ -35,12 +34,12 @@ use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\InaccessibleFileSourceException;
 use n2n\io\managed\FileManagingException;
 use n2n\io\managed\impl\engine\UncommittedManagedFileSource;
-use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\io\managed\impl\engine\variation\FsThumbManager;
-use n2n\io\managed\FileInfo;
+use n2n\concurrency\sync\Lock;
+use n2n\concurrency\sync\impl\Sync;
 
 class TransactionalFileEngine {
 	const GENERATED_LEVEL_LENGTH = 6;
@@ -48,11 +47,10 @@ class TransactionalFileEngine {
 	const FILE_SUFFIX = '.managed';
 	const FILEINFO_SUFFIX = '.inf';
 	const INFO_ORIGINAL_NAME_KEY = 'originalName';
+	const LOCK_FILE_EXT = '.lock';
 
 	private $fileManagerName;
 	private $baseDirFsPath;
-	private $dirPerm;
-	private $filePerm;
 
 	private $baseUrl;
 	private $customFileNamesAllowed = false;
@@ -60,14 +58,13 @@ class TransactionalFileEngine {
 	private $filePersistJobs = array();
 	private $fileRemoveJobs = array();
 
-	public function __construct($fileManagerName, FsPath $baseDirFsPath, $dirPerm, $filePerm) {
+	public function __construct($fileManagerName, FsPath $baseDirFsPath,
+			private string|int|null $dirPerm, private string|int|null $filePerm) {
 		$this->fileManagerName = $fileManagerName;
 		$this->baseDirFsPath = $baseDirFsPath;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
 	}
 
-	public function setCustomFileNamesAllowed($customFileNamesAllowed) {
+	public function setCustomFileNamesAllowed(bool $customFileNamesAllowed) {
 		$this->customFileNamesAllowed = $customFileNamesAllowed;
 	}
 
@@ -90,7 +87,7 @@ class TransactionalFileEngine {
 	 * @return string
 	 * @throws FileManagingConstraintException
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null) {
+	public function persist(File $file, ?FileLocator $fileLocator = null): ?string {
 		if (null !== ($qn = $this->checkFile($file))) {
 			return $qn;
 		}
@@ -109,7 +106,7 @@ class TransactionalFileEngine {
 		}
 	}
 
-	private function determineFileName(File $file, FileLocator $fileLocator = null) {
+	private function determineFileName(File $file, ?FileLocator $fileLocator = null) {
 		if (!$this->customFileNamesAllowed) {
 			return $this->generateFileName() . self::FILE_SUFFIX;
 		}
@@ -131,6 +128,17 @@ class TransactionalFileEngine {
 		return HashUtils::base36Md5Hash(uniqid(), self::GENERATED_LEVEL_LENGTH);
 	}
 
+
+	private function acquireLock(FsPath $fileFsPath): ?Lock {
+		$lock = Sync::byFileLock(new FsPath($fileFsPath . self::LOCK_FILE_EXT));
+
+		if ($lock->acquireNb()) {
+			return $lock;
+		}
+
+		return null;
+	}
+
 	private function createFilePersistJob($dirLevelNames, $fileName, File $file) {
 		if (!$file->getFileSource()->isValid()) {
 			throw new InaccessibleFileSourceException('FileSource of File no longer valid: ' . $file);
@@ -147,7 +155,10 @@ class TransactionalFileEngine {
 		$usedFileName = $fileName;
 		$lock = null;
 
-		while ($fileFsPath->exists() || null === ($lock = Sync::exNb($this, (string) $fileFsPath))) {
+		// lock could succeed because of orphan lock removal
+		while (isset($this->filePersistJobs[$qnb->__toString()])
+				|| $fileFsPath->exists()
+				|| null === ($lock = $this->acquireLock($fileFsPath))) {
 			$fileNameParts = explode('.', $fileName);
 			$fileNameParts[0] .= $ext++;
 			$usedFileName = implode('.', $fileNameParts);
@@ -171,7 +182,8 @@ class TransactionalFileEngine {
 			$managedFileSource->setUrl($this->baseUrl->pathExt($qnb->toArray()));
 		}
 
-		$affiliationEngine = new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm);
+		$affiliationEngine = new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm, $this->filePerm,
+				$this->customFileNamesAllowed);
 		// delete orphaned file
 		$affiliationEngine->clear();
 		$managedFileSource->setAffiliationEngine($affiliationEngine);
@@ -201,7 +213,7 @@ class TransactionalFileEngine {
 	 * @return File
 	 * @throws FileManagingException
 	 */
-	public function getByQualifiedName(string $qualifiedName) {
+	public function getByQualifiedName(string $qualifiedName, bool $ifExistsChecked = true): ?File {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
 			return $this->filePersistJobs[$qualifiedName]->getFile();
 		}
@@ -209,44 +221,31 @@ class TransactionalFileEngine {
 		$qnBuilder = QualifiedNameBuilder::createFromString($qualifiedName);
 
 		$fileFsPath = $this->baseDirFsPath->ext($qnBuilder->toArray());
+		$fileExists = $fileFsPath->isFile();
 
-		if (!$fileFsPath->isFile()) {
+		if ($ifExistsChecked && !$fileExists) {
 			return null;
 		}
-
-		$originalName = null;
-
-// 		if ($this->customFileNamesAllowed) {
-// 			$originalName = $fileFsPath->getName();
-// 		} else {
-// 			$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
-
-// 			$infoData = null;
-// 			try {
-// 				$infoData = $fileInfoDingsler->read();
-// 			} catch (FileManagingException $e) { }
-
-// 			if ($infoData === null || null === $infoData->getOriginalName()) {
-// 				$fileFsPath->delete();
-// 				$fileInfoDingsler->delete();
-// 				return null;
-// 			}
-
-// 			$originalName = $infoData->getOriginalName();;
-// 		}
 
 		$managedFileSource = new ManagedFileSource($fileFsPath, $this->fileManagerName, $qualifiedName);
 
 		if ($this->customFileNamesAllowed) {
 			$originalName = $fileFsPath->getName();
+		} else if (!$fileExists) {
+			$originalName = 'unknown-file-name';
 		} else {
-			$fileInfo = $managedFileSource->readFileInfo();
-			$originalName = $fileInfo->getOriginalName();
+			$originalName = function () use ($managedFileSource) {
+				$fileInfo = $managedFileSource->readFileInfo();
+				$originalName = $fileInfo->getOriginalName();
 
-			if ($originalName === null) {
-				$managedFileSource->delete();
-				return null;
-			}
+				if ($originalName !== null) {
+					return $originalName;
+				}
+
+//				$managedFileSource->delete();
+				throw new FileManagingException('FileInfo with existing original name could not be obtained for:'
+						. $managedFileSource);
+			};
 		}
 
 		if ($this->baseUrl !== null) {
@@ -254,7 +253,7 @@ class TransactionalFileEngine {
 		}
 
 		$managedFileSource->setAffiliationEngine(new LazyFsAffiliationEngine($managedFileSource, $this->dirPerm,
-				$this->filePerm));
+				$this->filePerm, $this->customFileNamesAllowed));
 
 		return new CommonFile($managedFileSource, $originalName);
 	}
@@ -263,7 +262,7 @@ class TransactionalFileEngine {
 		return null !== $this->checkFile($file);
 	}
 
-	public function checkFile(File $file) {
+	public function checkFile(File $file): ?string {
 		$fileSource = $file->getFileSource();
 
 		if (!$fileSource->isValid()) return null;
@@ -280,7 +279,7 @@ class TransactionalFileEngine {
 	}
 
 	public function remove(File $file) {
-		if (!$this->containsFile($file)) return;
+		if (!$this->containsFile($file)) return null;
 
 		$managedFileSource = $file->getFileSource();
 		IllegalStateException::assertTrue($managedFileSource instanceof ManagedFileSource);
@@ -293,7 +292,7 @@ class TransactionalFileEngine {
 		if (isset($this->filePersistJobs[$qualifiedName])) {
 			$this->filePersistJobs[$qualifiedName]->dispose();
 			unset($this->filePersistJobs[$qualifiedName]);
-			return;
+			return null;
 		}
 
 		$this->ensureWritable($managedFileSource->getFileFsPath());
@@ -311,7 +310,7 @@ class TransactionalFileEngine {
 
 	private $persistedFiles = array();
 
-	public function flush(bool $persistOnly = false) {
+	public function flush(bool $persistOnly = false): void {
 		while (null !== ($filePersistJob = array_pop($this->filePersistJobs))) {
 			$filePersistJob->execute();
 			$this->persistedFiles[] = $filePersistJob->getFile();
@@ -348,7 +347,7 @@ class TransactionalFileEngine {
 	 * @param FileLocator $fileLocator
 	 * @return \n2n\io\managed\img\ImageDimension[]
 	 */
-	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null) {
+	function getPossibleImageDimensions(File $file, ?FileLocator $fileLocator = null) {
 		$dirFsPath = $this->baseDirFsPath;
 		if ($fileLocator !== null) {
 			$dirFsPath = $this->baseDirFsPath->ext($fileLocator->buildDirLevelNames($file));

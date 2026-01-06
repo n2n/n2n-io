@@ -24,7 +24,7 @@ namespace n2n\io;
 class UploadedFileExceedsMaxSizeException extends FileUploadException {
 	private $maxSize;
 
-	public function __construct ($maxSize, $message = null, $code = null, \Exception $previous = null) {
+	public function __construct ($maxSize, $message = null, $code = null, ?\Exception $previous = null) {
 		parent::__construct($message, $code, $previous);
 		$this->maxSize = $maxSize;
 	}

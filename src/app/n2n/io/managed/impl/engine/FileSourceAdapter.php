@@ -40,12 +40,12 @@ abstract class FileSourceAdapter implements FileSource {
 	protected $fileFsPath;
 	protected $originalFileSource;
 	
-	protected $valid = true;
-	protected $url;
+	protected ?bool $valid = null;
+	protected ?Url $url = null;
 	protected ?AffiliationEngine $affiliationEngine = null;
 	
-	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath, 
-			FileSource $originalFileSource = null) {
+	public function __construct(?string $qualifiedName, ?string $fileManagerName, FsPath $fileFsPath,
+			?FileSource $originalFileSource = null) {
 		$this->qualifiedName = $qualifiedName;
 		$this->fileManagerName = $fileManagerName;
 		$this->fileFsPath = $fileFsPath;
@@ -125,14 +125,18 @@ abstract class FileSourceAdapter implements FileSource {
 	 * @see \n2n\io\managed\FileSource::isValid()
 	 */
 	public function isValid(): bool {
-		return $this->valid;
+		if ($this->valid !== null) {
+			return $this->valid;
+		}
+
+		return $this->valid = $this->fileFsPath->isFile();
 	}
-	
-	/**
-	 * @throws IllegalStateException
-	 */
-	protected function ensureValid() {
-		if ($this->valid) return;
+
+
+	protected function ensureValid(): void {
+		if ($this->isValid()) {
+			return;
+		}
 		
 		throw new InaccessibleFileSourceException('FileSource no longer valid: ' . $this->__toString());
 	}	
@@ -197,7 +201,7 @@ abstract class FileSourceAdapter implements FileSource {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::delete()
 	*/
-	public function delete() {
+	public function delete(): void {
 		$this->ensureValid();
 	
 		$this->valid = false;
@@ -258,10 +262,10 @@ abstract class FileSourceAdapter implements FileSource {
 		return $this->affiliationEngine;
 	}
 	
-	public function setAffiliationEngine(AffiliationEngine $affiliationEngine) {
+	public function setAffiliationEngine(AffiliationEngine $affiliationEngine): void {
 		$this->affiliationEngine = $affiliationEngine;
 	}
-	
+
 	function writeFileInfo(FileInfo $fileInfo) {
 		$fileInfoDingsler = new FileInfoDingsler($this->fileFsPath);
 		$fileInfoDingsler->write($fileInfo);

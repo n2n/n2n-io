@@ -21,24 +21,18 @@
  */
 namespace n2n\io\managed\impl\engine\transactional;
 
-use n2n\core\Lock;
 use n2n\util\ex\IllegalStateException;
 use n2n\io\managed\File;
 use n2n\util\io\IoException;
 use n2n\io\managed\FileManagingException;
+use n2n\concurrency\sync\Lock;
 
 class FilePersistJob {
-	private $file;
-	private $managedFileSource;
-	private $lock;
-	private $filePerm;
-	private $executed = false;
 
-	public function __construct(File $file, ManagedFileSource $managedFileSource, Lock $lock, string $filePerm) {
-		$this->file = $file;
-		$this->managedFileSource = $managedFileSource;
-		$this->lock = $lock;
-		$this->filePerm = $filePerm;
+	private bool $executed = false;
+
+	public function __construct(private File $file, private ManagedFileSource $managedFileSource, private Lock $lock,
+			private int|string|null $filePerm) {
 	}
 	
 	public function getFile() {

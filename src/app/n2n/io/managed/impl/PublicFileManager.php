@@ -27,23 +27,22 @@ use n2n\web\http\Request;
 use n2n\io\managed\FileManager;
 use n2n\context\RequestScoped;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
+use n2n\core\container\Transaction;
 
 class PublicFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	
-	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, Request $request = null) {
+	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, ?Request $request = null) {
 		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PUBLIC, $filesConfig->getManagerPublicDir(), 
 				$ioConfig->getPublicDirPermission(), $ioConfig->getPublicFilePermission());
 		$this->fileEngine->setCustomFileNamesAllowed(true);
-		
-		if ($request !== null) {
-			$url = $filesConfig->getManagerPublicUrl();
-			if ($url->isRelative() && !$url->getPath()->hasLeadingDelimiter()) {
-				$url = $request->getContextPath()->ext($url->getPath())->toUrl();
-			}
-			
+
+		$url = $filesConfig->getManagerPublicUrl();
+		if (!$url->isRelative() || $url->getPath()->hasLeadingDelimiter()) {
+			$this->fileEngine->setBaseUrl($url);
+		} else if ($request !== null) {
+			$this->fileEngine->setBaseUrl($request->getContextPath()->ext($url->getPath())->toUrl());
+		} else {
 			$this->fileEngine->setBaseUrl($url);
 		}
 	}
-	
-	
 }

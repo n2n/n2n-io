@@ -32,8 +32,6 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 
 	private $origFileSource;
 	private $mimeType;
-	private $dirPerm;
-	private $filePerm;
 	private $thumbDisabled = false;
 	/**
 	 * @var ThumbManager|null
@@ -44,14 +42,9 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	 */
 	private $variationManager;
 
-	/**
-	 * @param ThumbManager|null $thumbManager
-	 * @param VariationManager|null $variationManager
-	 */
-	function __construct(FileSource $origFileSource, string $dirPerm, string $filePerm) {
+	function __construct(FileSource $origFileSource, private int|string|null $dirPerm, private int|string|null $filePerm,
+			private bool $adjustThumbExtensionsEnabled) {
 		$this->origFileSource = $origFileSource;
-		$this->dirPerm = $dirPerm;
-		$this->filePerm = $filePerm;
 	}
 
 	private function getMimeType() {
@@ -91,7 +84,7 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 		}
 
 		return $this->thumbManager = new FsThumbManager($this->origFileSource, $this->getMimeType(),
-				$this->dirPerm, $this->filePerm);
+				$this->dirPerm, $this->filePerm, $this->adjustThumbExtensionsEnabled);
 
 	}
 
@@ -124,7 +117,7 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 	 * {@inheritDoc}
 	 * @see \n2n\io\managed\AffiliationEngine::clear()
 	 */
-	public function clear() {
+	public function clear(): void {
 		$this->getVariationManager()->clear();
 
 		if ($this->thumbDisabled) {
@@ -136,7 +129,8 @@ class LazyFsAffiliationEngine implements AffiliationEngine {
 			return;
 		}
 
-		$fsThumbManager = new FsThumbManager($this->origFileSource, 'pseudo/mime', $this->dirPerm, $this->filePerm);
+		$fsThumbManager = new FsThumbManager($this->origFileSource, 'pseudo/mime', $this->dirPerm, $this->filePerm,
+				$this->adjustThumbExtensionsEnabled);
 		$fsThumbManager->clear();
 	}
 }

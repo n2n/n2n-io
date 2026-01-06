@@ -36,7 +36,7 @@ class ImageFile {
 	 * @throws \n2n\util\ex\IllegalStateException if {@link FileSource} is disposed ({@link self::isValid()}).
 	 * @throws \n2n\io\img\UnsupportedImageTypeException if {@link self::isImage()} returns false.
 	 */
-	function __construct(File $file, ThumbCut $thumbCut = null) {
+	function __construct(File $file, ?ThumbCut $thumbCut = null) {
 		$this->file = $file;
 		$this->imageSource = $this->file->getFileSource()->createImageSource();
 		$this->thumbCut = $thumbCut;

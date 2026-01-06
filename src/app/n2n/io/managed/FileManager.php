@@ -34,7 +34,7 @@ interface FileManager {
 	 * @throws FileManagingConstraintException if passed File or FileLocator violates any FileManager constraints.
 	 * @throws FileManagingException on internal FileManager error 
 	 */
-	function persist(File $file, FileLocator $fileLocator = null): string;
+	function persist(File $file, ?FileLocator $fileLocator = null): string;
 	
 	/**
 	 * @param File
@@ -49,7 +49,7 @@ interface FileManager {
 	 * @throws \n2n\io\managed\impl\engine\QualifiedNameFormatException if qualifiedName is invalid
 	 * @throws FileManagingException 
 	 */
-	function getByQualifiedName(string $qualifiedName = null);
+	function getByQualifiedName(?string $qualifiedName, bool $ifExistsChecked = true): ?File;
 	
 	/**
 	 * @param string $qualifiedName
@@ -80,5 +80,5 @@ interface FileManager {
 	 * @param FileLocator $fileLocator
 	 * @return ImageDimension[]
 	 */
-	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null): array;
+	function getPossibleImageDimensions(File $file, ?FileLocator $fileLocator = null): array;
 }

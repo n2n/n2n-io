@@ -52,10 +52,6 @@ class FsFileSource extends FileSourceAdapter implements AffiliationEngine {
 		return IoUtils::filesize($this->fsPath);
 	}
 	
-	public function isValid(): bool {
-		return $this->fsPath->isFile();
-	}
-	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileSource::createInputStream()
 	 */

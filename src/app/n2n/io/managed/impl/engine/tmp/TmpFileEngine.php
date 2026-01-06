@@ -32,6 +32,8 @@ use n2n\io\managed\impl\engine\variation\LazyFsAffiliationEngine;
 use n2n\io\managed\impl\engine\FileInfoDingsler;
 use n2n\io\managed\impl\engine\QualifiedNameBuilder;
 use n2n\io\managed\FileInfo;
+use n2n\util\io\fs\FileOperationException;
+use n2n\util\ex\IllegalStateException;
 
 class TmpFileEngine {
 	const INFO_SUFFIX = '.inf';
@@ -46,7 +48,8 @@ class TmpFileEngine {
 	private $filePerm;
 	private $fileManagerName;
 
-	public function __construct(FsPath $fsPath, string $dirPerm, string $filePerm, string $fileManagerName) {
+	public function __construct(FsPath $fsPath, private FsPath $sessionDirFsPath, ?string $dirPerm, ?string $filePerm,
+			string $fileManagerName) {
 		$this->fsPath = $fsPath;
 		$this->dirPerm = $dirPerm;
 		$this->filePerm = $filePerm;
@@ -55,16 +58,20 @@ class TmpFileEngine {
 
 	private function createThreadTmpFileSource() {
 		$fileFsPath = new FsPath(tempnam((string) $this->fsPath, self::THREAD_PREFIX));
-		$fileFsPath->chmod($this->filePerm);
+		if ($this->filePerm !== null) {
+			$fileFsPath->chmod($this->filePerm);
+		}
 
 		$tfs = new TmpFileSource(null, $this->fileManagerName, $fileFsPath);
-		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 		return $tfs;
 	}
 
 	private function createSessionTmpFileSource($sessionId, $originalName) {
-		$fileFsPath = new FsPath(tempnam($this->fsPath, self::SESS_PREFIX));
-		$fileFsPath->chmod($this->filePerm);
+		$fileFsPath = new FsPath(tempnam($this->sessionDirFsPath, self::SESS_PREFIX));
+		if ($this->filePerm !== null) {
+			$fileFsPath->chmod($this->filePerm);
+		}
 
 // 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
 // 		$fileInfoDingsler->write();
@@ -73,7 +80,7 @@ class TmpFileEngine {
 		$fileInfo = new FileInfo($originalName);
 		$fileInfo->setCustomInfo(TmpFileEngine::class, [self::INFO_SESSION_ID_KEY => $sessionId]);
 		$tfs->writeFileInfo($fileInfo);
-		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+		$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 		return $tfs;
 	}
 
@@ -85,7 +92,7 @@ class TmpFileEngine {
 		return $this->createSessionTmpFileSource($sessionId, $originalName);
 	}
 
-	public function createFile(string $sessionId = null, string $originalName = null) {
+	public function createFile(?string $sessionId = null, ?string $originalName = null) {
 		$tmpFileSource = $this->createTmpFileSource($sessionId, $originalName);
 
 		if ($originalName === null) {
@@ -132,7 +139,7 @@ class TmpFileEngine {
 	public function getSessionFile($qualifiedName, $sessionId) {
 		QualifiedNameBuilder::validateLevel($qualifiedName);
 
-		$fileFsPath = $this->fsPath->ext($qualifiedName);
+		$fileFsPath = $this->sessionDirFsPath->ext($qualifiedName);
 		if (!$fileFsPath->exists() || !StringUtils::startsWith(self::SESS_PREFIX, $fileFsPath->getName())) return null;
 
 		$fileInfoDingsler = new FileInfoDingsler($fileFsPath);
@@ -166,17 +173,38 @@ class TmpFileEngine {
 
 		try {
 			$tfs = new TmpFileSource($qualifiedName, $this->fileManagerName, $fileFsPath, $sessionId);
-			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm));
+			$tfs->setAffiliationEngine(new LazyFsAffiliationEngine($tfs, $this->dirPerm, $this->filePerm, false));
 			return new CommonFile($tfs, $infoFile->getOriginalName());
 		} catch (\InvalidArgumentException $e) {
 			return null;
 		}
 	}
 
-	public function deleteOldSessionFiles($gcMaxLifetime) {
-		foreach ($this->fsPath->getChildren(self::SESS_PREFIX . '*') as $fsPath) {
-			if ($gcMaxLifetime < (time() - $fsPath->getMTime())) {
-				$fsPath->delete();
+	public function deleteOldSessionFiles($gcMaxLifetime): void {
+		foreach ($this->sessionDirFsPath->getChildren(self::SESS_PREFIX . '*') as $fsPath) {
+			try {
+				$fileMtime = $fsPath->getMTime();
+			} catch (\Throwable $e) {
+				// this will fix a concurrency problem where getMTime() fails because an other php process has deleted
+				// that file in the meantime.
+
+				if ($fsPath->exists()) {
+					throw new IllegalStateException(previous: $e);
+				}
+
+				continue;
+			}
+
+			if ($gcMaxLifetime < (time() - $fileMtime)) {
+				try {
+					$fsPath->delete();
+				} catch (FileOperationException $e) {
+					// concurrency problem: if file does not exist anymore another thread
+					// must have already deleted this file.
+					if ($fsPath->exists()) {
+						throw $e;
+					}
+				}
 			}
 		}
 	}

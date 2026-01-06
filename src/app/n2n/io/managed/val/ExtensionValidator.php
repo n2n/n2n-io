@@ -13,7 +13,7 @@ use n2n\util\type\CastUtils;
 class ExtensionValidator extends SimpleValidatorAdapter {
 	private $allowedExtensions;
 	
-	function __construct(array $allowedExtensions, Message $errorMessage = null) {
+	function __construct(array $allowedExtensions, ?Message $errorMessage = null) {
 		$this->allowedExtensions = $allowedExtensions;
 		parent::__construct(TypeConstraint::createSimple(File::class), $errorMessage);
 	}

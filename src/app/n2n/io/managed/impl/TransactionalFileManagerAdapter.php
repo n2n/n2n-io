@@ -31,8 +31,8 @@ use n2n\context\Lookupable;
 use n2n\core\container\TransactionalResource;
 use n2n\io\managed\FileManager;
 use n2n\core\container\CommitListener;
-use n2n\core\container\CommitFailedException;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
+use n2n\core\container\err\TransactionPhaseException;
 
 abstract class TransactionalFileManagerAdapter implements FileManager, Lookupable, TransactionalResource, CommitListener {
 	protected TransactionManager $tm;
@@ -41,23 +41,23 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	 */
 	protected $fileEngine;
 	
-	private function _init(TransactionManager $tm) {
+	private function _init(TransactionManager $tm): void {
 		$this->tm = $tm;
 		
 		$tm->registerResource($this);
 		$tm->registerCommitListener($this);
 	}
 
-	private function _terminate() {
+	private function _terminate(): void {
 		$this->tm->unregisterResource($this);
 		$this->tm->unregisterCommitListener($this);
 	}
 	
 	/**
 	 * @throws IllegalStateException
-	 * @return \n2n\io\managed\impl\engine\transactional\TransactionalFileEngine
+	 * @return TransactionalFileEngine
 	 */
-	private function getFileEngine() {
+	private function getFileEngine(): TransactionalFileEngine {
 		if ($this->fileEngine === null) {
 			throw new IllegalStateException('FileManager not initialized.');
 		}
@@ -65,7 +65,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		return $this->fileEngine;
 	}
 	
-	private function ensureNotReadOnly($operationName) {
+	private function ensureNotReadOnly($operationName): void {
 		if (true === $this->tm->isReadyOnly()) {
 			throw new IllegalStateException($operationName . ' operation disallowed in ready only transaction.');
 		}
@@ -73,7 +73,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::persist()
 	 */
-	public function persist(File $file, FileLocator $fileLocator = null): string {
+	public function persist(File $file, ?FileLocator $fileLocator = null): string {
 		$this->ensureNotReadOnly('persist');
 	
 		$fileEngine = $this->getFileEngine();
@@ -87,7 +87,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::removeByQualifiedName()
 	 */
-	public function removeByQualifiedName($qualifiedName) {
+	public function removeByQualifiedName($qualifiedName): void {
 		$this->ensureNotReadOnly('remove');
 	
 		$fileEngine = $this->getFileEngine();
@@ -97,7 +97,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		}
 	}
 	
-	public function remove(File $file) {
+	public function remove(File $file): void {
 		$this->ensureNotReadOnly('remove');
 	
 		$fileEngine = $this->getFileEngine();
@@ -114,7 +114,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::clear()
 	 */
-	public function clear() {
+	public function clear(): void {
 		$fileEngine = $this->getFileEngine();
 		$fileEngine->removeAll();
 		if (!$this->tm->hasOpenTransaction()) {
@@ -124,22 +124,24 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::checkFile()
 	 */
-	public function checkFile(File $file) {
+	public function checkFile(File $file): ?string {
 		return $this->getFileEngine()->checkFile($file);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::getByQualifiedName()
 	 */
-	public function getByQualifiedName(string $qualifiedName = null) {
+	public function getByQualifiedName(?string $qualifiedName, bool $ifExistsChecked = true): ?File {
 		if ($qualifiedName === null) return null;
 		
-		return $this->getFileEngine()->getByQualifiedName($qualifiedName);
+		return $this->getFileEngine()->getByQualifiedName($qualifiedName, $ifExistsChecked);
 	}
 
 	public function beginTransaction(Transaction $transaction): void {}
 
-	public function prepareCommit(Transaction $transaction): bool {
-		return true;
+	public function prepareCommit(Transaction $transaction): void {
+	}
+
+	public function requestCommit(Transaction $transaction): void {
 	}
 
 	public function commit(Transaction $transaction): void {}
@@ -147,17 +149,33 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	public function rollBack(Transaction $transaction): void {
 		$this->fileEngine->clearBuffer();
 	}
+
+	function prePrepare(Transaction $transaction): void {
+	}
+
+	function postPrepare(Transaction $transaction): void {
+	}
 	
 	public function preCommit(Transaction $transaction): void {
 		$this->fileEngine->flush(true);
 	}
 
-	public function commitFailed(Transaction $transaction, CommitFailedException $e) {
+	public function postCorruptedState(?Transaction $transaction, TransactionPhaseException $e): void {
 		$this->fileEngine->abortFlush();
 	}
-	
+
+
+	public function preRollback(Transaction $transaction): void {
+	}
+
+	public function postRollback(Transaction $transaction): void {
+	}
+
 	public function postCommit(Transaction $transaction): void {
 		$this->fileEngine->flush();
+	}
+
+	function postClose(Transaction $transaction): void {
 	}
 
 	function release(): void {
@@ -167,7 +185,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 		return true;
 	}
 	
-	function getPossibleImageDimensions(File $file, FileLocator $fileLocator = null): array {
+	function getPossibleImageDimensions(File $file, ?FileLocator $fileLocator = null): array {
 		return $this->fileEngine->getPossibleImageDimensions($file, $fileLocator);
 	}
 }

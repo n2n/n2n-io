@@ -28,14 +28,19 @@ use n2n\context\RequestScoped;
 use n2n\core\config\IoConfig;
 use n2n\io\managed\FileManager;
 use n2n\io\managed\impl\engine\transactional\TransactionalFileEngine;
+use n2n\core\config\AppConfig;
 
 class PrivateFileManager extends TransactionalFileManagerAdapter implements RequestScoped {
 	const SRV_DIR = 'files';
 	
-	private function _init(FilesConfig $filesConfig, IoConfig $ioConfig, VarStore $varStore) {		
+	private function _init(FilesConfig $filesConfig, AppConfig $appConfig, VarStore $varStore) {
+		$ioConfig = $appConfig->io();
+		$generalConfig = $appConfig->general();
+
 		$privateDir = $filesConfig->getManagerPrivateDir();
 		if ($privateDir === null) {
-			$privateDir = $varStore->requestDirFsPath(VarStore::CATEGORY_SRV, N2N::NS, self::SRV_DIR);
+			$privateDir = $varStore->requestDirFsPath(VarStore::CATEGORY_SRV, N2N::NS,
+					self::SRV_DIR, shared: $generalConfig->isApplicationReplicatable());
 		}
 		
 		$this->fileEngine = new TransactionalFileEngine(FileManager::TYPE_PRIVATE, $privateDir,

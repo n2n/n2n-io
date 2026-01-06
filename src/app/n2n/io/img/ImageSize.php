@@ -47,7 +47,7 @@ class ImageSize {
 	 * @param bool $cropAllowed
 	 * @return ThumbCut
 	 */
-	public function proportionalResize(int $width, int $height, string $autoCropMode = null, bool $scaleUp = true) {
+	public function proportionalResize(int $width, int $height, ?string $autoCropMode = null, bool $scaleUp = true) {
 		ArgUtils::valEnum($autoCropMode, self::getAutoCropModes(), null, true);
 		
 		$cropWidth = null; $cropHeight = null; $x = null; $y = null;

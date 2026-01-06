@@ -27,6 +27,7 @@ use n2n\io\img\ImageSource;
 use n2n\io\img\ImageResource;
 use n2n\util\type\ArgUtils;
 use n2n\io\managed\img\ThumbCut;
+use n2n\io\managed\img\ImageMimeType;
 
 class ProportionalThumbStrategy implements ThumbStrategy {
 	private $autoCropMode;
@@ -34,12 +35,13 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	private $imageDimension;
 	
 
-	public function __construct(int $width, int $height, string $autoCropMode = null, bool $scaleUpAllowed = true, 
-			string $idExt = null) {
+	public function __construct(int $width, int $height, ?string $autoCropMode = null, bool $scaleUpAllowed = true,
+			?string $idExt = null, ?ImageMimeType $imageMimeType = null) {
 		ArgUtils::valEnum($autoCropMode, ImageResource::getAutoCropModes(), null, true);
 		$this->autoCropMode = $autoCropMode;
 		$this->scaleUpAllowed = $scaleUpAllowed;
-		$this->imageDimension = new ImageDimension($width, $height, $autoCropMode !== null, $scaleUpAllowed, $idExt);
+		$this->imageDimension = new ImageDimension($width, $height, $autoCropMode !== null, $scaleUpAllowed,
+				$idExt, $imageMimeType);
 	}
 	
 	/**
@@ -73,6 +75,11 @@ class ProportionalThumbStrategy implements ThumbStrategy {
 	 * @see \n2n\io\managed\img\ThumbStrategy::matches()
 	 */
 	public function matches(ImageSource $imageSource): bool {
+		if ($this->imageDimension->getMimeType() !== null
+				&& $this->imageDimension->getMimeType()->value !== $imageSource->getMimeType()) {
+			return false;
+		}
+
 		if ($this->imageDimension->getWidth() == $imageSource->getWidth()
 				&& $this->imageDimension->getHeight() == $imageSource->getHeight()) {
 			return true;

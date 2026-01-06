@@ -23,6 +23,6 @@ namespace n2n\io;
 
 class FileUploadException extends \Exception {
 	public function __construct($message = null, $code = null, $previous = null) {
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message ?? '', $code ?? 0, $previous);
 	}
 }

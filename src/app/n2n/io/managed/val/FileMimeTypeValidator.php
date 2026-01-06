@@ -9,11 +9,12 @@ use n2n\util\type\TypeConstraint;
 use n2n\io\managed\File;
 use n2n\util\type\CastUtils;
 use n2n\validation\lang\ValidationMessages;
+use n2n\validation\plan\ValidationContext;
 
 class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	private $allowedMimeTypes;
 	
-	function __construct(array $allowedMimeTypes, Message $errorMessage = null) {
+	function __construct(array $allowedMimeTypes, ?Message $errorMessage = null) {
 		parent::__construct($errorMessage);
 
 		$this->allowedMimeTypes = $allowedMimeTypes;
@@ -22,7 +23,7 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function testSingle(Validatable $validatable, MagicContext $magicContext): bool {
+	protected function testSingle(Validatable $validatable, ValidationContext $validationContext, MagicContext $magicContext): bool {
 		$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 		if (null !== $file) {
 			CastUtils::assertTrue($file instanceof File);
@@ -34,8 +35,8 @@ class FileMimeTypeValidator extends SimpleValidatorAdapter {
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function validateSingle(Validatable $validatable, MagicContext $magicContext): void {
-		if (!$this->testSingle($validatable, $magicContext)) {
+	protected function validateSingle(Validatable $validatable, ValidationContext $validationContext, MagicContext $magicContext): void {
+		if (!$this->testSingle($validatable, $validationContext, $magicContext)) {
 			$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
 			CastUtils::assertTrue($file instanceof File);
 			

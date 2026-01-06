@@ -21,13 +21,14 @@
  */
 namespace n2n\io\orm;
 
-use n2n\persistence\meta\data\QueryItem;
+use n2n\spec\dbo\meta\data\QueryItem;
 use n2n\persistence\PdoStatement;
 use n2n\io\managed\FileManager;
 use n2n\persistence\orm\query\select\Selection;
 use n2n\persistence\orm\query\select\EagerValueBuilder;
 use n2n\io\managed\impl\engine\QualifiedNameFormatException;
 use n2n\persistence\orm\CorruptedDataException;
+use n2n\persistence\orm\query\select\ValueBuilder;
 
 class ManagedFileSelection implements Selection {
 	private $queryItem;
@@ -42,35 +43,28 @@ class ManagedFileSelection implements Selection {
 		$this->entityProperty = $entityProperty;
 	}
 	
-	public function getSelectQueryItems() {
+	public function getSelectQueryItems(): array {
 		return array($this->queryItem);
 	}
 
-	public function bindColumns(PdoStatement $stmt, array $columnAliases) {
+	public function bindColumns(PdoStatement $stmt, array $columnAliases): void {
 		$stmt->shareBindColumn($columnAliases[0], $this->qualifiedName);
 	}
 	/* (non-PHPdoc)
 	 * @see \n2n\persistence\orm\query\select\Selection::createValueBuilder()
 	 */
-	public function createValueBuilder() {
+	public function createValueBuilder(): ValueBuilder {
 		if ($this->qualifiedName === null) {
 			return new EagerValueBuilder(null);
 		}
-		
-		$file = null;
+
 		try {
-			$file = $this->fileManager->getByQualifiedName($this->qualifiedName);
+			return new EagerValueBuilder($this->fileManager->getByQualifiedName($this->qualifiedName, false));
 		} catch (QualifiedNameFormatException $e) {
 			throw new CorruptedDataException('Failed to lookup value for ' . $this->entityProperty, 0, 
 					new CorruptedDataException('Field \'' . $this->entityProperty->getColumnName()
 							. '\' of table \'' . $this->entityProperty->getEntityModel()->getTableName() 
 							. '\' contains an invalid value: ' . $this->qualifiedName, 0, $e));	
 		}
-		
-		if ($file !== null) {
-			return new EagerValueBuilder($file);
-		}
-		
-		return new EagerValueBuilder(new UnknownFile($this->qualifiedName, get_class($this->fileManager)));
 	}
 }

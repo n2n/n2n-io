@@ -16,7 +16,7 @@ class TmpFileEngineTest extends TestCase {
 		$id = uniqid();
 		$dirPath = new FsPath(__DIR__ . DIRECTORY_SEPARATOR . 'dump' . DIRECTORY_SEPARATOR . $id);
 		$dirPath->mkdirs();
-		$this->tmpFileEngine = new TmpFileEngine($dirPath, '0777', '0777', 'tmp' . $id);
+		$this->tmpFileEngine = new TmpFileEngine($dirPath, $dirPath, '0777', '0777', 'tmp' . $id);
 	}
 
 	function testAffiliation() {
@@ -46,10 +46,10 @@ class TmpFileEngineTest extends TestCase {
 		$file = $this->tmpFileEngine->createFile();
 		$fsPath = $file->getFileSource()->getFsPath();
 
-		$varFsPath = $fsPath->getParent()->ext('res-var-superduper')->ext($fsPath->getFileName());
+		$varFsPath = $fsPath->getParent()->ext('res-var-superduper')->ext($fsPath->getName());
 		$varFsPath->mkdirsAndCreateFile('0777', '0666');
 
-		$thumbFsPath = $fsPath->getParent()->ext('res-1x1xs')->ext($fsPath->getFileName());
+		$thumbFsPath = $fsPath->getParent()->ext('res-1x1xs')->ext($fsPath->getName());
 		$thumbFsPath->mkdirsAndCreateFile('0777', '0666');
 
 

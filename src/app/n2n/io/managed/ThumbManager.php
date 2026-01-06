@@ -30,7 +30,7 @@ interface ThumbManager {
 	 * @param ImageDimension $imageDimension
 	 * @return FileSource|null null if not avaialable
 	 */
-	public function getByDimension(ImageDimension $imageDimension);
+	public function getByDimension(ImageDimension $imageDimension): ?FileSource;
 	
 	/**
 	 * @param ImageResource $imageResource
