@@ -38,13 +38,15 @@ class FileSizeValidator extends SimpleValidatorAdapter {
 	 * {@inheritdoc}
 	 */
 	protected function validateSingle(Validatable $validatable, MagicContext $magicContext): void {
-		if (!$this->testSingle($validatable, $magicContext)) {
-			$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
-			CastUtils::assertTrue($file instanceof File);
-			
-			$validatable->addError(ValidationMessages::fileSize($file, $this->maxSize, 
-					$this->readLabel($validatable)));
+		if ($this->testSingle($validatable, $magicContext)) {
+			return;
 		}
+
+		$file = $this->readSafeValue($validatable, TypeConstraint::createSimple(File::class));
+		CastUtils::assertTrue($file instanceof File);
+
+		$validatable->addError(ValidationMessages::fileSize($file, $this->maxSize,
+				$this->readLabel($validatable)));
 	}
 }
 
