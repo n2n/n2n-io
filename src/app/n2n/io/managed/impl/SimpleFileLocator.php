@@ -36,14 +36,14 @@ class SimpleFileLocator implements FileLocator {
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileLocator::buildDirLevels()
 	 */
-	public function buildDirLevelNames(File $file) {
+	public function buildDirLevelNames(File $file): array {
 		return $this->dirLevels;
 	}
 	
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileLocator::buildFileName()
 	 */
-	public function buildFileName(File $file) {
+	public function buildFileName(File $file): ?string {
 		return null;
 	}
 }

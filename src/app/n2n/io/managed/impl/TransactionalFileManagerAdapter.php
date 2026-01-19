@@ -73,7 +73,7 @@ abstract class TransactionalFileManagerAdapter implements FileManager, Lookupabl
 	/* (non-PHPdoc)
 	 * @see \n2n\io\managed\FileManager::persist()
 	 */
-	public function persist(File $file, ?FileLocator $fileLocator = null): string {
+	public function persist(File $file, ?FileLocator $fileLocator = new MonthlyDirFileLocator()): string {
 		$this->ensureNotReadOnly('persist');
 	
 		$fileEngine = $this->getFileEngine();
