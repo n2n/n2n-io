@@ -16,10 +16,14 @@ class DailyDirFileLocator implements FileLocator {
 
 	private array $prefixLevels;
 
+	// Info.pdf -> Info-18as923.pdf
+	// Info.holeradio.pdf -> Info-18as923.holeradiopdf
+	// use TokenUtils::randomToken()
+
 	/**
 	 * @param string ...$prefixLevels Optional prefix directories before the date folder (e.g., 'imports', 'exports')
 	 */
-	function __construct(string ...$prefixLevels) {
+	function __construct(bool $uniqueSuffix = true, string ...$prefixLevels) {
 		$this->prefixLevels = $prefixLevels;
 	}
 
