@@ -24,12 +24,9 @@ namespace n2n\io\managed;
 interface FileLocator {
 	/**
 	 * @param File $file
-	 * @return array 
+	 * @return string[]
 	 */
-	public function buildDirLevelNames(File $file);
-	/**
-	 * @param File $file
-	 * @return string
-	 */
-	public function buildFileName(File $file);
+	public function buildDirLevelNames(File $file): array;
+
+	public function buildFileName(File $file): ?string;
 }
