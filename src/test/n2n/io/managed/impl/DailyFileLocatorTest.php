@@ -19,7 +19,7 @@ class DailyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithSinglePrefix(): void {
-		$locator = new DailyDirFileLocator('imports');
+		$locator = new DailyDirFileLocator(true, 'imports');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -30,7 +30,7 @@ class DailyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithMultiplePrefixes(): void {
-		$locator = new DailyDirFileLocator('uploads', 'images', 'profiles');
+		$locator = new DailyDirFileLocator(true, 'uploads', 'images', 'profiles');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -42,13 +42,54 @@ class DailyFileLocatorTest extends TestCase {
 		$this->assertEquals(date('Ymd'), $result[3]);
 	}
 
-	function testBuildFileNameReturnsNull(): void {
-		$locator = new DailyDirFileLocator();
+	function testBuildFileNameReturnsNullWhenUniqueSuffixDisabled(): void {
+		$locator = new DailyDirFileLocator(false);
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildFileName($fileMock);
 
 		$this->assertNull($result);
+	}
+
+	function testBuildFileNameWithExtension(): void {
+		$locator = new DailyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('Info.pdf');
+
+		$result = $locator->buildFileName($fileMock);
+
+		$this->assertMatchesRegularExpression('/^Info-[a-z0-9]{7}\.pdf$/', $result);
+	}
+
+	function testBuildFileNameWithMultipleExtensions(): void {
+		$locator = new DailyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('archive.tar.gz');
+
+		$result = $locator->buildFileName($fileMock);
+
+		$this->assertMatchesRegularExpression('/^archive\.tar-[a-z0-9]{7}\.gz$/', $result);
+	}
+
+	function testBuildFileNameWithoutExtension(): void {
+		$locator = new DailyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('README');
+
+		$result = $locator->buildFileName($fileMock);
+
+		$this->assertMatchesRegularExpression('/^README-[a-z0-9]{7}$/', $result);
+	}
+
+	function testBuildFileNameGeneratesUniqueTokens(): void {
+		$locator = new DailyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('test.txt');
+
+		$result1 = $locator->buildFileName($fileMock);
+		$result2 = $locator->buildFileName($fileMock);
+
+		$this->assertNotEquals($result1, $result2);
 	}
 
 	function testDateFormatIsCorrect(): void {
@@ -71,5 +112,11 @@ class DailyFileLocatorTest extends TestCase {
 		$result2 = $locator->buildDirLevelNames($fileMock);
 
 		$this->assertEquals($result1[0], $result2[0]);
+	}
+
+	function testCreateTokenFileNameStatic(): void {
+		$result = DailyDirFileLocator::createTokenFileName('document.pdf');
+
+		$this->assertMatchesRegularExpression('/^document-[a-z0-9]{7}\.pdf$/', $result);
 	}
 }

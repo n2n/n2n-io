@@ -19,7 +19,7 @@ class YearlyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithSinglePrefix(): void {
-		$locator = new YearlyDirFileLocator('imports');
+		$locator = new YearlyDirFileLocator(true, 'imports');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -30,7 +30,7 @@ class YearlyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithMultiplePrefixes(): void {
-		$locator = new YearlyDirFileLocator('uploads', 'images', 'profiles');
+		$locator = new YearlyDirFileLocator(true, 'uploads', 'images', 'profiles');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -42,13 +42,34 @@ class YearlyFileLocatorTest extends TestCase {
 		$this->assertEquals(date('Y'), $result[3]);
 	}
 
-	function testBuildFileNameReturnsNull(): void {
-		$locator = new YearlyDirFileLocator();
+	function testBuildFileNameReturnsNullWhenUniqueSuffixDisabled(): void {
+		$locator = new YearlyDirFileLocator(false);
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildFileName($fileMock);
 
 		$this->assertNull($result);
+	}
+
+	function testBuildFileNameWithExtension(): void {
+		$locator = new YearlyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('Photo.jpg');
+
+		$result = $locator->buildFileName($fileMock);
+
+		$this->assertMatchesRegularExpression('/^Photo-[a-z0-9]{7}\.jpg$/', $result);
+	}
+
+	function testBuildFileNameGeneratesUniqueTokens(): void {
+		$locator = new YearlyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('test.txt');
+
+		$result1 = $locator->buildFileName($fileMock);
+		$result2 = $locator->buildFileName($fileMock);
+
+		$this->assertNotEquals($result1, $result2);
 	}
 
 	function testDateFormatIsCorrect(): void {

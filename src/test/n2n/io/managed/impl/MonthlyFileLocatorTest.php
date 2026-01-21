@@ -19,7 +19,7 @@ class MonthlyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithSinglePrefix(): void {
-		$locator = new MonthlyDirFileLocator('imports');
+		$locator = new MonthlyDirFileLocator(true, 'imports');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -30,7 +30,7 @@ class MonthlyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithMultiplePrefixes(): void {
-		$locator = new MonthlyDirFileLocator('uploads', 'images', 'profiles');
+		$locator = new MonthlyDirFileLocator(true, 'uploads', 'images', 'profiles');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -42,13 +42,34 @@ class MonthlyFileLocatorTest extends TestCase {
 		$this->assertEquals(date('Ym'), $result[3]);
 	}
 
-	function testBuildFileNameReturnsNull(): void {
-		$locator = new MonthlyDirFileLocator();
+	function testBuildFileNameReturnsNullWhenUniqueSuffixDisabled(): void {
+		$locator = new MonthlyDirFileLocator(false);
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildFileName($fileMock);
 
 		$this->assertNull($result);
+	}
+
+	function testBuildFileNameWithExtension(): void {
+		$locator = new MonthlyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('Report.xlsx');
+
+		$result = $locator->buildFileName($fileMock);
+
+		$this->assertMatchesRegularExpression('/^Report-[a-z0-9]{7}\.xlsx$/', $result);
+	}
+
+	function testBuildFileNameGeneratesUniqueTokens(): void {
+		$locator = new MonthlyDirFileLocator(true);
+		$fileMock = $this->createMock(File::class);
+		$fileMock->method('getOriginalName')->willReturn('test.txt');
+
+		$result1 = $locator->buildFileName($fileMock);
+		$result2 = $locator->buildFileName($fileMock);
+
+		$this->assertNotEquals($result1, $result2);
 	}
 
 	function testDateFormatIsCorrect(): void {
