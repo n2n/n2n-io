@@ -21,7 +21,7 @@
  */
 namespace n2n\io\managed\img;
 
-use n2n\util\type\attrs\DataSet;
+use n2n\util\attr\DataSet;
 use n2n\io\img\ImageResource;
 use n2n\io\img\ImageSource;
 
@@ -116,7 +116,7 @@ class ThumbCut implements \JsonSerializable {
 		
 		try {
 			return new ThumbCut($ds->reqInt('x'), $ds->reqInt('y'), $ds->reqInt('width'), $ds->reqInt('height'));
-		} catch (\n2n\util\type\attrs\AttributesException $e) {
+		} catch (\n2n\util\attr\AttributesException $e) {
 			throw new \InvalidArgumentException(null, 0, $e);
 		}
 	}

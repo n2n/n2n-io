@@ -21,8 +21,8 @@
  */
 namespace n2n\io\managed;
 
-use n2n\util\type\attrs\DataMap;
-use n2n\util\type\attrs\AttributesException;
+use n2n\util\attr\DataMap;
+use n2n\util\attr\AttributesException;
 
 class FileInfo implements \JsonSerializable {
 	private $originalName;
