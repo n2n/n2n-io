@@ -114,14 +114,14 @@ class CommonFile implements File {
 	 * @param FileListener $fileListener
 	 */
 	public function registerFileListener(FileListener $fileListener) {
-		$this->fileListeners[spl_object_hash($fileListener)] = $fileListener;
+		$this->fileListeners[spl_object_id($fileListener)] = $fileListener;
 	}
 	/**
 	 *
 	 * @param string $fileListener
 	 */
 	public function unregisterFileListener(FileListener $fileListener) {
-		unset($this->fileListeners[spl_object_hash($fileListener)]);
+		unset($this->fileListeners[spl_object_id($fileListener)]);
 	}
 	
 	public function serialize() {

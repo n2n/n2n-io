@@ -207,7 +207,6 @@ class ImageResource {
 
 		// bool imagecopyresampled ( resource dst_im, resource src_im, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH)
 		imagecopyresampled($newResource, $this->resource, 0, 0, $startX, $startY, $destWidth, $destHeight, $originalW, $originalH);
-		imagedestroy($this->resource);
 		$this->resource = $newResource;
 
 		// reset sizes after croping
@@ -240,7 +239,6 @@ class ImageResource {
 	 */
 	public function destroy() {
 		if ($this->keepHandleAlive) return;
-		@imagedestroy($this->resource);
 	}
 	/**
 	 * 
