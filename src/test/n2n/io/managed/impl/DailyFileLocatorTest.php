@@ -19,7 +19,7 @@ class DailyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithSinglePrefix(): void {
-		$locator = new DailyDirFileLocator('imports');
+		$locator = new DailyDirFileLocator(true, 'imports');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
@@ -30,7 +30,7 @@ class DailyFileLocatorTest extends TestCase {
 	}
 
 	function testBuildDirLevelNamesWithMultiplePrefixes(): void {
-		$locator = new DailyDirFileLocator('uploads', 'images', 'profiles');
+		$locator = new DailyDirFileLocator(true, 'uploads', 'images', 'profiles');
 		$fileMock = $this->createMock(File::class);
 
 		$result = $locator->buildDirLevelNames($fileMock);
