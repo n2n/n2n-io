@@ -52,7 +52,7 @@ class FsThumbManager implements ThumbManager {
 		}
 		
 // 		return QualifiedNameBuilder::buildResFolderName(implode(self::THUMB_FOLDER_ATTRIBUTE_SEPARATOR,
-// 				array($dimension->getWidth(), $dimension->getHeight(), (boolean) $dimension->isCrop())));
+// 				array($dimension->getWidth(), $dimension->getHeight(), (bool) $dimension->isCrop())));
 	}
 	
 	public static function isDimensionDirName(string $dirName): bool {
@@ -75,7 +75,7 @@ class FsThumbManager implements ThumbManager {
 // 			throw new \InvalidArgumentException();
 // 		}
 	
-// 		return new ImageDimension((int) $dimAttrs[0], (int) $dimAttrs[1], (boolean)$dimAttrs[2]);
+// 		return new ImageDimension((int) $dimAttrs[0], (int) $dimAttrs[1], (bool)$dimAttrs[2]);
 // 	}
 	
 	private function createThumbFilePath(ImageDimension $imageDimension) {

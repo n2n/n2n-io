@@ -33,7 +33,7 @@ class ManagedFileSource extends FileSourceAdapter {
 	}
 	
 // 	public function setPersisent($persistent) {
-// 		$this->persistent = (boolean) $persistent;
+// 		$this->persistent = (bool) $persistent;
 // 	}
 	
 // 	public function isPersistent() {

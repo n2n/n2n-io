@@ -81,7 +81,7 @@ class FsVariationManager implements VariationManager {
 // 			throw new \InvalidArgumentException();
 // 		}
 	
-// 		return new ImageDimension((int) $dimAttrs[0], (int) $dimAttrs[1], (boolean)$dimAttrs[2]);
+// 		return new ImageDimension((int) $dimAttrs[0], (int) $dimAttrs[1], (bool)$dimAttrs[2]);
 // 	}
 	
 	private function createVariationFileFsPath(string $key) {
